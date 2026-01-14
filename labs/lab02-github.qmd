@@ -150,9 +150,9 @@ For more information checkout [Creating a pull request](https://docs.github.com/
 -   Add details of the pull request below (the commit id of your change (you can find this using `git log`)
 
 ``` sh
-commit:
-Author:
-Date:
+commit: 6913c5fe9b0033059a92db07f92fd965224ce1ff 
+Author: yifanwang <yifaneric.wang@mail.utoronto.ca>
+Date: Wed Jan 14 13:44:21 2026 -0500
 ```
 
 ------------------------------------------------------------------------
