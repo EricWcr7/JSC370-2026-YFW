@@ -15,10 +15,45 @@ execute:
   message: false
 ---
 
+# Primary Question
+What are the most numerous categories of crimes and offences in Toronto? Of these, when and where are they most likely to occur?
+
 # Steps
 
 ### 1. Read in the data
 
 ```{python}
 import pandas as pd
+```
+
+### 2. Preprocess the data
+
+```{python}
+```
+
+### 3. Check data completeness across years
+
+```{python}
+```
+
+### 4. Examine annual change in crime
+
+```{python}
+```
+
+### 5. Examine seasonality in crime
+
+```{python}
+```
+
+### 6. Examine seasonality, day vs night
+```{python}
+```
+
+### 7. Look at neighbourhood patterns
+```{python}
+```
+
+### 8. Create a map
+```{python}
 ```
