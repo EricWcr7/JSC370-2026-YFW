@@ -1,0 +1,24 @@
+---
+title: "Homework 1 — EDA and Visualization"
+subtitle: "JSC370 (Winter 2026)"
+date: "February 1, 2026"
+format:
+  live-html:
+    toc: true
+filters:
+  - r-wasm/live
+jupyter: python3
+execute:
+  enabled: true
+  echo: true
+  warning: false
+  message: false
+---
+
+# Steps
+
+### 1. Read in the data
+
+```{python}
+import pandas as pd
+```
