@@ -59,7 +59,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="hw1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="hw1_files/libs/clipboard/clipboard.min.js"></script>
 <script src="hw1_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="hw1_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="hw1_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -75,6 +75,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="hw1_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
 <script type="module" src="hw1_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
 <link href="hw1_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -88,11 +91,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#primary-question" id="toc-primary-question" class="nav-link active" data-scroll-target="#primary-question">Primary Question</a></li>
+  <li><a href="#environment-setup" id="toc-environment-setup" class="nav-link" data-scroll-target="#environment-setup">Environment Setup</a></li>
   <li><a href="#steps" id="toc-steps" class="nav-link" data-scroll-target="#steps">Steps</a>
   <ul class="collapse">
-  <li><a href="#read-in-the-data" id="toc-read-in-the-data" class="nav-link" data-scroll-target="#read-in-the-data">1. Read in the data</a></li>
-  <li><a href="#preprocess-the-data" id="toc-preprocess-the-data" class="nav-link" data-scroll-target="#preprocess-the-data">2. Preprocess the data</a></li>
-  <li><a href="#check-data-completeness-across-years" id="toc-check-data-completeness-across-years" class="nav-link" data-scroll-target="#check-data-completeness-across-years">3. Check data completeness across years</a></li>
+  <li><a href="#read-in-the-data" id="toc-read-in-the-data" class="nav-link" data-scroll-target="#read-in-the-data">1. Read in the data</a>
+  <ul class="collapse">
+  <li><a href="#read-the-data-with-only-the-needed-columns" id="toc-read-the-data-with-only-the-needed-columns" class="nav-link" data-scroll-target="#read-the-data-with-only-the-needed-columns">1.1 Read the data with only the needed columns</a></li>
+  <li><a href="#check-the-data-dimensions-and-memory" id="toc-check-the-data-dimensions-and-memory" class="nav-link" data-scroll-target="#check-the-data-dimensions-and-memory">1.2 Check the data dimensions and memory</a></li>
+  <li><a href="#check-the-data-types" id="toc-check-the-data-types" class="nav-link" data-scroll-target="#check-the-data-types">1.3 Check the data types</a></li>
+  <li><a href="#check-the-missing-values" id="toc-check-the-missing-values" class="nav-link" data-scroll-target="#check-the-missing-values">1.4 Check the missing values</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">1.5 Summary</a></li>
+  </ul></li>
+  <li><a href="#preprocess-the-data" id="toc-preprocess-the-data" class="nav-link" data-scroll-target="#preprocess-the-data">2. Preprocess the data</a>
+  <ul class="collapse">
+  <li><a href="#identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category" id="toc-identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category" class="nav-link" data-scroll-target="#identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category">2.1 Identify the most frequent MCI category and the most frequent offence within that category</a></li>
+  <li><a href="#build-the-analytic-dataset-with-the-selected-category-and-offence" id="toc-build-the-analytic-dataset-with-the-selected-category-and-offence" class="nav-link" data-scroll-target="#build-the-analytic-dataset-with-the-selected-category-and-offence">2.2 Build the analytic dataset with the selected category and offence</a></li>
+  <li><a href="#rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc." id="toc-rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc." class="nav-link" data-scroll-target="#rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc.">2.3 Rename variables for readability and preprocess the variables (value mapping, type conversion, etc.)</a></li>
+  <li><a href="#identify-and-clean-impossible-data" id="toc-identify-and-clean-impossible-data" class="nav-link" data-scroll-target="#identify-and-clean-impossible-data">2.4 Identify and clean impossible data</a></li>
+  <li><a href="#summary-1" id="toc-summary-1" class="nav-link" data-scroll-target="#summary-1">2.5 Summary</a></li>
+  </ul></li>
+  <li><a href="#check-data-completeness-across-years" id="toc-check-data-completeness-across-years" class="nav-link" data-scroll-target="#check-data-completeness-across-years">3. Check data completeness across years</a>
+  <ul class="collapse">
+  <li><a href="#examine-which-years-are-present-in-the-data" id="toc-examine-which-years-are-present-in-the-data" class="nav-link" data-scroll-target="#examine-which-years-are-present-in-the-data">3.1 Examine which years are present in the data</a></li>
+  <li><a href="#cross-reference-with-documentation-to-identify-valid-time-range" id="toc-cross-reference-with-documentation-to-identify-valid-time-range" class="nav-link" data-scroll-target="#cross-reference-with-documentation-to-identify-valid-time-range">3.2 Cross-reference with documentation to identify valid time range</a></li>
+  <li><a href="#examine-completeness-within-valid-time-range-according-to-the-data-documentation" id="toc-examine-completeness-within-valid-time-range-according-to-the-data-documentation" class="nav-link" data-scroll-target="#examine-completeness-within-valid-time-range-according-to-the-data-documentation">3.3 Examine completeness within valid time range according to the data documentation</a></li>
+  <li><a href="#subset-to-years-with-complete-data" id="toc-subset-to-years-with-complete-data" class="nav-link" data-scroll-target="#subset-to-years-with-complete-data">3.4 Subset to years with complete data</a></li>
+  <li><a href="#summary-2" id="toc-summary-2" class="nav-link" data-scroll-target="#summary-2">3.5 Summary</a></li>
+  </ul></li>
   <li><a href="#examine-annual-change-in-crime" id="toc-examine-annual-change-in-crime" class="nav-link" data-scroll-target="#examine-annual-change-in-crime">4. Examine annual change in crime</a></li>
   <li><a href="#examine-seasonality-in-crime" id="toc-examine-seasonality-in-crime" class="nav-link" data-scroll-target="#examine-seasonality-in-crime">5. Examine seasonality in crime</a></li>
   <li><a href="#examine-seasonality-day-vs-night" id="toc-examine-seasonality-day-vs-night" class="nav-link" data-scroll-target="#examine-seasonality-day-vs-night">6. Examine seasonality, day vs night</a></li>
@@ -134,34 +159,1002 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Primary Question</h1>
 <p>What are the most numerous categories of crimes and offences in Toronto? Of these, when and where are they most likely to occur?</p>
 </section>
-<section id="steps" class="level1">
-<h1>Steps</h1>
-<section id="read-in-the-data" class="level3">
-<h3 class="anchored" data-anchor-id="read-in-the-data">1. Read in the data</h3>
-<div id="fde80102" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="environment-setup" class="level1">
+<h1>Environment Setup</h1>
+<div id="environment-setup" class="cell" data-message="false" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="preprocess-the-data" class="level3">
-<h3 class="anchored" data-anchor-id="preprocess-the-data">2. Preprocess the data</h3>
+<section id="steps" class="level1">
+<h1>Steps</h1>
+<section id="read-in-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="read-in-the-data">1. Read in the data</h2>
+<section id="read-the-data-with-only-the-needed-columns" class="level3">
+<h3 class="anchored" data-anchor-id="read-the-data-with-only-the-needed-columns">1.1 Read the data with only the needed columns</h3>
+<div id="cell-read-data" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read and load only the needed columns</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> <span class="st">"Major_Crime_Indicators_Open_Data_-3805566126367379926.csv"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Focus on the following variables:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>key_vars <span class="op">=</span> [</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MCI_CATEGORY"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OFFENCE"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OCC_YEAR"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OCC_MONTH"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OCC_DAY"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OCC_DOY"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OCC_HOUR"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LOCATION_TYPE"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"NEIGHBOURHOOD_158"</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LONG_WGS84"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LAT_WGS84"</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.read_csv(data_path, usecols<span class="op">=</span>key_vars)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick look at the data</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> raw.copy()</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="read-data" class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">OCC_YEAR</th>
+<th data-quarto-table-cell-role="th">OCC_MONTH</th>
+<th data-quarto-table-cell-role="th">OCC_DAY</th>
+<th data-quarto-table-cell-role="th">OCC_DOY</th>
+<th data-quarto-table-cell-role="th">OCC_HOUR</th>
+<th data-quarto-table-cell-role="th">LOCATION_TYPE</th>
+<th data-quarto-table-cell-role="th">OFFENCE</th>
+<th data-quarto-table-cell-role="th">MCI_CATEGORY</th>
+<th data-quarto-table-cell-role="th">NEIGHBOURHOOD_158</th>
+<th data-quarto-table-cell-role="th">LONG_WGS84</th>
+<th data-quarto-table-cell-role="th">LAT_WGS84</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2014.0</td>
+<td>January</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>4</td>
+<td>Apartment (Rooming House, Condo)</td>
+<td>Assault</td>
+<td>Assault</td>
+<td>Downsview (155)</td>
+<td>-79.483869</td>
+<td>43.734369</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2014.0</td>
+<td>January</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>8</td>
+<td>Commercial Dwelling Unit (Hotel, Motel, B &amp; B,...</td>
+<td>Assault With Weapon</td>
+<td>Assault</td>
+<td>Oakdale-Beverley Heights (154)</td>
+<td>-79.513772</td>
+<td>43.719813</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2014.0</td>
+<td>January</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>12</td>
+<td>Single Home, House (Attach Garage, Cottage, Mo...</td>
+<td>Assault Bodily Harm</td>
+<td>Assault</td>
+<td>North Riverdale (68)</td>
+<td>-79.357562</td>
+<td>43.674791</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>2014.0</td>
+<td>January</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>13</td>
+<td>Retirement Home</td>
+<td>Assault</td>
+<td>Assault</td>
+<td>Wychwood (94)</td>
+<td>-79.422371</td>
+<td>43.673842</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>2014.0</td>
+<td>January</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>11</td>
+<td>Apartment (Rooming House, Condo)</td>
+<td>Assault</td>
+<td>Assault</td>
+<td>Clairlea-Birchmount (120)</td>
+<td>-79.286725</td>
+<td>43.700100</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
-<section id="check-data-completeness-across-years" class="level3">
-<h3 class="anchored" data-anchor-id="check-data-completeness-across-years">3. Check data completeness across years</h3>
+<section id="check-the-data-dimensions-and-memory" class="level3">
+<h3 class="anchored" data-anchor-id="check-the-data-dimensions-and-memory">1.2 Check the data dimensions and memory</h3>
+<div id="cell-check-data" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check dimensions and memory</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape:"</span>, df.shape)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_rows:"</span>, df.shape[<span class="dv">0</span>])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_cols:"</span>, df.shape[<span class="dv">1</span>])</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Check memory usage in GB</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>df.memory_usage(deep<span class="op">=</span><span class="va">True</span>).<span class="bu">sum</span>() <span class="op">/</span> <span class="dv">1024</span><span class="op">**</span><span class="dv">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>shape: (452949, 11)
+n_rows: 452949
+n_cols: 11</code></pre>
+</div>
+<div id="check-data" class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>np.float64(0.16353116929531097)</code></pre>
+</div>
+</div>
 </section>
-<section id="examine-annual-change-in-crime" class="level3">
-<h3 class="anchored" data-anchor-id="examine-annual-change-in-crime">4. Examine annual change in crime</h3>
+<section id="check-the-data-types" class="level3">
+<h3 class="anchored" data-anchor-id="check-the-data-types">1.3 Check the data types</h3>
+<div id="check-data-types" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check variable information</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 452949 entries, 0 to 452948
+Data columns (total 11 columns):
+ #   Column             Non-Null Count   Dtype  
+---  ------             --------------   -----  
+ 0   OCC_YEAR           452798 non-null  float64
+ 1   OCC_MONTH          452798 non-null  object 
+ 2   OCC_DAY            452798 non-null  float64
+ 3   OCC_DOY            452798 non-null  float64
+ 4   OCC_HOUR           452949 non-null  int64  
+ 5   LOCATION_TYPE      452949 non-null  object 
+ 6   OFFENCE            452949 non-null  object 
+ 7   MCI_CATEGORY       452949 non-null  object 
+ 8   NEIGHBOURHOOD_158  452949 non-null  object 
+ 9   LONG_WGS84         452949 non-null  float64
+ 10  LAT_WGS84          452949 non-null  float64
+dtypes: float64(5), int64(1), object(5)
+memory usage: 38.0+ MB</code></pre>
+</div>
+</div>
 </section>
-<section id="examine-seasonality-in-crime" class="level3">
-<h3 class="anchored" data-anchor-id="examine-seasonality-in-crime">5. Examine seasonality in crime</h3>
+<section id="check-the-missing-values" class="level3">
+<h3 class="anchored" data-anchor-id="check-the-missing-values">1.4 Check the missing values</h3>
+<div id="cell-check-missing-values" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize missing-value placeholders across all columns</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>missing_markers <span class="op">=</span> [<span class="st">""</span>, <span class="st">" "</span>, <span class="st">"N/A"</span>, <span class="st">"NA"</span>, <span class="st">"null"</span>, <span class="st">"Null"</span>]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.replace(missing_markers, np.nan)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Missing data summary</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>missing <span class="op">=</span> df.isna().<span class="bu">sum</span>().to_frame(<span class="st">"n_missing"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>missing[<span class="st">"pct_missing"</span>] <span class="op">=</span> (missing[<span class="st">"n_missing"</span>] <span class="op">/</span> <span class="bu">len</span>(df)).<span class="bu">round</span>(<span class="dv">4</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>display(missing.sort_values(<span class="st">"pct_missing"</span>, ascending<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="check-missing-values" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">n_missing</th>
+<th data-quarto-table-cell-role="th">pct_missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">OCC_YEAR</th>
+<td>151</td>
+<td>0.0003</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">OCC_MONTH</th>
+<td>151</td>
+<td>0.0003</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">OCC_DAY</th>
+<td>151</td>
+<td>0.0003</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">OCC_DOY</th>
+<td>151</td>
+<td>0.0003</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">OCC_HOUR</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">LOCATION_TYPE</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">OFFENCE</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">MCI_CATEGORY</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">NEIGHBOURHOOD_158</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">LONG_WGS84</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">LAT_WGS84</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
-<section id="examine-seasonality-day-vs-night" class="level3">
-<h3 class="anchored" data-anchor-id="examine-seasonality-day-vs-night">6. Examine seasonality, day vs night</h3>
+<section id="summary" class="level3">
+<h3 class="anchored" data-anchor-id="summary">1.5 Summary</h3>
+<p>Summary:</p>
+<ul>
+<li>Read the Toronto Police major crime indicators dataset from the downloaded CSV file using <code>pd.read_csv(..., usecols=key_vars)</code> to load only the 11 variables required for this homework: <code>MCI_CATEGORY</code>, <code>OFFENCE</code>, <code>OCC_YEAR</code>, <code>OCC_MONTH</code>, <code>OCC_DAY</code>, <code>OCC_DOY</code>, <code>OCC_HOUR</code>, <code>LOCATION_TYPE</code>, <code>NEIGHBOURHOOD_158</code>, <code>LONG_WGS84</code>, <code>LAT_WGS84</code>. Then make a copy of the dataframe for further analysis/preprocessing.</li>
+<li>The resulting dataframe has <strong>452,949 rows</strong> and <strong>11 columns</strong>.</li>
+<li>Variable types (from <code>df.info()</code>): <strong><code>int64</code></strong>: <code>OCC_HOUR</code>. <strong><code>float64</code></strong>: <code>OCC_YEAR</code>, <code>OCC_DAY</code>, <code>OCC_DOY</code>, <code>LONG_WGS84</code>, <code>LAT_WGS84</code> (the date fields are <code>float64</code>). <strong><code>object</code></strong>: <code>OCC_MONTH</code>, <code>LOCATION_TYPE</code>, <code>OFFENCE</code>, <code>MCI_CATEGORY</code>, <code>NEIGHBOURHOOD_158</code>.</li>
+<li>Checked the number of missing values for each variable after converting common missing-value identifiers (<code>""</code>, <code>" "</code>, <code>"N/A"</code>, <code>"NA"</code>, <code>"null"</code>, <code>"Null"</code>) to <code>NaN</code>. The only missing values among these 11 variables are <strong>151</strong> rows with missing values in <code>OCC_YEAR</code>, <code>OCC_MONTH</code>, <code>OCC_DAY</code>, and <code>OCC_DOY</code> (each has 151 missing); the other variables have no missing values.</li>
+</ul>
 </section>
-<section id="look-at-neighbourhood-patterns" class="level3">
-<h3 class="anchored" data-anchor-id="look-at-neighbourhood-patterns">7. Look at neighbourhood patterns</h3>
 </section>
-<section id="create-a-map" class="level3">
-<h3 class="anchored" data-anchor-id="create-a-map">8. Create a map</h3>
+<section id="preprocess-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="preprocess-the-data">2. Preprocess the data</h2>
+<section id="identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category" class="level3">
+<h3 class="anchored" data-anchor-id="identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category">2.1 Identify the most frequent MCI category and the most frequent offence within that category</h3>
+<div id="select-category-offence" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the most frequent MCI category</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cat_counts <span class="op">=</span> df[<span class="st">"MCI_CATEGORY"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>display(cat_counts.head(<span class="dv">10</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>top_category <span class="op">=</span> cat_counts.index[<span class="dv">0</span>]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Most frequent MCI_CATEGORY:"</span>, top_category)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Within that category, identify the most frequent offence</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>off_counts <span class="op">=</span> (</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    df.loc[df[<span class="st">"MCI_CATEGORY"</span>] <span class="op">==</span> top_category, <span class="st">"OFFENCE"</span>]</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>      .value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>display(off_counts.head(<span class="dv">10</span>))</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>top_offence <span class="op">=</span> off_counts.index[<span class="dv">0</span>]</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Most frequent OFFENCE within category:"</span>, top_offence)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="select-category-offence-1" class="cell-output cell-output-display">
+<pre><code>MCI_CATEGORY
+Assault            242671
+Break and Enter     81551
+Auto Theft          73739
+Robbery             39117
+Theft Over          15871
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Most frequent MCI_CATEGORY: Assault</code></pre>
+</div>
+<div id="select-category-offence-2" class="cell-output cell-output-display">
+<pre><code>OFFENCE
+Assault                           166524
+Assault With Weapon                41658
+Assault Bodily Harm                10456
+Assault Peace Officer               7859
+Assault - Resist/ Prevent Seiz      3804
+Aggravated Assault                  3217
+Discharge Firearm With Intent       2735
+Discharge Firearm - Recklessly      1941
+Pointing A Firearm                  1643
+Assault Peace Officer Wpn/Cbh        880
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Most frequent OFFENCE within category: Assault</code></pre>
+</div>
+</div>
+</section>
+<section id="build-the-analytic-dataset-with-the-selected-category-and-offence" class="level3">
+<h3 class="anchored" data-anchor-id="build-the-analytic-dataset-with-the-selected-category-and-offence">2.2 Build the analytic dataset with the selected category and offence</h3>
+<div id="build-analytic-dataset" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create analytic dataset for the selected category/offence</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>crime <span class="op">=</span> df.loc[</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    (df[<span class="st">"MCI_CATEGORY"</span>] <span class="op">==</span> top_category) <span class="op">&amp;</span> (df[<span class="st">"OFFENCE"</span>] <span class="op">==</span> top_offence),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    key_vars,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Analytic dataset shape:"</span>, crime.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analytic dataset shape: (166524, 11)</code></pre>
+</div>
+</div>
+</section>
+<section id="rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc." class="level3">
+<h3 class="anchored" data-anchor-id="rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc.">2.3 Rename variables for readability and preprocess the variables (value mapping, type conversion, etc.)</h3>
+<div id="cell-rename-and-convert-types" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename key variables for readability</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>crime <span class="op">=</span> crime.rename(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>{</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"MCI_CATEGORY"</span>: <span class="st">"category"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"OFFENCE"</span>: <span class="st">"offence"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"OCC_YEAR"</span>: <span class="st">"occurrence_year"</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"OCC_MONTH"</span>: <span class="st">"occurrence_month"</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"OCC_DAY"</span>: <span class="st">"occurrence_day"</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"OCC_DOY"</span>: <span class="st">"day_of_year"</span>,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"OCC_HOUR"</span>: <span class="st">"hour"</span>,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"LOCATION_TYPE"</span>: <span class="st">"location_type"</span>,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"NEIGHBOURHOOD_158"</span>: <span class="st">"neighbourhood"</span>,</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"LONG_WGS84"</span>: <span class="st">"lon"</span>,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"LAT_WGS84"</span>: <span class="st">"lat"</span>,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert time variables to numeric</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>crime[<span class="st">"occurrence_year"</span>] <span class="op">=</span> pd.to_numeric(crime[<span class="st">"occurrence_year"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>).astype(<span class="st">"Int64"</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>crime[<span class="st">"occurrence_day"</span>] <span class="op">=</span> pd.to_numeric(crime[<span class="st">"occurrence_day"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>).astype(<span class="st">"Int64"</span>)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>crime[<span class="st">"day_of_year"</span>] <span class="op">=</span> pd.to_numeric(crime[<span class="st">"day_of_year"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>).astype(<span class="st">"Int64"</span>)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="co"># OCC_MONTH is stored as month names; map to month numbers</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>month_map <span class="op">=</span> {</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"January"</span>: <span class="dv">1</span>, <span class="st">"February"</span>: <span class="dv">2</span>, <span class="st">"March"</span>: <span class="dv">3</span>, <span class="st">"April"</span>: <span class="dv">4</span>,</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"May"</span>: <span class="dv">5</span>, <span class="st">"June"</span>: <span class="dv">6</span>, <span class="st">"July"</span>: <span class="dv">7</span>, <span class="st">"August"</span>: <span class="dv">8</span>,</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"September"</span>: <span class="dv">9</span>, <span class="st">"October"</span>: <span class="dv">10</span>, <span class="st">"November"</span>: <span class="dv">11</span>, <span class="st">"December"</span>: <span class="dv">12</span>,</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>crime[<span class="st">"occurrence_month"</span>] <span class="op">=</span> (</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>    pd.to_numeric(crime[<span class="st">"occurrence_month"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>    .fillna(crime[<span class="st">"occurrence_month"</span>].<span class="bu">map</span>(month_map))</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>    .astype(<span class="st">"Int64"</span>)</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert strings to categorical</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> [<span class="st">"category"</span>, <span class="st">"offence"</span>, <span class="st">"location_type"</span>, <span class="st">"neighbourhood"</span>]:</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>    crime[col] <span class="op">=</span> crime[col].astype(<span class="st">"category"</span>)</span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>crime.info()</span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>display(crime.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+Index: 166524 entries, 0 to 452948
+Data columns (total 11 columns):
+ #   Column            Non-Null Count   Dtype   
+---  ------            --------------   -----   
+ 0   category          166524 non-null  category
+ 1   offence           166524 non-null  category
+ 2   occurrence_year   166440 non-null  Int64   
+ 3   occurrence_month  166440 non-null  Int64   
+ 4   occurrence_day    166440 non-null  Int64   
+ 5   day_of_year       166440 non-null  Int64   
+ 6   hour              166524 non-null  int64   
+ 7   location_type     166524 non-null  category
+ 8   neighbourhood     166524 non-null  category
+ 9   lon               166524 non-null  float64 
+ 10  lat               166524 non-null  float64 
+dtypes: Int64(4), category(4), float64(2), int64(1)
+memory usage: 11.6 MB</code></pre>
+</div>
+<div id="rename-and-convert-types" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">category</th>
+<th data-quarto-table-cell-role="th">offence</th>
+<th data-quarto-table-cell-role="th">occurrence_year</th>
+<th data-quarto-table-cell-role="th">occurrence_month</th>
+<th data-quarto-table-cell-role="th">occurrence_day</th>
+<th data-quarto-table-cell-role="th">day_of_year</th>
+<th data-quarto-table-cell-role="th">hour</th>
+<th data-quarto-table-cell-role="th">location_type</th>
+<th data-quarto-table-cell-role="th">neighbourhood</th>
+<th data-quarto-table-cell-role="th">lon</th>
+<th data-quarto-table-cell-role="th">lat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Assault</td>
+<td>Assault</td>
+<td>2014</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>4</td>
+<td>Apartment (Rooming House, Condo)</td>
+<td>Downsview (155)</td>
+<td>-79.483869</td>
+<td>43.734369</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Assault</td>
+<td>Assault</td>
+<td>2014</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>13</td>
+<td>Retirement Home</td>
+<td>Wychwood (94)</td>
+<td>-79.422371</td>
+<td>43.673842</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Assault</td>
+<td>Assault</td>
+<td>2014</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>11</td>
+<td>Apartment (Rooming House, Condo)</td>
+<td>Clairlea-Birchmount (120)</td>
+<td>-79.286725</td>
+<td>43.700100</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Assault</td>
+<td>Assault</td>
+<td>2014</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>20</td>
+<td>Single Home, House (Attach Garage, Cottage, Mo...</td>
+<td>Yonge-Eglinton (100)</td>
+<td>-79.400083</td>
+<td>43.705466</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Assault</td>
+<td>Assault</td>
+<td>2014</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>20</td>
+<td>Single Home, House (Attach Garage, Cottage, Mo...</td>
+<td>Yonge-Eglinton (100)</td>
+<td>-79.400083</td>
+<td>43.705466</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="identify-and-clean-impossible-data" class="level3">
+<h3 class="anchored" data-anchor-id="identify-and-clean-impossible-data">2.4 Identify and clean impossible data</h3>
+<div id="identify-and-clean-impossible-data" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean impossible data</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># - Coordinates (0,0) indicate NSA/outside Toronto</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for (0,0) coordinates</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>zero_coords <span class="op">=</span> (crime[<span class="st">"lon"</span>] <span class="op">==</span> <span class="dv">0</span>) <span class="op">&amp;</span> (crime[<span class="st">"lat"</span>] <span class="op">==</span> <span class="dv">0</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Sample of (0,0) coordinate records:"</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>display(crime.loc[zero_coords, [<span class="st">"neighbourhood"</span>, <span class="st">"lon"</span>, <span class="st">"lat"</span>]].head(<span class="dv">10</span>))</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Set (0,0) coordinates to NaN</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>crime.loc[zero_coords, [<span class="st">"lon"</span>, <span class="st">"lat"</span>]] <span class="op">=</span> np.nan</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Missing data summary after coordinate cleaning</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>missing <span class="op">=</span> crime.isna().<span class="bu">sum</span>().to_frame(<span class="st">"n_missing"</span>)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>missing[<span class="st">"pct_missing"</span>] <span class="op">=</span> (missing[<span class="st">"n_missing"</span>] <span class="op">/</span> <span class="bu">len</span>(crime)).<span class="bu">round</span>(<span class="dv">4</span>)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>display(missing.sort_values(<span class="st">"pct_missing"</span>, ascending<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Sample of (0,0) coordinate records:</code></pre>
+</div>
+<div id="identify-and-clean-impossible-data-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">neighbourhood</th>
+<th data-quarto-table-cell-role="th">lon</th>
+<th data-quarto-table-cell-role="th">lat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">81</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">294</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">333</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">347</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">403</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">571</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">780</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">781</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">828</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">879</th>
+<td>NSA</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="identify-and-clean-impossible-data-2" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">n_missing</th>
+<th data-quarto-table-cell-role="th">pct_missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">lon</th>
+<td>2864</td>
+<td>0.0172</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">lat</th>
+<td>2864</td>
+<td>0.0172</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">occurrence_year</th>
+<td>84</td>
+<td>0.0005</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">occurrence_month</th>
+<td>84</td>
+<td>0.0005</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">occurrence_day</th>
+<td>84</td>
+<td>0.0005</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">day_of_year</th>
+<td>84</td>
+<td>0.0005</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">category</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">offence</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">hour</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">location_type</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">neighbourhood</th>
+<td>0</td>
+<td>0.0000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="summary-1" class="level3">
+<h3 class="anchored" data-anchor-id="summary-1">2.5 Summary</h3>
+<ul>
+<li>I used frequency counts (<code>value_counts</code>) on <code>MCI_CATEGORY</code> to pick the most common category in the full dataset, then (within that category) used frequency counts on <code>OFFENCE</code> to pick the most common offence. Using this rule, the selected category is <strong>Assault</strong> and the selected offence is <strong>Assault</strong>.</li>
+<li>I filtered the data to only the selected category/offence and kept only the “necessary columns” from Question 1 (<code>key_vars</code>). This produced the analytic dataset <code>crime</code> with <strong>166,524 rows</strong> and <strong>11 columns</strong>.</li>
+<li>I renamed columns to make them easier to interpret and use later. This keeps the same information but with clearer names for analysis and plotting.</li>
+<li>I converted time and date fields to nullable integers (<code>Int64</code>), mapping month names to numbers (1–12). I also converted <code>category</code>, <code>offence</code>, <code>location_type</code>, and <code>neighbourhood</code> to pandas <code>category</code> type to reflect that they are nominal labels.</li>
+<li>I identified records with coordinates <strong>(lon, lat) = (0, 0)</strong> and treated these as invalid geographic coordinates (documentation indicates “not specified area/outside Toronto”, our primary question is focused on Toronto only), so I set <code>lon</code> and <code>lat</code> to <code>NaN</code> for those rows. After cleaning, <code>lon</code> and <code>lat</code> each have <strong>2,864</strong> missing values ((0.0172 %) of <code>crime</code>).</li>
+</ul>
+</section>
+</section>
+<section id="check-data-completeness-across-years" class="level2">
+<h2 class="anchored" data-anchor-id="check-data-completeness-across-years">3. Check data completeness across years</h2>
+<section id="examine-which-years-are-present-in-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="examine-which-years-are-present-in-the-data">3.1 Examine which years are present in the data</h3>
+<div id="cell-examine-years-present" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check which years are present in the crime dataset</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>year_counts <span class="op">=</span> crime[<span class="st">"occurrence_year"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Years present in crime dataset:"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>display(year_counts)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for missing years</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Year range: </span><span class="sc">{</span>crime[<span class="st">'occurrence_year'</span>]<span class="sc">.</span><span class="bu">min</span>()<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span>crime[<span class="st">'occurrence_year'</span>]<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Missing values in occurrence_year: </span><span class="sc">{</span>crime[<span class="st">'occurrence_year'</span>]<span class="sc">.</span>isna()<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Years present in crime dataset:</code></pre>
+</div>
+<div id="examine-years-present" class="cell-output cell-output-display">
+<pre><code>occurrence_year
+2000       20
+2001       16
+2002       15
+2003       19
+2004       28
+2005       27
+2006       16
+2007       25
+2008       36
+2009       56
+2010       74
+2011       90
+2012      144
+2013      314
+2014    11889
+2015    12387
+2016    12972
+2017    13397
+2018    13744
+2019    14327
+2020    12549
+2021    13125
+2022    14694
+2023    16878
+2024    17204
+2025    12394
+&lt;NA&gt;       84
+Name: count, dtype: Int64</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Year range: 2000 to 2025
+Missing values in occurrence_year: 84</code></pre>
+</div>
+</div>
+</section>
+<section id="cross-reference-with-documentation-to-identify-valid-time-range" class="level3">
+<h3 class="anchored" data-anchor-id="cross-reference-with-documentation-to-identify-valid-time-range">3.2 Cross-reference with documentation to identify valid time range</h3>
+<div id="cross-reference-documentation" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Documentation (Appendix A): MCI Assault data covers 2014 – 2025.09.30 (quarterly updates)</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>valid_start_year <span class="op">=</span> <span class="dv">2014</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>valid_end_year <span class="op">=</span> <span class="dv">2025</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>assault_valid <span class="op">=</span> crime[</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    crime[<span class="st">"occurrence_year"</span>].between(valid_start_year, valid_end_year, inclusive<span class="op">=</span><span class="st">"both"</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Documentation: MCI Assault data covers </span><span class="sc">{</span>valid_start_year<span class="sc">}</span><span class="ss"> – </span><span class="sc">{</span>valid_end_year<span class="sc">}</span><span class="ss">.09.30"</span>)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Original dataset: </span><span class="sc">{</span><span class="bu">len</span>(crime)<span class="sc">:,}</span><span class="ss"> rows"</span>)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">After filtering to valid range (</span><span class="sc">{</span>valid_start_year<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>valid_end_year<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span><span class="bu">len</span>(assault_valid)<span class="sc">:,}</span><span class="ss"> rows"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Documentation: MCI Assault data covers 2014 – 2025.09.30
+
+Original dataset: 166,524 rows
+
+After filtering to valid range (2014-2025): 165,560 rows</code></pre>
+</div>
+</div>
+</section>
+<section id="examine-completeness-within-valid-time-range-according-to-the-data-documentation" class="level3">
+<h3 class="anchored" data-anchor-id="examine-completeness-within-valid-time-range-according-to-the-data-documentation">3.3 Examine completeness within valid time range according to the data documentation</h3>
+<div id="cell-examine-completeness-valid-range" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check completeness: months present and date range for each year</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>year_completeness <span class="op">=</span> assault_valid.groupby(<span class="st">"occurrence_year"</span>).agg(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    n_records<span class="op">=</span>(<span class="st">"occurrence_year"</span>, <span class="st">"count"</span>),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    n_months<span class="op">=</span>(<span class="st">"occurrence_month"</span>, <span class="st">"nunique"</span>),</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    min_month<span class="op">=</span>(<span class="st">"occurrence_month"</span>, <span class="st">"min"</span>),</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    max_month<span class="op">=</span>(<span class="st">"occurrence_month"</span>, <span class="st">"max"</span>),</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    min_doy<span class="op">=</span>(<span class="st">"day_of_year"</span>, <span class="st">"min"</span>),</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    max_doy<span class="op">=</span>(<span class="st">"day_of_year"</span>, <span class="st">"max"</span>),</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>).reset_index()</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Add completeness indicator</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>year_completeness[<span class="st">"complete"</span>] <span class="op">=</span> year_completeness[<span class="st">"n_months"</span>] <span class="op">==</span> <span class="dv">12</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Year completeness summary:"</span>)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>display(year_completeness)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Year completeness summary:</code></pre>
+</div>
+<div id="examine-completeness-valid-range" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">occurrence_year</th>
+<th data-quarto-table-cell-role="th">n_records</th>
+<th data-quarto-table-cell-role="th">n_months</th>
+<th data-quarto-table-cell-role="th">min_month</th>
+<th data-quarto-table-cell-role="th">max_month</th>
+<th data-quarto-table-cell-role="th">min_doy</th>
+<th data-quarto-table-cell-role="th">max_doy</th>
+<th data-quarto-table-cell-role="th">complete</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2014</td>
+<td>11889</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>365</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2015</td>
+<td>12387</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>365</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2016</td>
+<td>12972</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>366</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>2017</td>
+<td>13397</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>365</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>2018</td>
+<td>13744</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>365</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>2019</td>
+<td>14327</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>365</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>2020</td>
+<td>12549</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>366</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>2021</td>
+<td>13125</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>365</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>2022</td>
+<td>14694</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>365</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>2023</td>
+<td>16878</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>365</td>
+<td>True</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>2024</td>
+<td>17204</td>
+<td>12</td>
+<td>1</td>
+<td>12</td>
+<td>1</td>
+<td>366</td>
+<td>True</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>2025</td>
+<td>12394</td>
+<td>9</td>
+<td>1</td>
+<td>9</td>
+<td>1</td>
+<td>273</td>
+<td>False</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="subset-to-years-with-complete-data" class="level3">
+<h3 class="anchored" data-anchor-id="subset-to-years-with-complete-data">3.4 Subset to years with complete data</h3>
+<div id="subset-complete-years" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Based on examination above, identify complete years (those with all 12 months)</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>complete_years <span class="op">=</span> year_completeness[year_completeness[<span class="st">"complete"</span>]][<span class="st">"occurrence_year"</span>].values</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Complete years (all 12 months present): </span><span class="sc">{</span>complete_years<span class="sc">.</span>tolist()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset to complete years only</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>assault_complete <span class="op">=</span> assault_valid[assault_valid[<span class="st">"occurrence_year"</span>].isin(complete_years)].copy()</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Valid range dataset: </span><span class="sc">{</span><span class="bu">len</span>(assault_valid)<span class="sc">:,}</span><span class="ss"> rows"</span>)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"After subsetting to complete years: </span><span class="sc">{</span><span class="bu">len</span>(assault_complete)<span class="sc">:,}</span><span class="ss"> rows"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Complete years (all 12 months present): [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+
+Valid range dataset: 165,560 rows
+After subsetting to complete years: 153,166 rows</code></pre>
+</div>
+</div>
+</section>
+<section id="summary-2" class="level3">
+<h3 class="anchored" data-anchor-id="summary-2">3.5 Summary</h3>
+<ul>
+<li>I examined the years present in the data and found that the data covers from minimum year 2000 to maximum year 2025 and there are no missing years in this range.</li>
+<li>I cross-referenced the data with the data documentation and found that the valid time range for <strong>Assault</strong> crimes data is from 2014 to 2025.09.30.</li>
+<li>I examined the completeness within the valid time range according to the data documentation and found that the data is complete for the years 2014 to 2024 since good coverage of the months and days of the year is present for each year in this range. 2025 is incomplete since only through September 30th is present.</li>
+<li>Therefore, I subsetted the dataset to the data lies within the range of 2014 to 2024 only.</li>
+</ul>
+</section>
+</section>
+<section id="examine-annual-change-in-crime" class="level2">
+<h2 class="anchored" data-anchor-id="examine-annual-change-in-crime">4. Examine annual change in crime</h2>
+</section>
+<section id="examine-seasonality-in-crime" class="level2">
+<h2 class="anchored" data-anchor-id="examine-seasonality-in-crime">5. Examine seasonality in crime</h2>
+</section>
+<section id="examine-seasonality-day-vs-night" class="level2">
+<h2 class="anchored" data-anchor-id="examine-seasonality-day-vs-night">6. Examine seasonality, day vs night</h2>
+</section>
+<section id="look-at-neighbourhood-patterns" class="level2">
+<h2 class="anchored" data-anchor-id="look-at-neighbourhood-patterns">7. Look at neighbourhood patterns</h2>
+</section>
+<section id="create-a-map" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-map">8. Create a map</h2>
 <script type="ojs-module-contents">
 eyJjb250ZW50cyI6W119
 </script>

@@ -18,42 +18,301 @@ execute:
 # Primary Question
 What are the most numerous categories of crimes and offences in Toronto? Of these, when and where are they most likely to occur?
 
+# Environment Setup
+```{python}
+#| label: environment-setup
+#| warning: false
+#| message: false
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
 # Steps
 
-### 1. Read in the data
+## 1. Read in the data
 
+### 1.1 Read the data with only the needed columns
 ```{python}
-import pandas as pd
+#| label: read-data
+
+# Read and load only the needed columns
+data_path = "Major_Crime_Indicators_Open_Data_-3805566126367379926.csv"
+# Focus on the following variables:
+key_vars = [
+    "MCI_CATEGORY",
+    "OFFENCE",
+    "OCC_YEAR",
+    "OCC_MONTH",
+    "OCC_DAY",
+    "OCC_DOY",
+    "OCC_HOUR",
+    "LOCATION_TYPE",
+    "NEIGHBOURHOOD_158",
+    "LONG_WGS84",
+    "LAT_WGS84",
+]
+raw = pd.read_csv(data_path, usecols=key_vars)
+
+# Quick look at the data
+df = raw.copy()
+df.head()
 ```
 
-### 2. Preprocess the data
+### 1.2 Check the data dimensions and memory
+```{python}
+#| label: check-data
+
+# Check dimensions and memory
+print("shape:", df.shape)
+print("n_rows:", df.shape[0])
+print("n_cols:", df.shape[1])
+
+# Check memory usage in GB
+df.memory_usage(deep=True).sum() / 1024**3
+```
+
+### 1.3 Check the data types
+```{python}
+#| label: check-data-types
+
+# Check variable information
+df.info()
+```
+
+### 1.4 Check the missing values
+
+```{python}
+#| label: check-missing-values
+
+# Standardize missing-value placeholders across all columns
+missing_markers = ["", " ", "N/A", "NA", "null", "Null"]
+df = df.replace(missing_markers, np.nan)
+
+# Missing data summary
+missing = df.isna().sum().to_frame("n_missing")
+missing["pct_missing"] = (missing["n_missing"] / len(df)).round(4)
+display(missing.sort_values("pct_missing", ascending=False))
+```
+
+### 1.5 Summary
+Summary:
+
+- Read the Toronto Police major crime indicators dataset from the downloaded CSV file using `pd.read_csv(..., usecols=key_vars)` to load only the 11 variables required for this homework: `MCI_CATEGORY`, `OFFENCE`, `OCC_YEAR`, `OCC_MONTH`, `OCC_DAY`, `OCC_DOY`, `OCC_HOUR`, `LOCATION_TYPE`, `NEIGHBOURHOOD_158`, `LONG_WGS84`, `LAT_WGS84`. Then make a copy of the dataframe for further analysis/preprocessing.
+- The resulting dataframe has **452,949 rows** and **11 columns**.
+- Variable types (from `df.info()`): **`int64`**: `OCC_HOUR`. **`float64`**: `OCC_YEAR`, `OCC_DAY`, `OCC_DOY`, `LONG_WGS84`, `LAT_WGS84` (the date fields are `float64`). **`object`**: `OCC_MONTH`, `LOCATION_TYPE`, `OFFENCE`, `MCI_CATEGORY`, `NEIGHBOURHOOD_158`.
+- Checked the number of missing values for each variable after converting common missing-value identifiers (`""`, `" "`, `"N/A"`, `"NA"`, `"null"`, `"Null"`) to `NaN`. The only missing values among these 11 variables are **151** rows with missing values in `OCC_YEAR`, `OCC_MONTH`, `OCC_DAY`, and `OCC_DOY` (each has 151 missing); the other variables have no missing values.
+
+## 2. Preprocess the data
+
+### 2.1 Identify the most frequent MCI category and the most frequent offence within that category
+```{python}
+#| label: select-category-offence
+
+# Identify the most frequent MCI category
+cat_counts = df["MCI_CATEGORY"].value_counts(dropna=False)
+display(cat_counts.head(10))
+
+top_category = cat_counts.index[0]
+print("Most frequent MCI_CATEGORY:", top_category)
+
+# Within that category, identify the most frequent offence
+off_counts = (
+    df.loc[df["MCI_CATEGORY"] == top_category, "OFFENCE"]
+      .value_counts(dropna=False)
+)
+display(off_counts.head(10))
+
+top_offence = off_counts.index[0]
+print("Most frequent OFFENCE within category:", top_offence)
+```
+
+### 2.2 Build the analytic dataset with the selected category and offence
+```{python}
+#| label: build-analytic-dataset
+
+# Create analytic dataset for the selected category/offence
+crime = df.loc[
+    (df["MCI_CATEGORY"] == top_category) & (df["OFFENCE"] == top_offence),
+    key_vars,
+].copy()
+
+print("Analytic dataset shape:", crime.shape)
+```
+
+### 2.3 Rename variables for readability and preprocess the variables (value mapping, type conversion, etc.)
+```{python}
+#| label: rename-and-convert-types
+
+# Rename key variables for readability
+crime = crime.rename(
+    columns={
+        "MCI_CATEGORY": "category",
+        "OFFENCE": "offence",
+        "OCC_YEAR": "occurrence_year",
+        "OCC_MONTH": "occurrence_month",
+        "OCC_DAY": "occurrence_day",
+        "OCC_DOY": "day_of_year",
+        "OCC_HOUR": "hour",
+        "LOCATION_TYPE": "location_type",
+        "NEIGHBOURHOOD_158": "neighbourhood",
+        "LONG_WGS84": "lon",
+        "LAT_WGS84": "lat",
+    }
+)
+
+# Convert time variables to numeric
+crime["occurrence_year"] = pd.to_numeric(crime["occurrence_year"], errors="coerce").astype("Int64")
+crime["occurrence_day"] = pd.to_numeric(crime["occurrence_day"], errors="coerce").astype("Int64")
+crime["day_of_year"] = pd.to_numeric(crime["day_of_year"], errors="coerce").astype("Int64")
+
+# OCC_MONTH is stored as month names; map to month numbers
+month_map = {
+    "January": 1, "February": 2, "March": 3, "April": 4,
+    "May": 5, "June": 6, "July": 7, "August": 8,
+    "September": 9, "October": 10, "November": 11, "December": 12,
+}
+crime["occurrence_month"] = (
+    pd.to_numeric(crime["occurrence_month"], errors="coerce")
+    .fillna(crime["occurrence_month"].map(month_map))
+    .astype("Int64")
+)
+
+# Convert strings to categorical
+for col in ["category", "offence", "location_type", "neighbourhood"]:
+    crime[col] = crime[col].astype("category")
+
+crime.info()
+display(crime.head())
+```
+
+### 2.4 Identify and clean impossible data
+```{python}
+#| label: identify-and-clean-impossible-data
+
+# Clean impossible data
+# - Coordinates (0,0) indicate NSA/outside Toronto
+
+# Check for (0,0) coordinates
+zero_coords = (crime["lon"] == 0) & (crime["lat"] == 0)
+print("\nSample of (0,0) coordinate records:")
+display(crime.loc[zero_coords, ["neighbourhood", "lon", "lat"]].head(10))
+
+# Set (0,0) coordinates to NaN
+crime.loc[zero_coords, ["lon", "lat"]] = np.nan
+
+# Missing data summary after coordinate cleaning
+missing = crime.isna().sum().to_frame("n_missing")
+missing["pct_missing"] = (missing["n_missing"] / len(crime)).round(4)
+display(missing.sort_values("pct_missing", ascending=False))
+```
+
+### 2.5 Summary
+
+- I used frequency counts (`value_counts`) on `MCI_CATEGORY` to pick the most common category in the full dataset, then (within that category) used frequency counts on `OFFENCE` to pick the most common offence. Using this rule, the selected category is **Assault** and the selected offence is **Assault**.
+- I filtered the data to only the selected category/offence and kept only the “necessary columns” from Question 1 (`key_vars`). This produced the analytic dataset `crime` with **166,524 rows** and **11 columns**.
+- I renamed columns to make them easier to interpret and use later. This keeps the same information but with clearer names for analysis and plotting.
+- I converted time and date fields to nullable integers (`Int64`), mapping month names to numbers (1–12). I also converted `category`, `offence`, `location_type`, and `neighbourhood` to pandas `category` type to reflect that they are nominal labels.
+- I identified records with coordinates **(lon, lat) = (0, 0)** and treated these as invalid geographic coordinates (documentation indicates “not specified area/outside Toronto”, our primary question is focused on Toronto only), so I set `lon` and `lat` to `NaN` for those rows. After cleaning, `lon` and `lat` each have **2,864** missing values (\(0.0172 \approx 1.72\%\) of `crime`).
+
+## 3. Check data completeness across years
+
+### 3.1 Examine which years are present in the data
+
+```{python}
+#| label: examine-years-present
+
+# Check which years are present in the crime dataset
+year_counts = crime["occurrence_year"].value_counts(dropna=False).sort_index()
+print("Years present in crime dataset:")
+display(year_counts)
+
+# Check for missing years
+print(f"\nYear range: {crime['occurrence_year'].min()} to {crime['occurrence_year'].max()}")
+print(f"Missing values in occurrence_year: {crime['occurrence_year'].isna().sum()}")
+```
+
+### 3.2 Cross-reference with documentation to identify valid time range
+
+```{python}
+#| label: cross-reference-documentation
+
+# Documentation (Appendix A): MCI Assault data covers 2014 – 2025.09.30 (quarterly updates)
+
+valid_start_year = 2014
+valid_end_year = 2025
+
+assault_valid = crime[
+    crime["occurrence_year"].between(valid_start_year, valid_end_year, inclusive="both")
+].copy()
+
+print(f"Documentation: MCI Assault data covers {valid_start_year} – {valid_end_year}.09.30")
+print(f"\nOriginal dataset: {len(crime):,} rows")
+print(f"\nAfter filtering to valid range ({valid_start_year}-{valid_end_year}): {len(assault_valid):,} rows")
+```
+
+### 3.3 Examine completeness within valid time range according to the data documentation
+
+```{python}
+#| label: examine-completeness-valid-range
+
+# Check completeness: months present and date range for each year
+year_completeness = assault_valid.groupby("occurrence_year").agg(
+    n_records=("occurrence_year", "count"),
+    n_months=("occurrence_month", "nunique"),
+    min_month=("occurrence_month", "min"),
+    max_month=("occurrence_month", "max"),
+    min_doy=("day_of_year", "min"),
+    max_doy=("day_of_year", "max"),
+).reset_index()
+
+# Add completeness indicator
+year_completeness["complete"] = year_completeness["n_months"] == 12
+
+print("Year completeness summary:")
+display(year_completeness)
+```
+
+### 3.4 Subset to years with complete data
+
+```{python}
+#| label: subset-complete-years
+
+# Based on examination above, identify complete years (those with all 12 months)
+complete_years = year_completeness[year_completeness["complete"]]["occurrence_year"].values
+print(f"Complete years (all 12 months present): {complete_years.tolist()}")
+
+# Subset to complete years only
+assault_complete = assault_valid[assault_valid["occurrence_year"].isin(complete_years)].copy()
+
+print(f"\nValid range dataset: {len(assault_valid):,} rows")
+print(f"After subsetting to complete years: {len(assault_complete):,} rows")
+```
+
+### 3.5 Summary
+- I examined the years present in the data and found that the data covers from minimum year 2000 to maximum year 2025 and there are no missing years in this range.
+- I cross-referenced the data with the data documentation and found that the valid time range for **Assault** crimes data is from 2014 to 2025.09.30.
+- I examined the completeness within the valid time range according to the data documentation and found that the data is complete for the years 2014 to 2024 since good coverage of the months and days of the year is present for each year in this range. 2025 is incomplete since only through September 30th is present.
+- Therefore, I subsetted the dataset to the data lies within the range of 2014 to 2024 only.
+
+## 4. Examine annual change in crime
 
 ```{python}
 ```
 
-### 3. Check data completeness across years
+## 5. Examine seasonality in crime
 
 ```{python}
 ```
 
-### 4. Examine annual change in crime
-
+## 6. Examine seasonality, day vs night
 ```{python}
 ```
 
-### 5. Examine seasonality in crime
-
+## 7. Look at neighbourhood patterns
 ```{python}
 ```
 
-### 6. Examine seasonality, day vs night
-```{python}
-```
-
-### 7. Look at neighbourhood patterns
-```{python}
-```
-
-### 8. Create a map
+## 8. Create a map
 ```{python}
 ```
