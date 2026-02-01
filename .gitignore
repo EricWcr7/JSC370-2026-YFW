@@ -210,3 +210,6 @@ __marimo__/
 
 # mac junk
 .DS_Store
+
+# Large data files
+*.csv
