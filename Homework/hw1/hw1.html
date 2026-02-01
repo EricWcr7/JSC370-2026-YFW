@@ -79,6 +79,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -118,8 +147,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#subset-to-years-with-complete-data" id="toc-subset-to-years-with-complete-data" class="nav-link" data-scroll-target="#subset-to-years-with-complete-data">3.4 Subset to years with complete data</a></li>
   <li><a href="#summary-2" id="toc-summary-2" class="nav-link" data-scroll-target="#summary-2">3.5 Summary</a></li>
   </ul></li>
-  <li><a href="#examine-annual-change-in-crime" id="toc-examine-annual-change-in-crime" class="nav-link" data-scroll-target="#examine-annual-change-in-crime">4. Examine annual change in crime</a></li>
-  <li><a href="#examine-seasonality-in-crime" id="toc-examine-seasonality-in-crime" class="nav-link" data-scroll-target="#examine-seasonality-in-crime">5. Examine seasonality in crime</a></li>
+  <li><a href="#examine-annual-change-in-crime" id="toc-examine-annual-change-in-crime" class="nav-link" data-scroll-target="#examine-annual-change-in-crime">4. Examine annual change in crime</a>
+  <ul class="collapse">
+  <li><a href="#aggregate-data-to-annual-counts" id="toc-aggregate-data-to-annual-counts" class="nav-link" data-scroll-target="#aggregate-data-to-annual-counts">4.1 Aggregate data to annual counts</a></li>
+  <li><a href="#plot-counts-over-time" id="toc-plot-counts-over-time" class="nav-link" data-scroll-target="#plot-counts-over-time">4.2 Plot counts over time</a></li>
+  <li><a href="#fit-poisson-regression-to-quantify-annual-trend" id="toc-fit-poisson-regression-to-quantify-annual-trend" class="nav-link" data-scroll-target="#fit-poisson-regression-to-quantify-annual-trend">4.3 Fit Poisson regression to quantify annual trend</a></li>
+  <li><a href="#model-fit-and-assumptions" id="toc-model-fit-and-assumptions" class="nav-link" data-scroll-target="#model-fit-and-assumptions">4.4 Model fit and assumptions</a></li>
+  <li><a href="#summary-3" id="toc-summary-3" class="nav-link" data-scroll-target="#summary-3">4.5 Summary</a></li>
+  </ul></li>
+  <li><a href="#examine-seasonality-in-crime" id="toc-examine-seasonality-in-crime" class="nav-link" data-scroll-target="#examine-seasonality-in-crime">5. Examine seasonality in crime</a>
+  <ul class="collapse">
+  <li><a href="#subset-to-the-most-recent-complete-year" id="toc-subset-to-the-most-recent-complete-year" class="nav-link" data-scroll-target="#subset-to-the-most-recent-complete-year">5.1 Subset to the most recent complete year</a></li>
+  <li><a href="#create-season-variable" id="toc-create-season-variable" class="nav-link" data-scroll-target="#create-season-variable">5.2 Create season variable</a></li>
+  <li><a href="#summary-statistics-of-assault-crime-counts-by-season" id="toc-summary-statistics-of-assault-crime-counts-by-season" class="nav-link" data-scroll-target="#summary-statistics-of-assault-crime-counts-by-season">5.3 Summary statistics of assault crime counts by season</a></li>
+  <li><a href="#plot-assault-crime-counts-by-season" id="toc-plot-assault-crime-counts-by-season" class="nav-link" data-scroll-target="#plot-assault-crime-counts-by-season">5.4 Plot assault crime counts by season</a></li>
+  <li><a href="#simple-chi-square-test-for-seasonal-differences" id="toc-simple-chi-square-test-for-seasonal-differences" class="nav-link" data-scroll-target="#simple-chi-square-test-for-seasonal-differences">5.5 Simple Chi-square test for seasonal differences</a></li>
+  </ul></li>
   <li><a href="#examine-seasonality-day-vs-night" id="toc-examine-seasonality-day-vs-night" class="nav-link" data-scroll-target="#examine-seasonality-day-vs-night">6. Examine seasonality, day vs night</a></li>
   <li><a href="#look-at-neighbourhood-patterns" id="toc-look-at-neighbourhood-patterns" class="nav-link" data-scroll-target="#look-at-neighbourhood-patterns">7. Look at neighbourhood patterns</a></li>
   <li><a href="#create-a-map" id="toc-create-a-map" class="nav-link" data-scroll-target="#create-a-map">8. Create a map</a></li>
@@ -164,7 +207,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="environment-setup" class="cell" data-message="false" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chisquare</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="steps" class="level1">
@@ -1143,9 +1189,482 @@ After subsetting to complete years: 153,166 rows</code></pre>
 </section>
 <section id="examine-annual-change-in-crime" class="level2">
 <h2 class="anchored" data-anchor-id="examine-annual-change-in-crime">4. Examine annual change in crime</h2>
+<section id="aggregate-data-to-annual-counts" class="level3">
+<h3 class="anchored" data-anchor-id="aggregate-data-to-annual-counts">4.1 Aggregate data to annual counts</h3>
+<div id="cell-assault-crime-annual-counts" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate to count of crimes per year</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>annual_counts <span class="op">=</span> (</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    assault_complete.groupby(<span class="st">"occurrence_year"</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    .size()</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">"count"</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Annual crime counts:"</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>display(annual_counts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Annual crime counts:</code></pre>
+</div>
+<div id="assault-crime-annual-counts" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">occurrence_year</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2014</td>
+<td>11889</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2015</td>
+<td>12387</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2016</td>
+<td>12972</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>2017</td>
+<td>13397</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>2018</td>
+<td>13744</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>2019</td>
+<td>14327</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>2020</td>
+<td>12549</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>2021</td>
+<td>13125</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>2022</td>
+<td>14694</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>2023</td>
+<td>16878</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>2024</td>
+<td>17204</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="plot-counts-over-time" class="level3">
+<h3 class="anchored" data-anchor-id="plot-counts-over-time">4.2 Plot counts over time</h3>
+<div id="cell-plot-assault-crime-annual-trend" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot annual counts over time</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>ax.plot(annual_counts[<span class="st">"occurrence_year"</span>], annual_counts[<span class="st">"count"</span>], </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>        marker<span class="op">=</span><span class="st">'o'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, markersize<span class="op">=</span><span class="dv">8</span>, color<span class="op">=</span><span class="st">'steelblue'</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Year"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Number of Assault Crimes"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Annual Assault Crime Counts in Toronto (2014-2024)"</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(annual_counts[<span class="st">"occurrence_year"</span>])</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>ax.tick_params(axis<span class="op">=</span><span class="st">'x'</span>, rotation<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw1_files/figure-html/plot-assault-crime-annual-trend-output-1.png" id="plot-assault-crime-annual-trend" width="951" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fit-poisson-regression-to-quantify-annual-trend" class="level3">
+<h3 class="anchored" data-anchor-id="fit-poisson-regression-to-quantify-annual-trend">4.3 Fit Poisson regression to quantify annual trend</h3>
+<div id="poisson-regression" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Poisson regression: count ~ year (as numeric)</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co"># y = annual crime count, x = year (numeric)</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>poisson_model <span class="op">=</span> smf.glm(</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    formula<span class="op">=</span><span class="st">"count ~ occurrence_year"</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>annual_counts,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    family<span class="op">=</span>sm.families.Poisson()</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>).fit()</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Poisson Regression Results:"</span>)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(poisson_model.summary())</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract coefficient for year</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>year_coef <span class="op">=</span> poisson_model.params[<span class="st">"occurrence_year"</span>]</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>year_se <span class="op">=</span> poisson_model.bse[<span class="st">"occurrence_year"</span>]</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>year_pvalue <span class="op">=</span> poisson_model.pvalues[<span class="st">"occurrence_year"</span>]</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate rate ratio per 1-year increase</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>rate_ratio <span class="op">=</span> np.exp(year_coef)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>rate_ratio_ci <span class="op">=</span> np.exp([</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>    year_coef <span class="op">-</span> <span class="fl">1.96</span> <span class="op">*</span> year_se,</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>    year_coef <span class="op">+</span> <span class="fl">1.96</span> <span class="op">*</span> year_se</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">--- Annual Trend Estimate ---"</span>)</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Coefficient (log rate ratio per year): </span><span class="sc">{</span>year_coef<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rate ratio per 1-year increase: </span><span class="sc">{</span>rate_ratio<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"95% CI for rate ratio: (</span><span class="sc">{</span>rate_ratio_ci[<span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss">, </span><span class="sc">{</span>rate_ratio_ci[<span class="dv">1</span>]<span class="sc">:.4f}</span><span class="ss">)"</span>)</span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate percent change for interpretation</span></span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>pct_change <span class="op">=</span> (rate_ratio <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Percent change per year: </span><span class="sc">{</span>pct_change<span class="sc">:+.2f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Poisson Regression Results:
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                  count   No. Observations:                   11
+Model:                            GLM   Df Residuals:                        9
+Model Family:                 Poisson   Df Model:                            1
+Link Function:                    Log   Scale:                          1.0000
+Method:                          IRLS   Log-Likelihood:                -372.70
+Date:                Sun, 01 Feb 2026   Deviance:                       620.30
+Time:                        11:54:39   Pearson chi2:                     608.
+No. Iterations:                     4   Pseudo R-squ. (CS):              1.000
+Covariance Type:            nonrobust                                         
+===================================================================================
+                      coef    std err          z      P&gt;|z|      [0.025      0.975]
+-----------------------------------------------------------------------------------
+Intercept         -53.8177      1.637    -32.885      0.000     -57.025     -50.610
+occurrence_year     0.0314      0.001     38.718      0.000       0.030       0.033
+===================================================================================
+
+--- Annual Trend Estimate ---
+Coefficient (log rate ratio per year): 0.031379
+Rate ratio per 1-year increase: 1.0319
+95% CI for rate ratio: (1.0302, 1.0335)
+Percent change per year: +3.19%</code></pre>
+</div>
+</div>
+<p><strong>Interpretation:</strong> For each 1-year increase from 2014 to 2024, the expected annual assault crime count increases by approximately 3.19%, suggesting a statistically significant upward trend in assault crimes over this period.</p>
+</section>
+<section id="model-fit-and-assumptions" class="level3">
+<h3 class="anchored" data-anchor-id="model-fit-and-assumptions">4.4 Model fit and assumptions</h3>
+<div id="cell-poisson-model-fit-and-assumptions" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check model fit: compare observed vs fitted values</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>annual_counts[<span class="st">"fitted"</span>] <span class="op">=</span> poisson_model.fittedvalues</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>annual_counts[<span class="st">"residuals"</span>] <span class="op">=</span> poisson_model.resid_deviance</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot observed vs fitted</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">5</span>))</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed vs Fitted</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].scatter(annual_counts[<span class="st">"occurrence_year"</span>], annual_counts[<span class="st">"count"</span>], </span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>                label<span class="op">=</span><span class="st">"Observed"</span>, s<span class="op">=</span><span class="dv">80</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span><span class="st">'steelblue'</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].plot(annual_counts[<span class="st">"occurrence_year"</span>], annual_counts[<span class="st">"fitted"</span>], </span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>             label<span class="op">=</span><span class="st">"Fitted"</span>, linewidth<span class="op">=</span><span class="dv">2</span>, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">"Year"</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"Count"</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Observed vs Fitted Values"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend()</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual plot</span></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].scatter(annual_counts[<span class="st">"occurrence_year"</span>], annual_counts[<span class="st">"residuals"</span>], </span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>                s<span class="op">=</span><span class="dv">80</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span><span class="st">'steelblue'</span>)</span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"Year"</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_ylabel(<span class="st">"Deviance Residuals"</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Residual Plot"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Goodness of fit: deviance and Pearson chi-squared</span></span>
+<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- Model Fit Statistics ---"</span>)</span>
+<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Deviance: </span><span class="sc">{</span>poisson_model<span class="sc">.</span>deviance<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Pearson chi-squared: </span><span class="sc">{</span>poisson_model<span class="sc">.</span>pearson_chi2<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Degrees of freedom: </span><span class="sc">{</span>poisson_model<span class="sc">.</span>df_resid<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-37"><a href="#cb35-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for overdispersion</span></span>
+<span id="cb35-38"><a href="#cb35-38" aria-hidden="true" tabindex="-1"></a>dispersion <span class="op">=</span> poisson_model.pearson_chi2 <span class="op">/</span> poisson_model.df_resid</span>
+<span id="cb35-39"><a href="#cb35-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Dispersion parameter (Pearson χ²/df): </span><span class="sc">{</span>dispersion<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb35-40"><a href="#cb35-40" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> dispersion <span class="op">&gt;</span> <span class="fl">1.5</span>: <span class="co"># Threshold for overdispersion</span></span>
+<span id="cb35-41"><a href="#cb35-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"  → Evidence of overdispersion (dispersion &gt; 1.5)"</span>)</span>
+<span id="cb35-42"><a href="#cb35-42" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb35-43"><a href="#cb35-43" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"  → No strong evidence of overdispersion"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw1_files/figure-html/poisson-model-fit-and-assumptions-output-1.png" id="poisson-model-fit-and-assumptions" width="1333" height="469" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- Model Fit Statistics ---
+Deviance: 620.30
+Pearson chi-squared: 607.53
+Degrees of freedom: 9
+
+Dispersion parameter (Pearson χ²/df): 67.5038
+  → Evidence of overdispersion (dispersion &gt; 1.5)</code></pre>
+</div>
+</div>
+<p><strong>Comments on Model Fit and Assumptions:</strong></p>
+<p>The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates <strong>overdispersion</strong>, violating the Poisson assumption (variance = mean) and making standard errors unreliable.</p>
+</section>
+<section id="summary-3" class="level3">
+<h3 class="anchored" data-anchor-id="summary-3">4.5 Summary</h3>
+<p>Yes, there is statistically significant evidence of an upward trend in assault crimes across Toronto from 2014 to 2024, with the Poisson regression estimating approximately a <strong>3.19% annual increase</strong> in expected crime counts (rate ratio ≈ 1.03). However, the model exhibits severe overdispersion, suggesting that while the overall increasing trend is present, the simple Poisson model may underestimate the uncertainty in this estimate， which means the model results may not be reliable.</p>
+</section>
 </section>
 <section id="examine-seasonality-in-crime" class="level2">
 <h2 class="anchored" data-anchor-id="examine-seasonality-in-crime">5. Examine seasonality in crime</h2>
+<section id="subset-to-the-most-recent-complete-year" class="level3">
+<h3 class="anchored" data-anchor-id="subset-to-the-most-recent-complete-year">5.1 Subset to the most recent complete year</h3>
+<div id="subset-to-most-recent-complete-year" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>most_recent_year <span class="op">=</span> assault_complete[<span class="st">"occurrence_year"</span>].<span class="bu">max</span>()</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Most recent complete year: </span><span class="sc">{</span>most_recent_year<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset to that year</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>assault_recent <span class="op">=</span> assault_complete[assault_complete[<span class="st">"occurrence_year"</span>] <span class="op">==</span> most_recent_year].copy()</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Records in </span><span class="sc">{</span>most_recent_year<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span><span class="bu">len</span>(assault_recent)<span class="sc">:,}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Most recent complete year: 2024
+Records in 2024: 17,204</code></pre>
+</div>
+</div>
+</section>
+<section id="create-season-variable" class="level3">
+<h3 class="anchored" data-anchor-id="create-season-variable">5.2 Create season variable</h3>
+<div id="create-season-variable" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define seasons based on month</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_season(month):</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> month <span class="kw">in</span> [<span class="dv">12</span>, <span class="dv">1</span>, <span class="dv">2</span>]:</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Winter"</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> month <span class="kw">in</span> [<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]:</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Spring"</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> month <span class="kw">in</span> [<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>]:</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Summer"</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> month <span class="kw">in</span> [<span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">11</span>]:</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Fall"</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>assault_recent[<span class="st">"season"</span>] <span class="op">=</span> assault_recent[<span class="st">"occurrence_month"</span>].<span class="bu">apply</span>(get_season)</span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Season distribution:"</span>)</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(assault_recent[<span class="st">"season"</span>].value_counts().sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Season distribution:
+season
+Fall      4394
+Spring    4393
+Summer    4470
+Winter    3947
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+<section id="summary-statistics-of-assault-crime-counts-by-season" class="level3">
+<h3 class="anchored" data-anchor-id="summary-statistics-of-assault-crime-counts-by-season">5.3 Summary statistics of assault crime counts by season</h3>
+<div id="cell-assault-season-summary" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count by season</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>season_counts <span class="op">=</span> assault_recent[<span class="st">"season"</span>].value_counts().sort_index()</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>season_summary <span class="op">=</span> season_counts.to_frame(<span class="st">"count"</span>).reset_index()</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>season_summary.columns <span class="op">=</span> [<span class="st">"season"</span>, <span class="st">"count"</span>]</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>season_summary[<span class="st">"percentage"</span>] <span class="op">=</span> (season_summary[<span class="st">"count"</span>] <span class="op">/</span> season_summary[<span class="st">"count"</span>].<span class="bu">sum</span>() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Summary statistics by season (</span><span class="sc">{</span>most_recent_year<span class="sc">}</span><span class="ss">):"</span>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>display(season_summary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Summary statistics by season (2024):</code></pre>
+</div>
+<div id="assault-season-summary" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Fall</td>
+<td>4394</td>
+<td>25.54</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Spring</td>
+<td>4393</td>
+<td>25.53</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Summer</td>
+<td>4470</td>
+<td>25.98</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Winter</td>
+<td>3947</td>
+<td>22.94</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="plot-assault-crime-counts-by-season" class="level3">
+<h3 class="anchored" data-anchor-id="plot-assault-crime-counts-by-season">5.4 Plot assault crime counts by season</h3>
+<div id="cell-plot-assault-crime-season-counts" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bar plot of counts by season</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">'#3498db'</span>, <span class="st">'#2ecc71'</span>, <span class="st">'#e74c3c'</span>, <span class="st">'#f39c12'</span>]</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> ax.bar(season_summary[<span class="st">"season"</span>], season_summary[<span class="st">"count"</span>], color<span class="op">=</span>colors, alpha<span class="op">=</span><span class="fl">0.8</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Add value labels on bars</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bar <span class="kw">in</span> bars:</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>    height <span class="op">=</span> bar.get_height()</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>    ax.text(bar.get_x() <span class="op">+</span> bar.get_width()<span class="op">/</span><span class="fl">2.</span>, height,</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f'</span><span class="sc">{</span><span class="bu">int</span>(height)<span class="sc">:,}</span><span class="ss">'</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>            ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'bottom'</span>, fontsize<span class="op">=</span><span class="dv">11</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Season"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Number of Assault Crimes"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="ss">f"Assault Crime Counts by Season (</span><span class="sc">{</span>most_recent_year<span class="sc">}</span><span class="ss">)"</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>ax.grid(axis<span class="op">=</span><span class="st">'y'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw1_files/figure-html/plot-assault-crime-season-counts-output-1.png" id="plot-assault-crime-season-counts" width="951" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="simple-chi-square-test-for-seasonal-differences" class="level3">
+<h3 class="anchored" data-anchor-id="simple-chi-square-test-for-seasonal-differences">5.5 Simple Chi-square test for seasonal differences</h3>
+<div id="cell-chi-square-test" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed counts</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>observed <span class="op">=</span> season_summary[<span class="st">"count"</span>].values</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Expected counts (uniform distribution across 4 seasons)</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>expected <span class="op">=</span> np.full(<span class="dv">4</span>, observed.<span class="bu">sum</span>() <span class="op">/</span> <span class="dv">4</span>)</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Chi-square test</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>chi2_stat, p_value <span class="op">=</span> chisquare(f_obs<span class="op">=</span>observed, f_exp<span class="op">=</span>expected)</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Chi-square test for seasonal differences:"</span>)</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Null hypothesis: Assault crimes are uniformly distributed across seasons"</span>)</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Chi-square statistic: </span><span class="sc">{</span>chi2_stat<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  P-value: </span><span class="sc">{</span>p_value<span class="sc">:.4e}</span><span class="ss">"</span>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Degrees of freedom: </span><span class="sc">{</span><span class="bu">len</span>(observed) <span class="op">-</span> <span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate residuals to identify which seasons differ from expected</span></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>season_summary[<span class="st">"expected"</span>] <span class="op">=</span> expected</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>season_summary[<span class="st">"residual"</span>] <span class="op">=</span> observed <span class="op">-</span> expected</span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>season_summary[<span class="st">"standardized_residual"</span>] <span class="op">=</span> (observed <span class="op">-</span> expected) <span class="op">/</span> np.sqrt(expected)</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Season-specific deviations from expected:"</span>)</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>display(season_summary[[<span class="st">"season"</span>, <span class="st">"count"</span>, <span class="st">"expected"</span>, <span class="st">"residual"</span>, <span class="st">"standardized_residual"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chi-square test for seasonal differences:
+  Null hypothesis: Assault crimes are uniformly distributed across seasons
+  Chi-square statistic: 39.76
+  P-value: 1.2003e-08
+  Degrees of freedom: 3
+
+Season-specific deviations from expected:</code></pre>
+</div>
+<div id="chi-square-test" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">expected</th>
+<th data-quarto-table-cell-role="th">residual</th>
+<th data-quarto-table-cell-role="th">standardized_residual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Fall</td>
+<td>4394</td>
+<td>4301.0</td>
+<td>93.0</td>
+<td>1.418072</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Spring</td>
+<td>4393</td>
+<td>4301.0</td>
+<td>92.0</td>
+<td>1.402824</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Summer</td>
+<td>4470</td>
+<td>4301.0</td>
+<td>169.0</td>
+<td>2.576926</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Winter</td>
+<td>3947</td>
+<td>4301.0</td>
+<td>-354.0</td>
+<td>-5.397822</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><strong>Interpretation:</strong> The chi-square test shows strong evidence against the null hypothesis of uniform distribution (χ² = 39.76, p &lt; 0.001), indicating significant seasonal variation in assault crimes in 2024. Note, with standardized residuals exceeding the threshold of <span class="math inline">\(|2|\)</span>, it is evident that <strong>Summer</strong> has notably <strong>higher</strong> counts than expected, while <strong>Winter</strong> has <strong>lower</strong> counts than expected.</p>
+</section>
 </section>
 <section id="examine-seasonality-day-vs-night" class="level2">
 <h2 class="anchored" data-anchor-id="examine-seasonality-day-vs-night">6. Examine seasonality, day vs night</h2>

@@ -23,9 +23,13 @@ What are the most numerous categories of crimes and offences in Toronto? Of thes
 #| label: environment-setup
 #| warning: false
 #| message: false
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from scipy.stats import chisquare
 ```
 
 # Steps
@@ -297,13 +301,249 @@ print(f"After subsetting to complete years: {len(assault_complete):,} rows")
 
 ## 4. Examine annual change in crime
 
+### 4.1 Aggregate data to annual counts
+
 ```{python}
+#| label: assault-crime-annual-counts
+
+# Aggregate to count of crimes per year
+annual_counts = (
+    assault_complete.groupby("occurrence_year")
+    .size()
+    .reset_index(name="count")
+)
+
+print("Annual crime counts:")
+display(annual_counts)
 ```
+
+### 4.2 Plot counts over time
+
+```{python}
+#| label: plot-assault-crime-annual-trend
+
+# Plot annual counts over time
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(annual_counts["occurrence_year"], annual_counts["count"], 
+        marker='o', linewidth=2, markersize=8, color='steelblue')
+ax.set_xlabel("Year", fontsize=12)
+ax.set_ylabel("Number of Assault Crimes", fontsize=12)
+ax.set_title("Annual Assault Crime Counts in Toronto (2014-2024)", fontsize=14, fontweight='bold')
+ax.grid(True, alpha=0.3)
+ax.set_xticks(annual_counts["occurrence_year"])
+ax.tick_params(axis='x', rotation=45)
+plt.tight_layout()
+plt.show()
+```
+
+### 4.3 Fit Poisson regression to quantify annual trend
+
+```{python}
+#| label: poisson-regression
+
+# Fit Poisson regression: count ~ year (as numeric)
+# y = annual crime count, x = year (numeric)
+poisson_model = smf.glm(
+    formula="count ~ occurrence_year",
+    data=annual_counts,
+    family=sm.families.Poisson()
+).fit()
+
+print("Poisson Regression Results:")
+print(poisson_model.summary())
+
+# Extract coefficient for year
+year_coef = poisson_model.params["occurrence_year"]
+year_se = poisson_model.bse["occurrence_year"]
+year_pvalue = poisson_model.pvalues["occurrence_year"]
+
+# Calculate rate ratio per 1-year increase
+rate_ratio = np.exp(year_coef)
+rate_ratio_ci = np.exp([
+    year_coef - 1.96 * year_se,
+    year_coef + 1.96 * year_se
+])
+
+print(f"\n--- Annual Trend Estimate ---")
+print(f"Coefficient (log rate ratio per year): {year_coef:.6f}")
+print(f"Rate ratio per 1-year increase: {rate_ratio:.4f}")
+print(f"95% CI for rate ratio: ({rate_ratio_ci[0]:.4f}, {rate_ratio_ci[1]:.4f})")
+
+# Calculate percent change for interpretation
+pct_change = (rate_ratio - 1) * 100
+print(f"Percent change per year: {pct_change:+.2f}%")
+```
+
+**Interpretation:** For each 1-year increase from 2014 to 2024, the expected annual assault crime count increases by approximately 3.19%, suggesting a statistically significant upward trend in assault crimes over this period.
+
+### 4.4 Model fit and assumptions
+
+```{python}
+#| label: poisson-model-fit-and-assumptions
+
+# Check model fit: compare observed vs fitted values
+annual_counts["fitted"] = poisson_model.fittedvalues
+annual_counts["residuals"] = poisson_model.resid_deviance
+
+# Plot observed vs fitted
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Observed vs Fitted
+axes[0].scatter(annual_counts["occurrence_year"], annual_counts["count"], 
+                label="Observed", s=80, alpha=0.7, color='steelblue')
+axes[0].plot(annual_counts["occurrence_year"], annual_counts["fitted"], 
+             label="Fitted", linewidth=2, color='red', linestyle='--')
+axes[0].set_xlabel("Year", fontsize=11)
+axes[0].set_ylabel("Count", fontsize=11)
+axes[0].set_title("Observed vs Fitted Values", fontsize=12, fontweight='bold')
+axes[0].legend()
+axes[0].grid(True, alpha=0.3)
+
+# Residual plot
+axes[1].scatter(annual_counts["occurrence_year"], annual_counts["residuals"], 
+                s=80, alpha=0.7, color='steelblue')
+axes[1].axhline(0, color='red', linestyle='--', linewidth=2)
+axes[1].set_xlabel("Year", fontsize=11)
+axes[1].set_ylabel("Deviance Residuals", fontsize=11)
+axes[1].set_title("Residual Plot", fontsize=12, fontweight='bold')
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+# Goodness of fit: deviance and Pearson chi-squared
+print("\n--- Model Fit Statistics ---")
+print(f"Deviance: {poisson_model.deviance:.2f}")
+print(f"Pearson chi-squared: {poisson_model.pearson_chi2:.2f}")
+print(f"Degrees of freedom: {poisson_model.df_resid}")
+
+# Check for overdispersion
+dispersion = poisson_model.pearson_chi2 / poisson_model.df_resid
+print(f"\nDispersion parameter (Pearson χ²/df): {dispersion:.4f}")
+if dispersion > 1.5: # Threshold for overdispersion
+    print("  → Evidence of overdispersion (dispersion > 1.5)")
+else:
+    print("  → No strong evidence of overdispersion")
+```
+
+**Comments on Model Fit and Assumptions:**
+
+The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates **overdispersion**, violating the Poisson assumption (variance = mean) and making standard errors unreliable.
+
+### 4.5 Summary
+
+Yes, there is statistically significant evidence of an upward trend in assault crimes across Toronto from 2014 to 2024, with the Poisson regression estimating approximately a **3.19% annual increase** in expected crime counts (rate ratio ≈ 1.03). However, the model exhibits severe overdispersion, suggesting that while the overall increasing trend is present, the simple Poisson model may underestimate the uncertainty in this estimate， which means the model results may not be reliable.
 
 ## 5. Examine seasonality in crime
 
+### 5.1 Subset to the most recent complete year
+
 ```{python}
+#| label: subset-to-most-recent-complete-year
+
+
+most_recent_year = assault_complete["occurrence_year"].max()
+print(f"Most recent complete year: {most_recent_year}")
+
+# Subset to that year
+assault_recent = assault_complete[assault_complete["occurrence_year"] == most_recent_year].copy()
+print(f"Records in {most_recent_year}: {len(assault_recent):,}")
 ```
+
+### 5.2 Create season variable
+
+```{python}
+#| label: create-season-variable
+
+# Define seasons based on month
+def get_season(month):
+    if month in [12, 1, 2]:
+        return "Winter"
+    elif month in [3, 4, 5]:
+        return "Spring"
+    elif month in [6, 7, 8]:
+        return "Summer"
+    elif month in [9, 10, 11]:
+        return "Fall"
+    else:
+        return None
+
+assault_recent["season"] = assault_recent["occurrence_month"].apply(get_season)
+
+print("Season distribution:")
+print(assault_recent["season"].value_counts().sort_index())
+```
+
+### 5.3 Summary statistics of assault crime counts by season
+
+```{python}
+#| label: assault-season-summary
+
+# Count by season
+season_counts = assault_recent["season"].value_counts().sort_index()
+season_summary = season_counts.to_frame("count").reset_index()
+season_summary.columns = ["season", "count"]
+season_summary["percentage"] = (season_summary["count"] / season_summary["count"].sum() * 100).round(2)
+
+print(f"Summary statistics by season ({most_recent_year}):")
+display(season_summary)
+```
+
+### 5.4 Plot assault crime counts by season
+
+```{python}
+#| label: plot-assault-crime-season-counts
+
+# Bar plot of counts by season
+fig, ax = plt.subplots(figsize=(10, 6))
+colors = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']
+bars = ax.bar(season_summary["season"], season_summary["count"], color=colors, alpha=0.8, edgecolor='black')
+
+# Add value labels on bars
+for bar in bars:
+    height = bar.get_height()
+    ax.text(bar.get_x() + bar.get_width()/2., height,
+            f'{int(height):,}',
+            ha='center', va='bottom', fontsize=11, fontweight='bold')
+
+ax.set_xlabel("Season", fontsize=12)
+ax.set_ylabel("Number of Assault Crimes", fontsize=12)
+ax.set_title(f"Assault Crime Counts by Season ({most_recent_year})", fontsize=14, fontweight='bold')
+ax.grid(axis='y', alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+### 5.5 Simple Chi-square test for seasonal differences
+
+```{python}
+#| label: chi-square-test
+
+# Observed counts
+observed = season_summary["count"].values
+
+# Expected counts (uniform distribution across 4 seasons)
+expected = np.full(4, observed.sum() / 4)
+
+# Chi-square test
+chi2_stat, p_value = chisquare(f_obs=observed, f_exp=expected)
+
+print("Chi-square test for seasonal differences:")
+print(f"  Null hypothesis: Assault crimes are uniformly distributed across seasons")
+print(f"  Chi-square statistic: {chi2_stat:.2f}")
+print(f"  P-value: {p_value:.4e}")
+print(f"  Degrees of freedom: {len(observed) - 1}")
+
+# Calculate residuals to identify which seasons differ from expected
+season_summary["expected"] = expected
+season_summary["residual"] = observed - expected
+season_summary["standardized_residual"] = (observed - expected) / np.sqrt(expected)
+
+print("\nSeason-specific deviations from expected:")
+display(season_summary[["season", "count", "expected", "residual", "standardized_residual"]])
+```
+
+**Interpretation:** The chi-square test shows strong evidence against the null hypothesis of uniform distribution (χ² = 39.76, p < 0.001), indicating significant seasonal variation in assault crimes in 2024. Note, with standardized residuals exceeding the threshold of $|2|$, it is evident that **Summer** has notably **higher** counts than expected, while **Winter** has **lower** counts than expected.
 
 ## 6. Examine seasonality, day vs night
 ```{python}
