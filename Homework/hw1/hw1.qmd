@@ -418,15 +418,11 @@ print(f"Degrees of freedom: {poisson_model.df_resid}")
 # Check for overdispersion
 dispersion = poisson_model.pearson_chi2 / poisson_model.df_resid
 print(f"\nDispersion parameter (Pearson χ²/df): {dispersion:.4f}")
-if dispersion > 1.5: # Threshold for overdispersion
-    print("  → Evidence of overdispersion (dispersion > 1.5)")
-else:
-    print("  → No strong evidence of overdispersion")
 ```
 
 **Comments on Model Fit and Assumptions:**
 
-The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates **overdispersion**, violating the Poisson assumption (variance = mean) and making standard errors unreliable.
+The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates **overdispersion** as it is significantly greater than the threshold 1.5, violating the Poisson assumption (variance = mean) and making standard errors unreliable.
 
 ## 4.5 Summary
 

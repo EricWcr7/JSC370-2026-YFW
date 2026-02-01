@@ -243,7 +243,7 @@ window.Quarto = {
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick look at the data</span></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> raw.copy()</span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="read-data" class="cell-output cell-output-display" data-execution_count="83">
+<div id="read-data" class="cell-output cell-output-display" data-execution_count="137">
 <div>
 
 
@@ -357,7 +357,7 @@ window.Quarto = {
 n_rows: 452949
 n_cols: 11</code></pre>
 </div>
-<div id="check-data" class="cell-output cell-output-display" data-execution_count="84">
+<div id="check-data" class="cell-output cell-output-display" data-execution_count="138">
 <pre><code>np.float64(0.16353116929531097)</code></pre>
 </div>
 </div>
@@ -1349,7 +1349,7 @@ Model Family:                 Poisson   Df Model:                            1
 Link Function:                    Log   Scale:                          1.0000
 Method:                          IRLS   Log-Likelihood:                -372.70
 Date:                Sun, 01 Feb 2026   Deviance:                       620.30
-Time:                        12:29:55   Pearson chi2:                     608.
+Time:                        12:32:26   Pearson chi2:                     608.
 No. Iterations:                     4   Pseudo R-squ. (CS):              1.000
 Covariance Type:            nonrobust                                         
 ===================================================================================
@@ -1409,11 +1409,7 @@ Percent change per year: +3.19%</code></pre>
 <span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-37"><a href="#cb35-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for overdispersion</span></span>
 <span id="cb35-38"><a href="#cb35-38" aria-hidden="true" tabindex="-1"></a>dispersion <span class="op">=</span> poisson_model.pearson_chi2 <span class="op">/</span> poisson_model.df_resid</span>
-<span id="cb35-39"><a href="#cb35-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Dispersion parameter (Pearson χ²/df): </span><span class="sc">{</span>dispersion<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb35-40"><a href="#cb35-40" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> dispersion <span class="op">&gt;</span> <span class="fl">1.5</span>: <span class="co"># Threshold for overdispersion</span></span>
-<span id="cb35-41"><a href="#cb35-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"  → Evidence of overdispersion (dispersion &gt; 1.5)"</span>)</span>
-<span id="cb35-42"><a href="#cb35-42" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb35-43"><a href="#cb35-43" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"  → No strong evidence of overdispersion"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb35-39"><a href="#cb35-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Dispersion parameter (Pearson χ²/df): </span><span class="sc">{</span>dispersion<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1428,12 +1424,11 @@ Deviance: 620.30
 Pearson chi-squared: 607.53
 Degrees of freedom: 9
 
-Dispersion parameter (Pearson χ²/df): 67.5038
-  → Evidence of overdispersion (dispersion &gt; 1.5)</code></pre>
+Dispersion parameter (Pearson χ²/df): 67.5038</code></pre>
 </div>
 </div>
 <p><strong>Comments on Model Fit and Assumptions:</strong></p>
-<p>The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates <strong>overdispersion</strong>, violating the Poisson assumption (variance = mean) and making standard errors unreliable.</p>
+<p>The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates <strong>overdispersion</strong> as it is significantly greater than the threshold 1.5, violating the Poisson assumption (variance = mean) and making standard errors unreliable.</p>
 </section>
 <section id="summary-3" class="level2">
 <h2 class="anchored" data-anchor-id="summary-3">4.5 Summary</h2>
