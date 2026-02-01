@@ -121,9 +121,7 @@ window.Quarto = {
   <ul>
   <li><a href="#primary-question" id="toc-primary-question" class="nav-link active" data-scroll-target="#primary-question">Primary Question</a></li>
   <li><a href="#environment-setup" id="toc-environment-setup" class="nav-link" data-scroll-target="#environment-setup">Environment Setup</a></li>
-  <li><a href="#steps" id="toc-steps" class="nav-link" data-scroll-target="#steps">Steps</a>
-  <ul class="collapse">
-  <li><a href="#read-in-the-data" id="toc-read-in-the-data" class="nav-link" data-scroll-target="#read-in-the-data">1. Read in the data</a>
+  <li><a href="#step-1.-read-in-the-data" id="toc-step-1.-read-in-the-data" class="nav-link" data-scroll-target="#step-1.-read-in-the-data">Step 1. Read in the data</a>
   <ul class="collapse">
   <li><a href="#read-the-data-with-only-the-needed-columns" id="toc-read-the-data-with-only-the-needed-columns" class="nav-link" data-scroll-target="#read-the-data-with-only-the-needed-columns">1.1 Read the data with only the needed columns</a></li>
   <li><a href="#check-the-data-dimensions-and-memory" id="toc-check-the-data-dimensions-and-memory" class="nav-link" data-scroll-target="#check-the-data-dimensions-and-memory">1.2 Check the data dimensions and memory</a></li>
@@ -131,7 +129,7 @@ window.Quarto = {
   <li><a href="#check-the-missing-values" id="toc-check-the-missing-values" class="nav-link" data-scroll-target="#check-the-missing-values">1.4 Check the missing values</a></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">1.5 Summary</a></li>
   </ul></li>
-  <li><a href="#preprocess-the-data" id="toc-preprocess-the-data" class="nav-link" data-scroll-target="#preprocess-the-data">2. Preprocess the data</a>
+  <li><a href="#step-2.-preprocess-the-data" id="toc-step-2.-preprocess-the-data" class="nav-link" data-scroll-target="#step-2.-preprocess-the-data">Step 2. Preprocess the data</a>
   <ul class="collapse">
   <li><a href="#identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category" id="toc-identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category" class="nav-link" data-scroll-target="#identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category">2.1 Identify the most frequent MCI category and the most frequent offence within that category</a></li>
   <li><a href="#build-the-analytic-dataset-with-the-selected-category-and-offence" id="toc-build-the-analytic-dataset-with-the-selected-category-and-offence" class="nav-link" data-scroll-target="#build-the-analytic-dataset-with-the-selected-category-and-offence">2.2 Build the analytic dataset with the selected category and offence</a></li>
@@ -139,7 +137,7 @@ window.Quarto = {
   <li><a href="#identify-and-clean-impossible-data" id="toc-identify-and-clean-impossible-data" class="nav-link" data-scroll-target="#identify-and-clean-impossible-data">2.4 Identify and clean impossible data</a></li>
   <li><a href="#summary-1" id="toc-summary-1" class="nav-link" data-scroll-target="#summary-1">2.5 Summary</a></li>
   </ul></li>
-  <li><a href="#check-data-completeness-across-years" id="toc-check-data-completeness-across-years" class="nav-link" data-scroll-target="#check-data-completeness-across-years">3. Check data completeness across years</a>
+  <li><a href="#step-3.-check-data-completeness-across-years" id="toc-step-3.-check-data-completeness-across-years" class="nav-link" data-scroll-target="#step-3.-check-data-completeness-across-years">Step 3. Check data completeness across years</a>
   <ul class="collapse">
   <li><a href="#examine-which-years-are-present-in-the-data" id="toc-examine-which-years-are-present-in-the-data" class="nav-link" data-scroll-target="#examine-which-years-are-present-in-the-data">3.1 Examine which years are present in the data</a></li>
   <li><a href="#cross-reference-with-documentation-to-identify-valid-time-range" id="toc-cross-reference-with-documentation-to-identify-valid-time-range" class="nav-link" data-scroll-target="#cross-reference-with-documentation-to-identify-valid-time-range">3.2 Cross-reference with documentation to identify valid time range</a></li>
@@ -147,7 +145,7 @@ window.Quarto = {
   <li><a href="#subset-to-years-with-complete-data" id="toc-subset-to-years-with-complete-data" class="nav-link" data-scroll-target="#subset-to-years-with-complete-data">3.4 Subset to years with complete data</a></li>
   <li><a href="#summary-2" id="toc-summary-2" class="nav-link" data-scroll-target="#summary-2">3.5 Summary</a></li>
   </ul></li>
-  <li><a href="#examine-annual-change-in-crime" id="toc-examine-annual-change-in-crime" class="nav-link" data-scroll-target="#examine-annual-change-in-crime">4. Examine annual change in crime</a>
+  <li><a href="#step-4.-examine-annual-change-in-crime" id="toc-step-4.-examine-annual-change-in-crime" class="nav-link" data-scroll-target="#step-4.-examine-annual-change-in-crime">Step 4. Examine annual change in crime</a>
   <ul class="collapse">
   <li><a href="#aggregate-data-to-annual-counts" id="toc-aggregate-data-to-annual-counts" class="nav-link" data-scroll-target="#aggregate-data-to-annual-counts">4.1 Aggregate data to annual counts</a></li>
   <li><a href="#plot-counts-over-time" id="toc-plot-counts-over-time" class="nav-link" data-scroll-target="#plot-counts-over-time">4.2 Plot counts over time</a></li>
@@ -155,7 +153,7 @@ window.Quarto = {
   <li><a href="#model-fit-and-assumptions" id="toc-model-fit-and-assumptions" class="nav-link" data-scroll-target="#model-fit-and-assumptions">4.4 Model fit and assumptions</a></li>
   <li><a href="#summary-3" id="toc-summary-3" class="nav-link" data-scroll-target="#summary-3">4.5 Summary</a></li>
   </ul></li>
-  <li><a href="#examine-seasonality-in-crime" id="toc-examine-seasonality-in-crime" class="nav-link" data-scroll-target="#examine-seasonality-in-crime">5. Examine seasonality in crime</a>
+  <li><a href="#step-5.-examine-seasonality-in-crime" id="toc-step-5.-examine-seasonality-in-crime" class="nav-link" data-scroll-target="#step-5.-examine-seasonality-in-crime">Step 5. Examine seasonality in crime</a>
   <ul class="collapse">
   <li><a href="#subset-to-the-most-recent-complete-year" id="toc-subset-to-the-most-recent-complete-year" class="nav-link" data-scroll-target="#subset-to-the-most-recent-complete-year">5.1 Subset to the most recent complete year</a></li>
   <li><a href="#create-season-variable" id="toc-create-season-variable" class="nav-link" data-scroll-target="#create-season-variable">5.2 Create season variable</a></li>
@@ -163,10 +161,16 @@ window.Quarto = {
   <li><a href="#plot-assault-crime-counts-by-season" id="toc-plot-assault-crime-counts-by-season" class="nav-link" data-scroll-target="#plot-assault-crime-counts-by-season">5.4 Plot assault crime counts by season</a></li>
   <li><a href="#simple-chi-square-test-for-seasonal-differences" id="toc-simple-chi-square-test-for-seasonal-differences" class="nav-link" data-scroll-target="#simple-chi-square-test-for-seasonal-differences">5.5 Simple Chi-square test for seasonal differences</a></li>
   </ul></li>
-  <li><a href="#examine-seasonality-day-vs-night" id="toc-examine-seasonality-day-vs-night" class="nav-link" data-scroll-target="#examine-seasonality-day-vs-night">6. Examine seasonality, day vs night</a></li>
-  <li><a href="#look-at-neighbourhood-patterns" id="toc-look-at-neighbourhood-patterns" class="nav-link" data-scroll-target="#look-at-neighbourhood-patterns">7. Look at neighbourhood patterns</a></li>
-  <li><a href="#create-a-map" id="toc-create-a-map" class="nav-link" data-scroll-target="#create-a-map">8. Create a map</a></li>
+  <li><a href="#step-6.-examine-seasonality-day-vs-night" id="toc-step-6.-examine-seasonality-day-vs-night" class="nav-link" data-scroll-target="#step-6.-examine-seasonality-day-vs-night">Step 6. Examine seasonality, day vs night</a>
+  <ul class="collapse">
+  <li><a href="#summarize-crime-counts-by-hour" id="toc-summarize-crime-counts-by-hour" class="nav-link" data-scroll-target="#summarize-crime-counts-by-hour">6.1 Summarize crime counts by hour</a></li>
+  <li><a href="#create-daynight-indicator" id="toc-create-daynight-indicator" class="nav-link" data-scroll-target="#create-daynight-indicator">6.2 Create day/night indicator</a></li>
+  <li><a href="#create-season-daynight-contingency-table" id="toc-create-season-daynight-contingency-table" class="nav-link" data-scroll-target="#create-season-daynight-contingency-table">6.3 Create season × day/night contingency table</a></li>
+  <li><a href="#visualize-the-contingency-table" id="toc-visualize-the-contingency-table" class="nav-link" data-scroll-target="#visualize-the-contingency-table">6.4 Visualize the contingency table</a></li>
+  <li><a href="#chi-square-test-for-independence" id="toc-chi-square-test-for-independence" class="nav-link" data-scroll-target="#chi-square-test-for-independence">6.5 Chi-square test for independence</a></li>
   </ul></li>
+  <li><a href="#step-7.-look-at-neighbourhood-patterns" id="toc-step-7.-look-at-neighbourhood-patterns" class="nav-link" data-scroll-target="#step-7.-look-at-neighbourhood-patterns">Step 7. Look at neighbourhood patterns</a></li>
+  <li><a href="#step-8.-create-a-map" id="toc-step-8.-create-a-map" class="nav-link" data-scroll-target="#step-8.-create-a-map">Step 8. Create a map</a></li>
   </ul>
 </nav>
 </div>
@@ -210,15 +214,13 @@ window.Quarto = {
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chisquare</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> chisquare, chi2_contingency</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="steps" class="level1">
-<h1>Steps</h1>
-<section id="read-in-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="read-in-the-data">1. Read in the data</h2>
-<section id="read-the-data-with-only-the-needed-columns" class="level3">
-<h3 class="anchored" data-anchor-id="read-the-data-with-only-the-needed-columns">1.1 Read the data with only the needed columns</h3>
+<section id="step-1.-read-in-the-data" class="level1">
+<h1>Step 1. Read in the data</h1>
+<section id="read-the-data-with-only-the-needed-columns" class="level2">
+<h2 class="anchored" data-anchor-id="read-the-data-with-only-the-needed-columns">1.1 Read the data with only the needed columns</h2>
 <div id="cell-read-data" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read and load only the needed columns</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> <span class="st">"Major_Crime_Indicators_Open_Data_-3805566126367379926.csv"</span></span>
@@ -241,7 +243,7 @@ window.Quarto = {
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick look at the data</span></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> raw.copy()</span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="read-data" class="cell-output cell-output-display" data-execution_count="2">
+<div id="read-data" class="cell-output cell-output-display" data-execution_count="83">
 <div>
 
 
@@ -340,8 +342,8 @@ window.Quarto = {
 </div>
 </div>
 </section>
-<section id="check-the-data-dimensions-and-memory" class="level3">
-<h3 class="anchored" data-anchor-id="check-the-data-dimensions-and-memory">1.2 Check the data dimensions and memory</h3>
+<section id="check-the-data-dimensions-and-memory" class="level2">
+<h2 class="anchored" data-anchor-id="check-the-data-dimensions-and-memory">1.2 Check the data dimensions and memory</h2>
 <div id="cell-check-data" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check dimensions and memory</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape:"</span>, df.shape)</span>
@@ -355,13 +357,13 @@ window.Quarto = {
 n_rows: 452949
 n_cols: 11</code></pre>
 </div>
-<div id="check-data" class="cell-output cell-output-display" data-execution_count="3">
+<div id="check-data" class="cell-output cell-output-display" data-execution_count="84">
 <pre><code>np.float64(0.16353116929531097)</code></pre>
 </div>
 </div>
 </section>
-<section id="check-the-data-types" class="level3">
-<h3 class="anchored" data-anchor-id="check-the-data-types">1.3 Check the data types</h3>
+<section id="check-the-data-types" class="level2">
+<h2 class="anchored" data-anchor-id="check-the-data-types">1.3 Check the data types</h2>
 <div id="check-data-types" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check variable information</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -387,8 +389,8 @@ memory usage: 38.0+ MB</code></pre>
 </div>
 </div>
 </section>
-<section id="check-the-missing-values" class="level3">
-<h3 class="anchored" data-anchor-id="check-the-missing-values">1.4 Check the missing values</h3>
+<section id="check-the-missing-values" class="level2">
+<h2 class="anchored" data-anchor-id="check-the-missing-values">1.4 Check the missing values</h2>
 <div id="cell-check-missing-values" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize missing-value placeholders across all columns</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>missing_markers <span class="op">=</span> [<span class="st">""</span>, <span class="st">" "</span>, <span class="st">"N/A"</span>, <span class="st">"NA"</span>, <span class="st">"null"</span>, <span class="st">"Null"</span>]</span>
@@ -473,8 +475,8 @@ memory usage: 38.0+ MB</code></pre>
 </div>
 </div>
 </section>
-<section id="summary" class="level3">
-<h3 class="anchored" data-anchor-id="summary">1.5 Summary</h3>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">1.5 Summary</h2>
 <p>Summary:</p>
 <ul>
 <li>Read the Toronto Police major crime indicators dataset from the downloaded CSV file using <code>pd.read_csv(..., usecols=key_vars)</code> to load only the 11 variables required for this homework: <code>MCI_CATEGORY</code>, <code>OFFENCE</code>, <code>OCC_YEAR</code>, <code>OCC_MONTH</code>, <code>OCC_DAY</code>, <code>OCC_DOY</code>, <code>OCC_HOUR</code>, <code>LOCATION_TYPE</code>, <code>NEIGHBOURHOOD_158</code>, <code>LONG_WGS84</code>, <code>LAT_WGS84</code>. Then make a copy of the dataframe for further analysis/preprocessing.</li>
@@ -484,10 +486,10 @@ memory usage: 38.0+ MB</code></pre>
 </ul>
 </section>
 </section>
-<section id="preprocess-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="preprocess-the-data">2. Preprocess the data</h2>
-<section id="identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category" class="level3">
-<h3 class="anchored" data-anchor-id="identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category">2.1 Identify the most frequent MCI category and the most frequent offence within that category</h3>
+<section id="step-2.-preprocess-the-data" class="level1">
+<h1>Step 2. Preprocess the data</h1>
+<section id="identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category" class="level2">
+<h2 class="anchored" data-anchor-id="identify-the-most-frequent-mci-category-and-the-most-frequent-offence-within-that-category">2.1 Identify the most frequent MCI category and the most frequent offence within that category</h2>
 <div id="select-category-offence" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the most frequent MCI category</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>cat_counts <span class="op">=</span> df[<span class="st">"MCI_CATEGORY"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>)</span>
@@ -536,8 +538,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="build-the-analytic-dataset-with-the-selected-category-and-offence" class="level3">
-<h3 class="anchored" data-anchor-id="build-the-analytic-dataset-with-the-selected-category-and-offence">2.2 Build the analytic dataset with the selected category and offence</h3>
+<section id="build-the-analytic-dataset-with-the-selected-category-and-offence" class="level2">
+<h2 class="anchored" data-anchor-id="build-the-analytic-dataset-with-the-selected-category-and-offence">2.2 Build the analytic dataset with the selected category and offence</h2>
 <div id="build-analytic-dataset" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create analytic dataset for the selected category/offence</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>crime <span class="op">=</span> df.loc[</span>
@@ -551,8 +553,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc." class="level3">
-<h3 class="anchored" data-anchor-id="rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc.">2.3 Rename variables for readability and preprocess the variables (value mapping, type conversion, etc.)</h3>
+<section id="rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc." class="level2">
+<h2 class="anchored" data-anchor-id="rename-variables-for-readability-and-preprocess-the-variables-value-mapping-type-conversion-etc.">2.3 Rename variables for readability and preprocess the variables (value mapping, type conversion, etc.)</h2>
 <div id="cell-rename-and-convert-types" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename key variables for readability</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>crime <span class="op">=</span> crime.rename(</span>
@@ -713,8 +715,8 @@ memory usage: 11.6 MB</code></pre>
 </div>
 </div>
 </section>
-<section id="identify-and-clean-impossible-data" class="level3">
-<h3 class="anchored" data-anchor-id="identify-and-clean-impossible-data">2.4 Identify and clean impossible data</h3>
+<section id="identify-and-clean-impossible-data" class="level2">
+<h2 class="anchored" data-anchor-id="identify-and-clean-impossible-data">2.4 Identify and clean impossible data</h2>
 <div id="identify-and-clean-impossible-data" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean impossible data</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># - Coordinates (0,0) indicate NSA/outside Toronto</span></span>
@@ -889,8 +891,8 @@ Sample of (0,0) coordinate records:</code></pre>
 </div>
 </div>
 </section>
-<section id="summary-1" class="level3">
-<h3 class="anchored" data-anchor-id="summary-1">2.5 Summary</h3>
+<section id="summary-1" class="level2">
+<h2 class="anchored" data-anchor-id="summary-1">2.5 Summary</h2>
 <ul>
 <li>I used frequency counts (<code>value_counts</code>) on <code>MCI_CATEGORY</code> to pick the most common category in the full dataset, then (within that category) used frequency counts on <code>OFFENCE</code> to pick the most common offence. Using this rule, the selected category is <strong>Assault</strong> and the selected offence is <strong>Assault</strong>.</li>
 <li>I filtered the data to only the selected category/offence and kept only the “necessary columns” from Question 1 (<code>key_vars</code>). This produced the analytic dataset <code>crime</code> with <strong>166,524 rows</strong> and <strong>11 columns</strong>.</li>
@@ -900,10 +902,10 @@ Sample of (0,0) coordinate records:</code></pre>
 </ul>
 </section>
 </section>
-<section id="check-data-completeness-across-years" class="level2">
-<h2 class="anchored" data-anchor-id="check-data-completeness-across-years">3. Check data completeness across years</h2>
-<section id="examine-which-years-are-present-in-the-data" class="level3">
-<h3 class="anchored" data-anchor-id="examine-which-years-are-present-in-the-data">3.1 Examine which years are present in the data</h3>
+<section id="step-3.-check-data-completeness-across-years" class="level1">
+<h1>Step 3. Check data completeness across years</h1>
+<section id="examine-which-years-are-present-in-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="examine-which-years-are-present-in-the-data">3.1 Examine which years are present in the data</h2>
 <div id="cell-examine-years-present" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check which years are present in the crime dataset</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>year_counts <span class="op">=</span> crime[<span class="st">"occurrence_year"</span>].value_counts(dropna<span class="op">=</span><span class="va">False</span>).sort_index()</span>
@@ -954,8 +956,8 @@ Missing values in occurrence_year: 84</code></pre>
 </div>
 </div>
 </section>
-<section id="cross-reference-with-documentation-to-identify-valid-time-range" class="level3">
-<h3 class="anchored" data-anchor-id="cross-reference-with-documentation-to-identify-valid-time-range">3.2 Cross-reference with documentation to identify valid time range</h3>
+<section id="cross-reference-with-documentation-to-identify-valid-time-range" class="level2">
+<h2 class="anchored" data-anchor-id="cross-reference-with-documentation-to-identify-valid-time-range">3.2 Cross-reference with documentation to identify valid time range</h2>
 <div id="cross-reference-documentation" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Documentation (Appendix A): MCI Assault data covers 2014 – 2025.09.30 (quarterly updates)</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -978,8 +980,8 @@ After filtering to valid range (2014-2025): 165,560 rows</code></pre>
 </div>
 </div>
 </section>
-<section id="examine-completeness-within-valid-time-range-according-to-the-data-documentation" class="level3">
-<h3 class="anchored" data-anchor-id="examine-completeness-within-valid-time-range-according-to-the-data-documentation">3.3 Examine completeness within valid time range according to the data documentation</h3>
+<section id="examine-completeness-within-valid-time-range-according-to-the-data-documentation" class="level2">
+<h2 class="anchored" data-anchor-id="examine-completeness-within-valid-time-range-according-to-the-data-documentation">3.3 Examine completeness within valid time range according to the data documentation</h2>
 <div id="cell-examine-completeness-valid-range" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check completeness: months present and date range for each year</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>year_completeness <span class="op">=</span> assault_valid.groupby(<span class="st">"occurrence_year"</span>).agg(</span>
@@ -1157,8 +1159,8 @@ After filtering to valid range (2014-2025): 165,560 rows</code></pre>
 </div>
 </div>
 </section>
-<section id="subset-to-years-with-complete-data" class="level3">
-<h3 class="anchored" data-anchor-id="subset-to-years-with-complete-data">3.4 Subset to years with complete data</h3>
+<section id="subset-to-years-with-complete-data" class="level2">
+<h2 class="anchored" data-anchor-id="subset-to-years-with-complete-data">3.4 Subset to years with complete data</h2>
 <div id="subset-complete-years" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Based on examination above, identify complete years (those with all 12 months)</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>complete_years <span class="op">=</span> year_completeness[year_completeness[<span class="st">"complete"</span>]][<span class="st">"occurrence_year"</span>].values</span>
@@ -1177,8 +1179,8 @@ After subsetting to complete years: 153,166 rows</code></pre>
 </div>
 </div>
 </section>
-<section id="summary-2" class="level3">
-<h3 class="anchored" data-anchor-id="summary-2">3.5 Summary</h3>
+<section id="summary-2" class="level2">
+<h2 class="anchored" data-anchor-id="summary-2">3.5 Summary</h2>
 <ul>
 <li>I examined the years present in the data and found that the data covers from minimum year 2000 to maximum year 2025 and there are no missing years in this range.</li>
 <li>I cross-referenced the data with the data documentation and found that the valid time range for <strong>Assault</strong> crimes data is from 2014 to 2025.09.30.</li>
@@ -1187,10 +1189,10 @@ After subsetting to complete years: 153,166 rows</code></pre>
 </ul>
 </section>
 </section>
-<section id="examine-annual-change-in-crime" class="level2">
-<h2 class="anchored" data-anchor-id="examine-annual-change-in-crime">4. Examine annual change in crime</h2>
-<section id="aggregate-data-to-annual-counts" class="level3">
-<h3 class="anchored" data-anchor-id="aggregate-data-to-annual-counts">4.1 Aggregate data to annual counts</h3>
+<section id="step-4.-examine-annual-change-in-crime" class="level1">
+<h1>Step 4. Examine annual change in crime</h1>
+<section id="aggregate-data-to-annual-counts" class="level2">
+<h2 class="anchored" data-anchor-id="aggregate-data-to-annual-counts">4.1 Aggregate data to annual counts</h2>
 <div id="cell-assault-crime-annual-counts" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate to count of crimes per year</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>annual_counts <span class="op">=</span> (</span>
@@ -1279,8 +1281,8 @@ After subsetting to complete years: 153,166 rows</code></pre>
 </div>
 </div>
 </section>
-<section id="plot-counts-over-time" class="level3">
-<h3 class="anchored" data-anchor-id="plot-counts-over-time">4.2 Plot counts over time</h3>
+<section id="plot-counts-over-time" class="level2">
+<h2 class="anchored" data-anchor-id="plot-counts-over-time">4.2 Plot counts over time</h2>
 <div id="cell-plot-assault-crime-annual-trend" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot annual counts over time</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
@@ -1303,8 +1305,8 @@ After subsetting to complete years: 153,166 rows</code></pre>
 </div>
 </div>
 </section>
-<section id="fit-poisson-regression-to-quantify-annual-trend" class="level3">
-<h3 class="anchored" data-anchor-id="fit-poisson-regression-to-quantify-annual-trend">4.3 Fit Poisson regression to quantify annual trend</h3>
+<section id="fit-poisson-regression-to-quantify-annual-trend" class="level2">
+<h2 class="anchored" data-anchor-id="fit-poisson-regression-to-quantify-annual-trend">4.3 Fit Poisson regression to quantify annual trend</h2>
 <div id="poisson-regression" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Poisson regression: count ~ year (as numeric)</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co"># y = annual crime count, x = year (numeric)</span></span>
@@ -1347,7 +1349,7 @@ Model Family:                 Poisson   Df Model:                            1
 Link Function:                    Log   Scale:                          1.0000
 Method:                          IRLS   Log-Likelihood:                -372.70
 Date:                Sun, 01 Feb 2026   Deviance:                       620.30
-Time:                        11:54:39   Pearson chi2:                     608.
+Time:                        12:29:55   Pearson chi2:                     608.
 No. Iterations:                     4   Pseudo R-squ. (CS):              1.000
 Covariance Type:            nonrobust                                         
 ===================================================================================
@@ -1366,8 +1368,8 @@ Percent change per year: +3.19%</code></pre>
 </div>
 <p><strong>Interpretation:</strong> For each 1-year increase from 2014 to 2024, the expected annual assault crime count increases by approximately 3.19%, suggesting a statistically significant upward trend in assault crimes over this period.</p>
 </section>
-<section id="model-fit-and-assumptions" class="level3">
-<h3 class="anchored" data-anchor-id="model-fit-and-assumptions">4.4 Model fit and assumptions</h3>
+<section id="model-fit-and-assumptions" class="level2">
+<h2 class="anchored" data-anchor-id="model-fit-and-assumptions">4.4 Model fit and assumptions</h2>
 <div id="cell-poisson-model-fit-and-assumptions" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check model fit: compare observed vs fitted values</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>annual_counts[<span class="st">"fitted"</span>] <span class="op">=</span> poisson_model.fittedvalues</span>
@@ -1433,15 +1435,15 @@ Dispersion parameter (Pearson χ²/df): 67.5038
 <p><strong>Comments on Model Fit and Assumptions:</strong></p>
 <p>The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates <strong>overdispersion</strong>, violating the Poisson assumption (variance = mean) and making standard errors unreliable.</p>
 </section>
-<section id="summary-3" class="level3">
-<h3 class="anchored" data-anchor-id="summary-3">4.5 Summary</h3>
+<section id="summary-3" class="level2">
+<h2 class="anchored" data-anchor-id="summary-3">4.5 Summary</h2>
 <p>Yes, there is statistically significant evidence of an upward trend in assault crimes across Toronto from 2014 to 2024, with the Poisson regression estimating approximately a <strong>3.19% annual increase</strong> in expected crime counts (rate ratio ≈ 1.03). However, the model exhibits severe overdispersion, suggesting that while the overall increasing trend is present, the simple Poisson model may underestimate the uncertainty in this estimate， which means the model results may not be reliable.</p>
 </section>
 </section>
-<section id="examine-seasonality-in-crime" class="level2">
-<h2 class="anchored" data-anchor-id="examine-seasonality-in-crime">5. Examine seasonality in crime</h2>
-<section id="subset-to-the-most-recent-complete-year" class="level3">
-<h3 class="anchored" data-anchor-id="subset-to-the-most-recent-complete-year">5.1 Subset to the most recent complete year</h3>
+<section id="step-5.-examine-seasonality-in-crime" class="level1">
+<h1>Step 5. Examine seasonality in crime</h1>
+<section id="subset-to-the-most-recent-complete-year" class="level2">
+<h2 class="anchored" data-anchor-id="subset-to-the-most-recent-complete-year">5.1 Subset to the most recent complete year</h2>
 <div id="subset-to-most-recent-complete-year" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>most_recent_year <span class="op">=</span> assault_complete[<span class="st">"occurrence_year"</span>].<span class="bu">max</span>()</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Most recent complete year: </span><span class="sc">{</span>most_recent_year<span class="sc">}</span><span class="ss">"</span>)</span>
@@ -1455,8 +1457,8 @@ Records in 2024: 17,204</code></pre>
 </div>
 </div>
 </section>
-<section id="create-season-variable" class="level3">
-<h3 class="anchored" data-anchor-id="create-season-variable">5.2 Create season variable</h3>
+<section id="create-season-variable" class="level2">
+<h2 class="anchored" data-anchor-id="create-season-variable">5.2 Create season variable</h2>
 <div id="create-season-variable" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define seasons based on month</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_season(month):</span>
@@ -1486,8 +1488,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="summary-statistics-of-assault-crime-counts-by-season" class="level3">
-<h3 class="anchored" data-anchor-id="summary-statistics-of-assault-crime-counts-by-season">5.3 Summary statistics of assault crime counts by season</h3>
+<section id="summary-statistics-of-assault-crime-counts-by-season" class="level2">
+<h2 class="anchored" data-anchor-id="summary-statistics-of-assault-crime-counts-by-season">5.3 Summary statistics of assault crime counts by season</h2>
 <div id="cell-assault-season-summary" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count by season</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>season_counts <span class="op">=</span> assault_recent[<span class="st">"season"</span>].value_counts().sort_index()</span>
@@ -1545,8 +1547,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="plot-assault-crime-counts-by-season" class="level3">
-<h3 class="anchored" data-anchor-id="plot-assault-crime-counts-by-season">5.4 Plot assault crime counts by season</h3>
+<section id="plot-assault-crime-counts-by-season" class="level2">
+<h2 class="anchored" data-anchor-id="plot-assault-crime-counts-by-season">5.4 Plot assault crime counts by season</h2>
 <div id="cell-plot-assault-crime-season-counts" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bar plot of counts by season</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
@@ -1575,8 +1577,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="simple-chi-square-test-for-seasonal-differences" class="level3">
-<h3 class="anchored" data-anchor-id="simple-chi-square-test-for-seasonal-differences">5.5 Simple Chi-square test for seasonal differences</h3>
+<section id="simple-chi-square-test-for-seasonal-differences" class="level2">
+<h2 class="anchored" data-anchor-id="simple-chi-square-test-for-seasonal-differences">5.5 Simple Chi-square test for seasonal differences</h2>
 <div id="cell-chi-square-test" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed counts</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>observed <span class="op">=</span> season_summary[<span class="st">"count"</span>].values</span>
@@ -1663,17 +1665,429 @@ Season-specific deviations from expected:</code></pre>
 </div>
 </div>
 </div>
-<p><strong>Interpretation:</strong> The chi-square test shows strong evidence against the null hypothesis of uniform distribution (χ² = 39.76, p &lt; 0.001), indicating significant seasonal variation in assault crimes in 2024. Note, with standardized residuals exceeding the threshold of <span class="math inline">\(|2|\)</span>, it is evident that <strong>Summer</strong> has notably <strong>higher</strong> counts than expected, while <strong>Winter</strong> has <strong>lower</strong> counts than expected.</p>
+<p><strong>Interpretation:</strong> The chi-square test shows strong evidence against the null hypothesis of uniform distribution (χ² = 39.76, p &lt; 0.05), indicating significant seasonal variation in assault crimes in 2024. Note, with standardized residuals exceeding the threshold of <span class="math inline">\(|2|\)</span>, it is evident that <strong>Summer</strong> has notably <strong>higher</strong> counts than expected, while <strong>Winter</strong> has <strong>lower</strong> counts than expected.</p>
 </section>
 </section>
-<section id="examine-seasonality-day-vs-night" class="level2">
-<h2 class="anchored" data-anchor-id="examine-seasonality-day-vs-night">6. Examine seasonality, day vs night</h2>
+<section id="step-6.-examine-seasonality-day-vs-night" class="level1">
+<h1>Step 6. Examine seasonality, day vs night</h1>
+<section id="summarize-crime-counts-by-hour" class="level2">
+<h2 class="anchored" data-anchor-id="summarize-crime-counts-by-hour">6.1 Summarize crime counts by hour</h2>
+<div id="cell-assault-crime-counts-by-hour" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count crimes by hour</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>hour_counts <span class="op">=</span> assault_recent[<span class="st">"hour"</span>].value_counts().sort_index()</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Crime counts by hour:"</span>)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>display(hour_counts.to_frame(<span class="st">"count"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Crime counts by hour:</code></pre>
+</div>
+<div id="assault-crime-counts-by-hour" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">hour</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1217</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>565</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>511</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>420</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>271</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>237</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>219</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>342</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>526</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>646</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>691</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>761</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>1075</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>800</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>806</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>1019</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>934</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>906</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>932</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>849</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>912</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>901</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>861</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>803</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
-<section id="look-at-neighbourhood-patterns" class="level2">
-<h2 class="anchored" data-anchor-id="look-at-neighbourhood-patterns">7. Look at neighbourhood patterns</h2>
+<section id="create-daynight-indicator" class="level2">
+<h2 class="anchored" data-anchor-id="create-daynight-indicator">6.2 Create day/night indicator</h2>
+<p><strong>Day/Night Definition:</strong> - <strong>Day</strong>: 6:00 AM to 5:59 PM (hours 6-17) - <strong>Night</strong>: 6:00 PM to 5:59 AM (hours 18-23, 0-5)</p>
+<div id="create-day-night-indicator-variable" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_time_period(hour):</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="dv">6</span> <span class="op">&lt;=</span> hour <span class="op">&lt;=</span> <span class="dv">17</span>:</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Day"</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Night"</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>assault_recent[<span class="st">"time_period"</span>] <span class="op">=</span> assault_recent[<span class="st">"hour"</span>].<span class="bu">apply</span>(get_time_period)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Check distribution</span></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Day/Night distribution:"</span>)</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(assault_recent[<span class="st">"time_period"</span>].value_counts())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Day/Night distribution:
+time_period
+Day      8725
+Night    8479
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
 </section>
-<section id="create-a-map" class="level2">
-<h2 class="anchored" data-anchor-id="create-a-map">8. Create a map</h2>
+<section id="create-season-daynight-contingency-table" class="level2">
+<h2 class="anchored" data-anchor-id="create-season-daynight-contingency-table">6.3 Create season × day/night contingency table</h2>
+<div id="season-day-night-contingency-table" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create contingency table</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>contingency_table <span class="op">=</span> pd.crosstab(</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    assault_recent[<span class="st">"season"</span>],</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    assault_recent[<span class="st">"time_period"</span>],</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    margins<span class="op">=</span><span class="va">True</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Season × Day/Night Contingency Table:"</span>)</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>display(contingency_table)</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate proportions within each season (row percentages)</span></span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>contingency_pct <span class="op">=</span> pd.crosstab(</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>    assault_recent[<span class="st">"season"</span>],</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>    assault_recent[<span class="st">"time_period"</span>],</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>    normalize<span class="op">=</span><span class="st">"index"</span></span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Percentage of Day/Night within each season:"</span>)</span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>display(contingency_pct.<span class="bu">round</span>(<span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Season × Day/Night Contingency Table:</code></pre>
+</div>
+<div id="season-day-night-contingency-table-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">time_period</th>
+<th data-quarto-table-cell-role="th">Day</th>
+<th data-quarto-table-cell-role="th">Night</th>
+<th data-quarto-table-cell-role="th">All</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Fall</th>
+<td>2285</td>
+<td>2109</td>
+<td>4394</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Spring</th>
+<td>2251</td>
+<td>2142</td>
+<td>4393</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Summer</th>
+<td>2150</td>
+<td>2320</td>
+<td>4470</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Winter</th>
+<td>2039</td>
+<td>1908</td>
+<td>3947</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">All</th>
+<td>8725</td>
+<td>8479</td>
+<td>17204</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Percentage of Day/Night within each season:</code></pre>
+</div>
+<div id="season-day-night-contingency-table-2" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">time_period</th>
+<th data-quarto-table-cell-role="th">Day</th>
+<th data-quarto-table-cell-role="th">Night</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Fall</th>
+<td>52.00</td>
+<td>48.00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Spring</th>
+<td>51.24</td>
+<td>48.76</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Summer</th>
+<td>48.10</td>
+<td>51.90</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Winter</th>
+<td>51.66</td>
+<td>48.34</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="visualize-the-contingency-table" class="level2">
+<h2 class="anchored" data-anchor-id="visualize-the-contingency-table">6.4 Visualize the contingency table</h2>
+<div id="cell-visualize-contingency-table" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for grouped bar chart</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>contingency_plot <span class="op">=</span> pd.crosstab(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    assault_recent[<span class="st">"season"</span>],</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    assault_recent[<span class="st">"time_period"</span>]</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create grouped bar chart</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">5</span>))</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Subplot 1: Counts</span></span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>contingency_plot.plot(kind<span class="op">=</span><span class="st">'bar'</span>, ax<span class="op">=</span>axes[<span class="dv">0</span>], color<span class="op">=</span>[<span class="st">'#f39c12'</span>, <span class="st">'#34495e'</span>], alpha<span class="op">=</span><span class="fl">0.8</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>)</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">"Season"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"Number of Crimes"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Assault Crimes by Season and Time Period (Counts)"</span>, fontsize<span class="op">=</span><span class="dv">13</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend(title<span class="op">=</span><span class="st">"Time Period"</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].grid(axis<span class="op">=</span><span class="st">'y'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].tick_params(axis<span class="op">=</span><span class="st">'x'</span>, rotation<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-19"><a href="#cb53-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Subplot 2: Proportions</span></span>
+<span id="cb53-20"><a href="#cb53-20" aria-hidden="true" tabindex="-1"></a>contingency_pct.plot(kind<span class="op">=</span><span class="st">'bar'</span>, ax<span class="op">=</span>axes[<span class="dv">1</span>], color<span class="op">=</span>[<span class="st">'#f39c12'</span>, <span class="st">'#34495e'</span>], alpha<span class="op">=</span><span class="fl">0.8</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>)</span>
+<span id="cb53-21"><a href="#cb53-21" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"Season"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb53-22"><a href="#cb53-22" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_ylabel(<span class="st">"Percentage (%)"</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb53-23"><a href="#cb53-23" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Day vs Night Distribution by Season (Proportions)"</span>, fontsize<span class="op">=</span><span class="dv">13</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb53-24"><a href="#cb53-24" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].grid(axis<span class="op">=</span><span class="st">'y'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb53-25"><a href="#cb53-25" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].tick_params(axis<span class="op">=</span><span class="st">'x'</span>, rotation<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb53-26"><a href="#cb53-26" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].axhline(<span class="dv">50</span>, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="st">'50% mark'</span>)</span>
+<span id="cb53-27"><a href="#cb53-27" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].legend(title<span class="op">=</span><span class="st">"Time Period"</span>, fontsize<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb53-28"><a href="#cb53-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-29"><a href="#cb53-29" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb53-30"><a href="#cb53-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw1_files/figure-html/visualize-contingency-table-output-1.png" id="visualize-contingency-table" width="1335" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="chi-square-test-for-independence" class="level2">
+<h2 class="anchored" data-anchor-id="chi-square-test-for-independence">6.5 Chi-square test for independence</h2>
+<div id="cell-chi-square-test-of-independence" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform chi-square test of independence</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>contingency_test <span class="op">=</span> pd.crosstab(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    assault_recent[<span class="st">"season"</span>],</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>    assault_recent[<span class="st">"time_period"</span>]</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>chi2_stat, p_value, dof, expected <span class="op">=</span> chi2_contingency(contingency_test)</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Chi-square test for independence (Season × Day/Night):"</span>)</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Null hypothesis: Day/night proportions are independent of season"</span>)</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Chi-square statistic: </span><span class="sc">{</span>chi2_stat<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  P-value: </span><span class="sc">{</span>p_value<span class="sc">:.4e}</span><span class="ss">"</span>)</span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  Degrees of freedom: </span><span class="sc">{</span>dof<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate standardized residuals to identify which cells contribute most</span></span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a>observed <span class="op">=</span> contingency_test.values</span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a>std_residuals <span class="op">=</span> (observed <span class="op">-</span> expected) <span class="op">/</span> np.sqrt(expected)</span>
+<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-19"><a href="#cb54-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dataframe with standardized residuals</span></span>
+<span id="cb54-20"><a href="#cb54-20" aria-hidden="true" tabindex="-1"></a>std_resid_df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb54-21"><a href="#cb54-21" aria-hidden="true" tabindex="-1"></a>    std_residuals,</span>
+<span id="cb54-22"><a href="#cb54-22" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>contingency_test.index,</span>
+<span id="cb54-23"><a href="#cb54-23" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>contingency_test.columns</span>
+<span id="cb54-24"><a href="#cb54-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb54-25"><a href="#cb54-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-26"><a href="#cb54-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Standardized residuals (Season × Day/Night):"</span>)</span>
+<span id="cb54-27"><a href="#cb54-27" aria-hidden="true" tabindex="-1"></a>display(std_resid_df.<span class="bu">round</span>(<span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chi-square test for independence (Season × Day/Night):
+  Null hypothesis: Day/night proportions are independent of season
+  Chi-square statistic: 17.05
+  P-value: 6.8914e-04
+  Degrees of freedom: 3
+
+Standardized residuals (Season × Day/Night):</code></pre>
+</div>
+<div id="chi-square-test-of-independence" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">time_period</th>
+<th data-quarto-table-cell-role="th">Day</th>
+<th data-quarto-table-cell-role="th">Night</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">season</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Fall</th>
+<td>1.20</td>
+<td>-1.22</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Spring</th>
+<td>0.49</td>
+<td>-0.50</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Summer</th>
+<td>-2.46</td>
+<td>2.49</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Winter</th>
+<td>0.83</td>
+<td>-0.85</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><strong>Interpretation:</strong></p>
+<p>I used a <strong>chi-square test of independence</strong> on the <strong>season × day/night</strong> contingency table to test whether the <em>proportion</em> of day vs night crimes is the same across seasons (null hypothesis: independent). Since p &lt; 0.05, we reject the null. So yes, it is evident that the day/night distribution differs by season.</p>
+<p>Then I used standardized residuals (<span class="math inline">\(|residual| &gt; 2\)</span>) to identify which season/time cells differ most from the expected counts under independence.</p>
+<p>Therefore, <strong>Summer</strong> looks most different, with <strong>fewer Day</strong> crimes than expected and <strong>more Night</strong> crimes than expected (standardized residuals: Day = −2.46, Night = +2.49).</p>
+</section>
+</section>
+<section id="step-7.-look-at-neighbourhood-patterns" class="level1">
+<h1>Step 7. Look at neighbourhood patterns</h1>
+</section>
+<section id="step-8.-create-a-map" class="level1">
+<h1>Step 8. Create a map</h1>
 <script type="ojs-module-contents">
 eyJjb250ZW50cyI6W119
 </script>
@@ -1702,7 +2116,6 @@ eyJjb250ZW50cyI6W119
 <script type="vfs-file">
 W10=
 </script>
-</section>
 </section>
 
 </main>

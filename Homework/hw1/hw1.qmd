@@ -29,14 +29,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from scipy.stats import chisquare
+from scipy.stats import chisquare, chi2_contingency
 ```
 
-# Steps
+# Step 1. Read in the data
 
-## 1. Read in the data
-
-### 1.1 Read the data with only the needed columns
+## 1.1 Read the data with only the needed columns
 ```{python}
 #| label: read-data
 
@@ -63,7 +61,7 @@ df = raw.copy()
 df.head()
 ```
 
-### 1.2 Check the data dimensions and memory
+## 1.2 Check the data dimensions and memory
 ```{python}
 #| label: check-data
 
@@ -76,7 +74,7 @@ print("n_cols:", df.shape[1])
 df.memory_usage(deep=True).sum() / 1024**3
 ```
 
-### 1.3 Check the data types
+## 1.3 Check the data types
 ```{python}
 #| label: check-data-types
 
@@ -84,7 +82,7 @@ df.memory_usage(deep=True).sum() / 1024**3
 df.info()
 ```
 
-### 1.4 Check the missing values
+## 1.4 Check the missing values
 
 ```{python}
 #| label: check-missing-values
@@ -99,7 +97,7 @@ missing["pct_missing"] = (missing["n_missing"] / len(df)).round(4)
 display(missing.sort_values("pct_missing", ascending=False))
 ```
 
-### 1.5 Summary
+## 1.5 Summary
 Summary:
 
 - Read the Toronto Police major crime indicators dataset from the downloaded CSV file using `pd.read_csv(..., usecols=key_vars)` to load only the 11 variables required for this homework: `MCI_CATEGORY`, `OFFENCE`, `OCC_YEAR`, `OCC_MONTH`, `OCC_DAY`, `OCC_DOY`, `OCC_HOUR`, `LOCATION_TYPE`, `NEIGHBOURHOOD_158`, `LONG_WGS84`, `LAT_WGS84`. Then make a copy of the dataframe for further analysis/preprocessing.
@@ -107,9 +105,9 @@ Summary:
 - Variable types (from `df.info()`): **`int64`**: `OCC_HOUR`. **`float64`**: `OCC_YEAR`, `OCC_DAY`, `OCC_DOY`, `LONG_WGS84`, `LAT_WGS84` (the date fields are `float64`). **`object`**: `OCC_MONTH`, `LOCATION_TYPE`, `OFFENCE`, `MCI_CATEGORY`, `NEIGHBOURHOOD_158`.
 - Checked the number of missing values for each variable after converting common missing-value identifiers (`""`, `" "`, `"N/A"`, `"NA"`, `"null"`, `"Null"`) to `NaN`. The only missing values among these 11 variables are **151** rows with missing values in `OCC_YEAR`, `OCC_MONTH`, `OCC_DAY`, and `OCC_DOY` (each has 151 missing); the other variables have no missing values.
 
-## 2. Preprocess the data
+# Step 2. Preprocess the data
 
-### 2.1 Identify the most frequent MCI category and the most frequent offence within that category
+## 2.1 Identify the most frequent MCI category and the most frequent offence within that category
 ```{python}
 #| label: select-category-offence
 
@@ -131,7 +129,7 @@ top_offence = off_counts.index[0]
 print("Most frequent OFFENCE within category:", top_offence)
 ```
 
-### 2.2 Build the analytic dataset with the selected category and offence
+## 2.2 Build the analytic dataset with the selected category and offence
 ```{python}
 #| label: build-analytic-dataset
 
@@ -144,7 +142,7 @@ crime = df.loc[
 print("Analytic dataset shape:", crime.shape)
 ```
 
-### 2.3 Rename variables for readability and preprocess the variables (value mapping, type conversion, etc.)
+## 2.3 Rename variables for readability and preprocess the variables (value mapping, type conversion, etc.)
 ```{python}
 #| label: rename-and-convert-types
 
@@ -190,7 +188,7 @@ crime.info()
 display(crime.head())
 ```
 
-### 2.4 Identify and clean impossible data
+## 2.4 Identify and clean impossible data
 ```{python}
 #| label: identify-and-clean-impossible-data
 
@@ -211,7 +209,7 @@ missing["pct_missing"] = (missing["n_missing"] / len(crime)).round(4)
 display(missing.sort_values("pct_missing", ascending=False))
 ```
 
-### 2.5 Summary
+## 2.5 Summary
 
 - I used frequency counts (`value_counts`) on `MCI_CATEGORY` to pick the most common category in the full dataset, then (within that category) used frequency counts on `OFFENCE` to pick the most common offence. Using this rule, the selected category is **Assault** and the selected offence is **Assault**.
 - I filtered the data to only the selected category/offence and kept only the “necessary columns” from Question 1 (`key_vars`). This produced the analytic dataset `crime` with **166,524 rows** and **11 columns**.
@@ -219,9 +217,9 @@ display(missing.sort_values("pct_missing", ascending=False))
 - I converted time and date fields to nullable integers (`Int64`), mapping month names to numbers (1–12). I also converted `category`, `offence`, `location_type`, and `neighbourhood` to pandas `category` type to reflect that they are nominal labels.
 - I identified records with coordinates **(lon, lat) = (0, 0)** and treated these as invalid geographic coordinates (documentation indicates “not specified area/outside Toronto”, our primary question is focused on Toronto only), so I set `lon` and `lat` to `NaN` for those rows. After cleaning, `lon` and `lat` each have **2,864** missing values (\(0.0172 \approx 1.72\%\) of `crime`).
 
-## 3. Check data completeness across years
+# Step 3. Check data completeness across years
 
-### 3.1 Examine which years are present in the data
+## 3.1 Examine which years are present in the data
 
 ```{python}
 #| label: examine-years-present
@@ -236,7 +234,7 @@ print(f"\nYear range: {crime['occurrence_year'].min()} to {crime['occurrence_yea
 print(f"Missing values in occurrence_year: {crime['occurrence_year'].isna().sum()}")
 ```
 
-### 3.2 Cross-reference with documentation to identify valid time range
+## 3.2 Cross-reference with documentation to identify valid time range
 
 ```{python}
 #| label: cross-reference-documentation
@@ -255,7 +253,7 @@ print(f"\nOriginal dataset: {len(crime):,} rows")
 print(f"\nAfter filtering to valid range ({valid_start_year}-{valid_end_year}): {len(assault_valid):,} rows")
 ```
 
-### 3.3 Examine completeness within valid time range according to the data documentation
+## 3.3 Examine completeness within valid time range according to the data documentation
 
 ```{python}
 #| label: examine-completeness-valid-range
@@ -277,7 +275,7 @@ print("Year completeness summary:")
 display(year_completeness)
 ```
 
-### 3.4 Subset to years with complete data
+## 3.4 Subset to years with complete data
 
 ```{python}
 #| label: subset-complete-years
@@ -293,15 +291,15 @@ print(f"\nValid range dataset: {len(assault_valid):,} rows")
 print(f"After subsetting to complete years: {len(assault_complete):,} rows")
 ```
 
-### 3.5 Summary
+## 3.5 Summary
 - I examined the years present in the data and found that the data covers from minimum year 2000 to maximum year 2025 and there are no missing years in this range.
 - I cross-referenced the data with the data documentation and found that the valid time range for **Assault** crimes data is from 2014 to 2025.09.30.
 - I examined the completeness within the valid time range according to the data documentation and found that the data is complete for the years 2014 to 2024 since good coverage of the months and days of the year is present for each year in this range. 2025 is incomplete since only through September 30th is present.
 - Therefore, I subsetted the dataset to the data lies within the range of 2014 to 2024 only.
 
-## 4. Examine annual change in crime
+# Step 4. Examine annual change in crime
 
-### 4.1 Aggregate data to annual counts
+## 4.1 Aggregate data to annual counts
 
 ```{python}
 #| label: assault-crime-annual-counts
@@ -317,7 +315,7 @@ print("Annual crime counts:")
 display(annual_counts)
 ```
 
-### 4.2 Plot counts over time
+## 4.2 Plot counts over time
 
 ```{python}
 #| label: plot-assault-crime-annual-trend
@@ -336,7 +334,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-### 4.3 Fit Poisson regression to quantify annual trend
+## 4.3 Fit Poisson regression to quantify annual trend
 
 ```{python}
 #| label: poisson-regression
@@ -376,7 +374,7 @@ print(f"Percent change per year: {pct_change:+.2f}%")
 
 **Interpretation:** For each 1-year increase from 2014 to 2024, the expected annual assault crime count increases by approximately 3.19%, suggesting a statistically significant upward trend in assault crimes over this period.
 
-### 4.4 Model fit and assumptions
+## 4.4 Model fit and assumptions
 
 ```{python}
 #| label: poisson-model-fit-and-assumptions
@@ -430,13 +428,13 @@ else:
 
 The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates **overdispersion**, violating the Poisson assumption (variance = mean) and making standard errors unreliable.
 
-### 4.5 Summary
+## 4.5 Summary
 
 Yes, there is statistically significant evidence of an upward trend in assault crimes across Toronto from 2014 to 2024, with the Poisson regression estimating approximately a **3.19% annual increase** in expected crime counts (rate ratio ≈ 1.03). However, the model exhibits severe overdispersion, suggesting that while the overall increasing trend is present, the simple Poisson model may underestimate the uncertainty in this estimate， which means the model results may not be reliable.
 
-## 5. Examine seasonality in crime
+# Step 5. Examine seasonality in crime
 
-### 5.1 Subset to the most recent complete year
+## 5.1 Subset to the most recent complete year
 
 ```{python}
 #| label: subset-to-most-recent-complete-year
@@ -450,7 +448,7 @@ assault_recent = assault_complete[assault_complete["occurrence_year"] == most_re
 print(f"Records in {most_recent_year}: {len(assault_recent):,}")
 ```
 
-### 5.2 Create season variable
+## 5.2 Create season variable
 
 ```{python}
 #| label: create-season-variable
@@ -474,7 +472,7 @@ print("Season distribution:")
 print(assault_recent["season"].value_counts().sort_index())
 ```
 
-### 5.3 Summary statistics of assault crime counts by season
+## 5.3 Summary statistics of assault crime counts by season
 
 ```{python}
 #| label: assault-season-summary
@@ -489,7 +487,7 @@ print(f"Summary statistics by season ({most_recent_year}):")
 display(season_summary)
 ```
 
-### 5.4 Plot assault crime counts by season
+## 5.4 Plot assault crime counts by season
 
 ```{python}
 #| label: plot-assault-crime-season-counts
@@ -514,7 +512,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-### 5.5 Simple Chi-square test for seasonal differences
+## 5.5 Simple Chi-square test for seasonal differences
 
 ```{python}
 #| label: chi-square-test
@@ -543,16 +541,152 @@ print("\nSeason-specific deviations from expected:")
 display(season_summary[["season", "count", "expected", "residual", "standardized_residual"]])
 ```
 
-**Interpretation:** The chi-square test shows strong evidence against the null hypothesis of uniform distribution (χ² = 39.76, p < 0.001), indicating significant seasonal variation in assault crimes in 2024. Note, with standardized residuals exceeding the threshold of $|2|$, it is evident that **Summer** has notably **higher** counts than expected, while **Winter** has **lower** counts than expected.
+**Interpretation:** The chi-square test shows strong evidence against the null hypothesis of uniform distribution (χ² = 39.76, p < 0.05), indicating significant seasonal variation in assault crimes in 2024. Note, with standardized residuals exceeding the threshold of $|2|$, it is evident that **Summer** has notably **higher** counts than expected, while **Winter** has **lower** counts than expected.
 
-## 6. Examine seasonality, day vs night
+# Step 6. Examine seasonality, day vs night
+
+## 6.1 Summarize crime counts by hour
+
+```{python}
+#| label: assault-crime-counts-by-hour
+
+# Count crimes by hour
+hour_counts = assault_recent["hour"].value_counts().sort_index()
+print("Crime counts by hour:")
+display(hour_counts.to_frame("count"))
+```
+
+## 6.2 Create day/night indicator
+
+**Day/Night Definition:**
+- **Day**: 6:00 AM to 5:59 PM (hours 6-17)
+- **Night**: 6:00 PM to 5:59 AM (hours 18-23, 0-5)
+
+```{python}
+#| label: create-day-night-indicator-variable
+
+def get_time_period(hour):
+    if 6 <= hour <= 17:
+        return "Day"
+    else:
+        return "Night"
+
+assault_recent["time_period"] = assault_recent["hour"].apply(get_time_period)
+
+# Check distribution
+print("Day/Night distribution:")
+print(assault_recent["time_period"].value_counts())
+```
+
+## 6.3 Create season × day/night contingency table
+
+```{python}
+#| label: season-day-night-contingency-table
+
+# Create contingency table
+contingency_table = pd.crosstab(
+    assault_recent["season"],
+    assault_recent["time_period"],
+    margins=True
+)
+
+print("Season × Day/Night Contingency Table:")
+display(contingency_table)
+
+# Calculate proportions within each season (row percentages)
+contingency_pct = pd.crosstab(
+    assault_recent["season"],
+    assault_recent["time_period"],
+    normalize="index"
+) * 100
+
+print("\nPercentage of Day/Night within each season:")
+display(contingency_pct.round(2))
+```
+
+## 6.4 Visualize the contingency table
+
+```{python}
+#| label: visualize-contingency-table
+
+# Prepare data for grouped bar chart
+contingency_plot = pd.crosstab(
+    assault_recent["season"],
+    assault_recent["time_period"]
+)
+
+# Create grouped bar chart
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Subplot 1: Counts
+contingency_plot.plot(kind='bar', ax=axes[0], color=['#f39c12', '#34495e'], alpha=0.8, edgecolor='black')
+axes[0].set_xlabel("Season", fontsize=12)
+axes[0].set_ylabel("Number of Crimes", fontsize=12)
+axes[0].set_title("Assault Crimes by Season and Time Period (Counts)", fontsize=13, fontweight='bold')
+axes[0].legend(title="Time Period", fontsize=10)
+axes[0].grid(axis='y', alpha=0.3)
+axes[0].tick_params(axis='x', rotation=45)
+
+# Subplot 2: Proportions
+contingency_pct.plot(kind='bar', ax=axes[1], color=['#f39c12', '#34495e'], alpha=0.8, edgecolor='black')
+axes[1].set_xlabel("Season", fontsize=12)
+axes[1].set_ylabel("Percentage (%)", fontsize=12)
+axes[1].set_title("Day vs Night Distribution by Season (Proportions)", fontsize=13, fontweight='bold')
+axes[1].grid(axis='y', alpha=0.3)
+axes[1].tick_params(axis='x', rotation=45)
+axes[1].axhline(50, color='red', linestyle='--', linewidth=1.5, alpha=0.7, label='50% mark')
+axes[1].legend(title="Time Period", fontsize=10)
+
+plt.tight_layout()
+plt.show()
+```
+
+## 6.5 Chi-square test for independence
+
+```{python}
+#| label: chi-square-test-of-independence
+
+# Perform chi-square test of independence
+contingency_test = pd.crosstab(
+    assault_recent["season"],
+    assault_recent["time_period"]
+)
+
+chi2_stat, p_value, dof, expected = chi2_contingency(contingency_test)
+
+print("Chi-square test for independence (Season × Day/Night):")
+print(f"  Null hypothesis: Day/night proportions are independent of season")
+print(f"  Chi-square statistic: {chi2_stat:.2f}")
+print(f"  P-value: {p_value:.4e}")
+print(f"  Degrees of freedom: {dof}")
+
+# Calculate standardized residuals to identify which cells contribute most
+observed = contingency_test.values
+std_residuals = (observed - expected) / np.sqrt(expected)
+
+# Create dataframe with standardized residuals
+std_resid_df = pd.DataFrame(
+    std_residuals,
+    index=contingency_test.index,
+    columns=contingency_test.columns
+)
+
+print("\nStandardized residuals (Season × Day/Night):")
+display(std_resid_df.round(2))
+```
+
+**Interpretation:** 
+
+I used a **chi-square test of independence** on the **season × day/night** contingency table to test whether the *proportion* of day vs night crimes is the same across seasons (null hypothesis: independent). Since p < 0.05, we reject the null. So yes, it is evident that the day/night distribution differs by season.
+
+Then I used standardized residuals ($|residual| > 2$) to identify which season/time cells differ most from the expected counts under independence.
+
+Therefore, **Summer** looks most different, with **fewer Day** crimes than expected and **more Night** crimes than expected (standardized residuals: Day = −2.46, Night = +2.49).
+
+# Step 7. Look at neighbourhood patterns
 ```{python}
 ```
 
-## 7. Look at neighbourhood patterns
-```{python}
-```
-
-## 8. Create a map
+# Step 8. Create a map
 ```{python}
 ```
