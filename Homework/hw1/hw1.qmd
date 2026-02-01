@@ -30,6 +30,8 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from scipy.stats import chisquare, chi2_contingency
+import folium
+from folium.plugins import MarkerCluster
 ```
 
 # Step 1. Read in the data
@@ -680,9 +682,255 @@ Then I used standardized residuals ($|residual| > 2$) to identify which season/t
 Therefore, **Summer** looks most different, with **fewer Day** crimes than expected and **more Night** crimes than expected (standardized residuals: Day = −2.46, Night = +2.49).
 
 # Step 7. Look at neighbourhood patterns
+
+## 7.1 Summarize crime counts by neighbourhood
+
 ```{python}
+#| label: neighbourhood-stats-summary
+
+# Total count by neighbourhood
+neighbourhood_total = assault_recent.groupby("neighbourhood", observed=True).size().reset_index(name="total_count")
+
+# Day/Night counts by neighbourhood
+neighbourhood_day_night = assault_recent.groupby(["neighbourhood", "time_period"], observed=True).size().unstack(fill_value=0)
+neighbourhood_day_night = neighbourhood_day_night.reset_index()
+neighbourhood_day_night.columns = ["neighbourhood", "day_count", "night_count"]
+
+# Merge and calculate night proportion
+neighbourhood_summary = neighbourhood_total.merge(neighbourhood_day_night, on="neighbourhood")
+neighbourhood_summary["night_proportion"] = (
+    neighbourhood_summary["night_count"] / neighbourhood_summary["total_count"]
+).round(4)
+
+print(f"Total neighbourhoods: {len(neighbourhood_summary)}")
+print(f"\nTop 10 neighbourhoods by total crime count:")
+display(neighbourhood_summary.nlargest(10, "total_count").reset_index(drop=True))
 ```
 
+**Interpretation:** 
+
+In 2024, the highest assault counts are concentrated in a small set of neighbourhoods, with many of the top-10 located in the **downtown** (e.g., Downtown Yonge East, Church–Wellesley, Yonge–Bay Corridor, Moss Park, Kensington–Chinatown), alongside **Mimico–Queensway(160)** (Etobicoke/lakeshore) and **West Hill(136)** (Scarborough). Night-time patterns differ across these areas: **Mimico–Queensway(160)** assaults crimes mostly occur during the daytime (night proportion ≈ 0.17), while several downtown neighbourhoods have roughly half assaults occurring at night (night proportion ≈ 0.45–0.65).
+
 # Step 8. Create a map
+
+## 8.1 Prepare data for mapping
+
 ```{python}
+#| label: prepare-map-data
+
+# Use 2024 data with valid coordinates
+assault_map = assault_recent.dropna(subset=["lon", "lat"]).copy()
+
+print(f"Records with valid coordinates for mapping: {len(assault_map):,}")
+```
+
+## 8.2 Create interactive map with all crime points
+
+**Note:**
+- If this map is not properly displayed, please grade on the next map.
+- This map is asking Claude Sonnet 4.5 for assitance to generate because my skills are limited to include all the data points when Quarto is rendering in a folium map with individual crime points. Therefore, I asked AI for help to save the map to a external HTML file and embed it in the Quarto document.
+
+```{python}
+#| label: create-all-crime-points-map-individual-points
+#| output: false
+
+# Set up the map centered on Toronto
+toronto_center = [assault_map["lat"].mean(), assault_map["lon"].mean()]
+
+m = folium.Map(
+    location=toronto_center,
+    zoom_start=11,
+    tiles="CartoDB positron",
+    control_scale=True
+)
+
+# Define season colors
+season_colors = {
+    "Winter": "#3498db",
+    "Spring": "#2ecc71", 
+    "Summer": "#e74c3c",
+    "Fall": "#f39c12"
+}
+
+# Add ALL crime points using MarkerCluster for efficient rendering
+print(f"Adding all {len(assault_map):,} crime locations to map with clustering...")
+
+marker_cluster = MarkerCluster(
+    name="Crime Locations",
+    overlay=True,
+    control=True,
+    icon_create_function=None
+)
+
+for idx, row in assault_map.iterrows():
+    color = season_colors.get(row["season"], "gray")
+    
+    # Minimal popup for performance
+    popup_html = f"""
+    <b>{row['neighbourhood']}</b><br>
+    {int(row['occurrence_year'])}-{int(row['occurrence_month']):02d}-{int(row['occurrence_day']):02d} {int(row['hour']):02d}:00<br>
+    <span style="color: {color};">●</span> {row['season']} ({row['time_period']})
+    """
+    
+    folium.CircleMarker(
+        location=[row["lat"], row["lon"]],
+        radius=4,
+        popup=folium.Popup(popup_html, max_width=200),
+        tooltip=f"{row['neighbourhood']}",
+        color=color,
+        fill=True,
+        fill_color=color,
+        fill_opacity=0.6,
+        opacity=0.8,
+        weight=1.5
+    ).add_to(marker_cluster)
+
+marker_cluster.add_to(m)
+
+# Add title
+title_html = """
+<div style="position: fixed; 
+            top: 10px; left: 50px; 
+            background-color: white; border:2px solid #2c3e50; z-index:9999; 
+            padding: 10px 15px; border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+    <h3 style="margin: 0; font-size: 18px; color: #2c3e50; font-family: Arial;">
+        Assault Crime Locations in Toronto (2024)
+    </h3>
+</div>
+"""
+m.get_root().html.add_child(folium.Element(title_html))
+
+# Add legend for seasons with note
+legend_html = """
+<div style="position: fixed; 
+            bottom: 50px; right: 50px; width: 180px; 
+            background-color: white; border:2px solid #95a5a6; z-index:9999; 
+            font-size:13px; padding: 12px; border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);">
+    <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 14px; color: #2c3e50;">Season</p>
+    <p style="margin: 5px 0;"><span style="color: #e74c3c; font-size: 18px;">●</span> Summer</p>
+    <p style="margin: 5px 0;"><span style="color: #f39c12; font-size: 18px;">●</span> Fall</p>
+    <p style="margin: 5px 0;"><span style="color: #2ecc71; font-size: 18px;">●</span> Spring</p>
+    <p style="margin: 5px 0;"><span style="color: #3498db; font-size: 18px;">●</span> Winter</p>
+    <hr style="margin: 10px 0; border: 1px solid #bdc3c7;">
+    <p style="margin: 0; font-size: 11px; color: #7f8c8d; line-height: 1.4;">
+        <i>Note: When zoomed out, cluster colors reflect the dominant season among grouped points.</i>
+    </p>
+</div>
+"""
+m.get_root().html.add_child(folium.Element(legend_html))
+
+# Save to external HTML file to bypass Quarto's rendering limitations
+map_file = "crime_map_2024.html"
+m.save(map_file)
+print(f"Map saved to {map_file} with {len(assault_map):,} points")
+print(f"Map will be displayed below via iframe")
+```
+
+<iframe src="crime_map_2024.html" width="100%" height="600px" style="border:1px solid #ccc; border-radius:8px;"></iframe>
+
+## 8.3 Neighbourhood aggregation map
+
+```{python}
+#| label: create-all-crime-points-map-neighbourhood-aggregation
+
+# Aggregate by neighbourhood - count crimes and calculate mean location
+neighbourhood_geo = assault_map.groupby("neighbourhood", observed=True).agg(
+    lat=("lat", "mean"),
+    lon=("lon", "mean"),
+    count=("neighbourhood", "size"),
+    day_count=("time_period", lambda x: (x == "Day").sum()),
+    night_count=("time_period", lambda x: (x == "Night").sum())
+).reset_index().sort_values("count", ascending=False)
+
+neighbourhood_geo["night_proportion"] = (
+    neighbourhood_geo["night_count"] / neighbourhood_geo["count"]
+).round(3)
+
+print(f"Total neighbourhoods: {len(neighbourhood_geo)}")
+
+# Set up the map centered on Toronto
+toronto_center = [neighbourhood_geo["lat"].mean(), neighbourhood_geo["lon"].mean()]
+
+m2 = folium.Map(
+    location=toronto_center,
+    zoom_start=11,
+    tiles="CartoDB positron",
+    control_scale=True
+)
+
+# Add title
+title_html = """
+<div style="position: fixed; 
+            top: 10px; left: 50px; 
+            background-color: white; border:2px solid #2c3e50; z-index:9999; 
+            padding: 10px 15px; border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+    <h3 style="margin: 0; font-size: 18px; color: #2c3e50; font-family: Arial;">
+        Assault Crimes by Neighbourhood (2024)
+    </h3>
+</div>
+"""
+m2.get_root().html.add_child(folium.Element(title_html))
+
+# Define color scale based on count
+max_count = neighbourhood_geo["count"].max()
+min_count = neighbourhood_geo["count"].min()
+
+def get_color_and_radius(count):
+    normalized = (count - min_count) / (max_count - min_count) if max_count > min_count else 0.5
+    if normalized < 0.33:
+        color = "#3498db"  # Blue - low
+    elif normalized < 0.67:
+        color = "#f39c12"  # Orange - medium
+    else:
+        color = "#e74c3c"  # Red - high
+    radius = 7 + 18 * normalized
+    return color, radius
+
+# Add neighbourhood markers
+for _, row in neighbourhood_geo.iterrows():
+    color, radius = get_color_and_radius(row["count"])
+    
+    popup_html = f"""
+    <div style="font-family: Arial; font-size: 13px; line-height: 1.6;">
+        <b style="font-size: 16px; color: #2c3e50;">{row['neighbourhood']}</b>
+        <hr style="margin: 6px 0; border: 1px solid #bdc3c7;">
+        <b>Total Crimes:</b> {int(row['count'])}<br>
+        <b>Day:</b> {int(row['day_count'])} ({100*(1-row['night_proportion']):.1f}%)<br>
+        <b>Night:</b> {int(row['night_count'])} ({100*row['night_proportion']:.1f}%)
+    </div>
+    """
+    
+    folium.CircleMarker(
+        location=[row["lat"], row["lon"]],
+        radius=radius,
+        popup=folium.Popup(popup_html, max_width=280),
+        tooltip=f"{row['neighbourhood']}: {int(row['count'])} crimes",
+        color=color,
+        fill=True,
+        fill_color=color,
+        fill_opacity=0.7,
+        opacity=0.9,
+        weight=2
+    ).add_to(m2)
+
+# Add legend
+legend_html = """
+<div style="position: fixed; 
+            bottom: 50px; right: 50px; width: 160px; 
+            background-color: white; border:2px solid #95a5a6; z-index:9999; 
+            font-size:13px; padding: 12px; border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);">
+    <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 14px; color: #2c3e50;">Crime Count</p>
+    <p style="margin: 5px 0;"><span style="color: #e74c3c; font-size: 18px;">●</span> High</p>
+    <p style="margin: 5px 0;"><span style="color: #f39c12; font-size: 18px;">●</span> Medium</p>
+    <p style="margin: 5px 0;"><span style="color: #3498db; font-size: 18px;">●</span> Low</p>
+    <p style="margin: 8px 0 0 0; font-size: 11px; color: #7f8c8d; font-style: italic;">Marker size ∝ count</p>
+</div>
+"""
+m2.get_root().html.add_child(folium.Element(legend_html))
+
+m2
 ```
