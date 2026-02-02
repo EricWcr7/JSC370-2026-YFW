@@ -1,6 +1,7 @@
 ---
 title: "Homework 1 — EDA and Visualization"
 subtitle: "JSC370 (Winter 2026)"
+author: "Yi Fan (Eric) Wang"
 date: "February 1, 2026"
 format:
   live-html:
@@ -127,7 +128,7 @@ off_counts = (
 display(off_counts.head(10))
 
 top_offence = off_counts.index[0]
-print("Most frequent OFFENCE within category:", top_offence)
+print(f"Most frequent OFFENCE within MCI_CATEGORY {top_category}:", top_offence)
 ```
 
 ## 2.2 Build the analytic dataset with the selected category and offence
@@ -198,25 +199,60 @@ display(crime.head())
 
 # Check for (0,0) coordinates
 zero_coords = (crime["lon"] == 0) & (crime["lat"] == 0)
+print(f"\nNumber of records with (0,0) coordinates: {zero_coords.sum()}")
 print("\nSample of (0,0) coordinate records:")
-display(crime.loc[zero_coords, ["neighbourhood", "lon", "lat"]].head(10))
+display(crime.loc[zero_coords, ["neighbourhood", "lat", "lon"]].head(10))
 
-# Set (0,0) coordinates to NaN
-crime.loc[zero_coords, ["lon", "lat"]] = np.nan
+# Remove rows with (0,0) coordinates
+crime = crime.loc[~zero_coords].copy()
+print(f"\nRecords after removing (0,0) coordinates: {len(crime):,}")
 
 # Missing data summary after coordinate cleaning
 missing = crime.isna().sum().to_frame("n_missing")
 missing["pct_missing"] = (missing["n_missing"] / len(crime)).round(4)
 display(missing.sort_values("pct_missing", ascending=False))
 ```
+```{python}
+#| label: identify-remaining-nsa-records
 
+# Clean impossible data
+# - Identify remaining NSA records
+nsa_mask = crime["neighbourhood"].eq("NSA")
+print(f"Number of records with neighbourhood == 'NSA': {int(nsa_mask.sum()):,}")
+
+print("\nSample of NSA records:")
+display(crime.loc[nsa_mask, ["neighbourhood", "lat", "lon"]].head(10))
+
+# Remove NSA records
+n_before = len(crime)
+crime = crime.loc[~nsa_mask].copy()
+print(f"\nRemoved {n_before - len(crime):,} NSA records. Remaining records: {len(crime):,}")
+
+# Sanity check: are remaining coordinates within the GTA? (approximate bounding box)
+gta_lat_min, gta_lat_max = 43.20, 44.30
+gta_lon_min, gta_lon_max = -80.20, -78.60
+
+missing_coord_mask = crime[["lon", "lat"]].isna().any(axis=1)
+in_gta_mask = (
+    ~missing_coord_mask
+    & crime["lat"].between(gta_lat_min, gta_lat_max)
+    & crime["lon"].between(gta_lon_min, gta_lon_max)
+)
+out_of_gta_mask = (~missing_coord_mask) & (~in_gta_mask)
+
+print(f"\nMissing coordinates after cleaning: {int(missing_coord_mask.sum()):,}")
+print(f"Coordinates outside GTA bounding box: {int(out_of_gta_mask.sum()):,}")
+```
 ## 2.5 Summary
 
 - I used frequency counts (`value_counts`) on `MCI_CATEGORY` to pick the most common category in the full dataset, then (within that category) used frequency counts on `OFFENCE` to pick the most common offence. Using this rule, the selected category is **Assault** and the selected offence is **Assault**.
-- I filtered the data to only the selected category/offence and kept only the “necessary columns” from Question 1 (`key_vars`). This produced the analytic dataset `crime` with **166,524 rows** and **11 columns**.
+- I filtered the data to only the selected category/offence and kept only the “necessary columns” from Question 1 (`key_vars`).
 - I renamed columns to make them easier to interpret and use later. This keeps the same information but with clearer names for analysis and plotting.
 - I converted time and date fields to nullable integers (`Int64`), mapping month names to numbers (1–12). I also converted `category`, `offence`, `location_type`, and `neighbourhood` to pandas `category` type to reflect that they are nominal labels.
-- I identified records with coordinates **(lon, lat) = (0, 0)** and treated these as invalid geographic coordinates (documentation indicates “not specified area/outside Toronto”, our primary question is focused on Toronto only), so I set `lon` and `lat` to `NaN` for those rows. After cleaning, `lon` and `lat` each have **2,864** missing values (\(0.0172 \approx 1.72\%\) of `crime`).
+- I identified records with coordinates **(lon, lat) = (0, 0)** and treated these as invalid geographic coordinates (documentation indicates “not specified area/outside Toronto”, our primary question is focused on Toronto only). Then I removed these rows from the dataset.
+- I identified records with neighbourhood **NSA** that is non (0,0) coordinates and treated these as invalid geographic coordinates (documentation indicates “not specified area/outside Toronto”, our primary question is focused on Toronto only). There were 170 such rows in total. Then I removed these rows from the dataset.
+- I performed a sanity check to ensure that the remaining coordinates are within the GTA bounding box (approximate bounding box). There were no coordinates outside the GTA bounding box.
+- The resulting analytic dataset has **163,490 rows** and **11 columns**.
 
 # Step 3. Check data completeness across years
 
@@ -294,7 +330,7 @@ print(f"After subsetting to complete years: {len(assault_complete):,} rows")
 
 ## 3.5 Summary
 - I examined the years present in the data and found that the data covers from minimum year 2000 to maximum year 2025 and there are no missing years in this range.
-- I cross-referenced the data with the data documentation and found that the valid time range for **Assault** crimes data is from 2014 to 2025.09.30.
+- I cross-referenced the data with the data documentation Appendix A: Open Data Summary Table, and found that the valid time range for **Assault** crimes data is from 2014 to 2025.09.30.
 - I examined the completeness within the valid time range according to the data documentation and found that the data is complete for the years 2014 to 2024 since good coverage of the months and days of the year is present for each year in this range. 2025 is incomplete since only through September 30th is present.
 - Therefore, I subsetted the dataset to the data lies within the range of 2014 to 2024 only.
 
@@ -373,7 +409,7 @@ pct_change = (rate_ratio - 1) * 100
 print(f"Percent change per year: {pct_change:+.2f}%")
 ```
 
-**Interpretation:** For each 1-year increase from 2014 to 2024, the expected annual assault crime count increases by approximately 3.19%, suggesting a statistically significant upward trend in assault crimes over this period.
+**Interpretation:** For each 1-year increase from 2014 to 2024, the expected annual assault crime count increases by approximately 3.21%, suggesting a statistically significant (p-value < 0.05) upward trend in assault crimes over this period.
 
 ## 4.4 Model fit and assumptions
 
@@ -423,11 +459,11 @@ print(f"\nDispersion parameter (Pearson χ²/df): {dispersion:.4f}")
 
 **Comments on Model Fit and Assumptions:**
 
-The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈67.5) indicates **overdispersion** as it is significantly greater than the threshold 1.5, violating the Poisson assumption (variance = mean) and making standard errors unreliable.
+The Poisson model captures the overall upward trend, though the residual plot shows systematic deviations (notably around 2021). The dispersion parameter (≈69.77) indicates **overdispersion** as it is significantly greater than the threshold 1.5, violating the Poisson assumption (variance = mean) and making standard errors unreliable.
 
 ## 4.5 Summary
 
-Yes, there is statistically significant evidence of an upward trend in assault crimes across Toronto from 2014 to 2024, with the Poisson regression estimating approximately a **3.19% annual increase** in expected crime counts (rate ratio ≈ 1.03). However, the model exhibits severe overdispersion, suggesting that while the overall increasing trend is present, the simple Poisson model may underestimate the uncertainty in this estimate， which means the model results may not be reliable.
+Yes, there is statistically significant evidence of an upward trend in assault crimes across Toronto from 2014 to 2024, with the Poisson regression estimating approximately a **3.21% annual increase** in expected crime counts. However, the model exhibits severe overdispersion, suggesting that while the overall increasing trend is present, the simple Poisson model may underestimate the uncertainty in this estimate， which means the model results may not be reliable.
 
 # Step 5. Examine seasonality in crime
 
@@ -538,7 +574,7 @@ print("\nSeason-specific deviations from expected:")
 display(season_summary[["season", "count", "expected", "residual", "standardized_residual"]])
 ```
 
-**Interpretation:** The chi-square test shows strong evidence against the null hypothesis of uniform distribution (χ² = 39.76, p < 0.05), indicating significant seasonal variation in assault crimes in 2024. Note, with standardized residuals exceeding the threshold of $|2|$, it is evident that **Summer** has notably **higher** counts than expected, while **Winter** has **lower** counts than expected.
+**Interpretation:** The chi-square test shows strong evidence against the null hypothesis of uniform distribution (χ² = 38.26, p < 0.05), indicating significant seasonal variation in assault crimes in 2024. Note, with standardized residuals exceeding the threshold of $|2|$, it is evident that **Summer** has notably **higher** counts than expected, while **Winter** has **lower** counts than expected.
 
 # Step 6. Examine seasonality, day vs night
 
@@ -678,7 +714,7 @@ I used a **chi-square test of independence** on the **season × day/night** cont
 
 Then I used standardized residuals ($|residual| > 2$) to identify which season/time cells differ most from the expected counts under independence.
 
-Therefore, **Summer** looks most different, with **fewer Day** crimes than expected and **more Night** crimes than expected (standardized residuals: Day = −2.46, Night = +2.49).
+Therefore, **Summer** looks most different, with **fewer Day** crimes than expected and **more Night** crimes than expected (standardized residuals: Day = −2.47, Night = +2.51).
 
 # Step 7. Look at neighbourhood patterns
 
@@ -718,7 +754,7 @@ In 2024, the highest assault counts are concentrated in a small set of neighbour
 #| label: prepare-map-data
 
 # Use 2024 data with valid coordinates
-assault_map = assault_recent.dropna(subset=["lon", "lat"]).copy()
+assault_map = assault_recent.copy()
 
 print(f"Records with valid coordinates for mapping: {len(assault_map):,}")
 ```
@@ -827,3 +863,13 @@ m2.get_root().html.add_child(folium.Element(legend_html))
 
 m2
 ```
+
+## 8.3 Map Summary
+
+This neighbourhood-aggregated map shows strong spatial clustering of assaults, with the highest counts concentrated in downtown Toronto (larger orange markers).  
+Most neighbourhoods farther from the core have smaller, lower-count markers, indicating a more diffuse distribution outside the centre.  
+
+Marker **size and color** are proportional to the total number of assaults in each neighbourhood (marker location is the neighbourhood crime record locations' mean in terms of latitude/longitude), so the map emphasizes area-level concentration rather than exact incident locations.
+
+
+
