@@ -318,8 +318,10 @@ Do some summary statistics on the scraped Oscar data.
 display(osc.describe())
 print(f"Number of films: {osc.shape[0]}")
 print(f"Range of years: {osc['Year'].min()} to {osc['Year'].max()}")
-print(f"Film with most Awards: {osc['Awards'].max()}")
-print(f"Average number of nominations: {osc['Nominations'].mean()}")
+max_awards = osc['Awards'].max()
+top_award_films = osc.loc[osc['Awards'].eq(max_awards), 'Film'].tolist()
+print(f"Film(s) with most Awards ({max_awards}): {top_award_films}")
+print(f"Average number of nominations: {osc['Nominations'].mean():.2f}")
 ```
 
 ---
@@ -398,8 +400,11 @@ print(f"Average revenue for Oscar winners: {merged[merged['won_oscar'] == 1]['re
 print(f"Average budget for non-Oscar winners: {merged[merged['won_oscar'] == 0]['budget'].mean()}")
 print(f"Average revenue for non-Oscar winners: {merged[merged['won_oscar'] == 0]['revenue'].mean()}")
 # 3. Which Oscar-winning movie had the highest revenue? Highest budget?
-print(f"Movie with highest revenue: {merged[merged['won_oscar'] == 1]['revenue'].max()}")
-print(f"Movie with highest budget: {merged[merged['won_oscar'] == 1]['budget'].max()}")
+winners = merged.loc[merged['won_oscar'].eq(1)].copy()
+top_rev = winners.loc[winners['revenue'].idxmax(), ['title', 'revenue']]
+top_budget = winners.loc[winners['budget'].idxmax(), ['title', 'budget']]
+print(f"Top-revenue Oscar winner: {top_rev['title']} (revenue={top_rev['revenue']})")
+print(f"Top-budget Oscar winner: {top_budget['title']} (budget={top_budget['budget']})")
 ```
 
 ---
@@ -451,7 +456,7 @@ TMDB provides budget data that Wikipedia doesn't have, so we can explore the bud
 )
 ```
 
-Summary: The scatter plot shows a strong positive relationship between budget and revenue, with most movies falling above the break-even line (indicating profitability). Oscar winners (yellow points) are distributed throughout the plot but appear more frequently among higher-budget, higher-revenue films. The wide scatter around the trend suggests that while bigger budgets generally lead to higher revenue, the success of a movie is highly variable and not only determined by production budget.
+Summary: The scatter plot shows a strong positive relationship between budget and revenue, with most movies falling above the break-even line. Oscar winners are distributed throughout the plot but appear more frequently among higher budget, higher revenue films. The wide scatter around the trend suggests that while bigger budgets lead to higher revenue, the success of a movie is highly variable and not only determined by production budget.
 
 
 ### 4c. Return on investment
