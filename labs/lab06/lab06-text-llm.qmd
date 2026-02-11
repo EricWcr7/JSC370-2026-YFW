@@ -448,7 +448,7 @@ specialty_sentence_stats = (
 
 Summarize: Do you notice any patterns sentence length across different medical specialties?
 
-Average sentence length is similar across most medical specialties. Most medians are around 15-225 words. A few medical specialties show more variabilitiy with some extremely long sentences as outliers, likely reflecting complex medical narratives or detailed clinical notes instead of simple clinical notes.
+Average sentence length is similar across most medical specialties. Most medians are around 15-25 words. A few medical specialties show more variabilitiy with some extremely long sentences as outliers, likely reflecting complex medical narratives or detailed clinical notes instead of simple clinical notes.
 
 ---
 
