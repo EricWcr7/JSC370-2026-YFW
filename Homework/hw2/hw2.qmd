@@ -302,14 +302,11 @@ Reshape the alcohol data from wide to long format, creating a “Year” column 
 ### 1d.
 Filter the life expectancy data to include only the years that match the alcohol data (1996, 2016, 2019).
 
-### 1e.
-Merge these datasets by country name and year. Note: You may need to standardize country names between datasets (e.g., “United States” vs “United States of America”).
+### Merge these datasets by country name and year. Note: You may need to standardize country names between datasets (e.g., “United States” vs “United States of America”).
 
-### 1f.
-Conduct basic EDA on the merged dataset: check dimensions, missing values, summary statistics of key variables to look for outliers. Which countries have the lowest and highest life expectancies and alcohol consumption?
+### Conduct basic EDA on the merged dataset: check dimensions, missing values, summary statistics of key variables to look for outliers. Which countries have the lowest and highest life expectancies and alcohol consumption?
 
-### 1g.
-Write a paragraph describing your scraping and cleaning steps. Include a written summary of the variables and the number of observations before and after merging. Document any countries that didn’t match and how you handled them. Also summarize your findings from the basic EDA.
+### Write a paragraph describing your scraping and cleaning steps. Include a written summary of the variables and the number of observations before and after merging. Document any countries that didn’t match and how you handled them. Also summarize your findings from the basic EDA.
 
 ## 2. (4 points) Create a summary table of the merged dataset showing the mean and sd of life expectancy, alcohol consumption, population, and GDP per capita by year. Briefly summarize.
 
