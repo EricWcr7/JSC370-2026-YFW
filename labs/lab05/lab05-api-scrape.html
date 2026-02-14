@@ -2284,7 +2284,7 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 <h3 class="anchored" data-anchor-id="a.-set-up-and-discover-movies">1a. Set up and discover movies</h3>
 <p>Replace <code>&quot;YOUR_API_KEY&quot;</code> with your actual TMDB API key. Then use the <code>/discover/movie</code> endpoint to find top-grossing movies.</p>
 <p>Refer to the <a href="https://developer.themoviedb.org/reference/discover-movie">TMDB Discover API docs</a> and fill in the query parameters below:</p>
-<div id="53309123" class="cell" data-execution_count="2">
+<div id="94618555" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># TMDB API configuration</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>BASE_URL <span class="op">=</span> <span class="st">&quot;https://api.themoviedb.org/3&quot;</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>API_KEY <span class="op">=</span> <span class="st">&quot;c4d84fc4d49e2e6e1d318959a68f3bcd&quot;</span>  <span class="co"># Replace with your API key!</span></span>
@@ -2313,7 +2313,7 @@ Request URL: https://api.themoviedb.org/3/discover/movie?api_key=c4d84fc4d49e2e6
 <section id="b.-examine-the-json-response" class="level3">
 <h3 class="anchored" data-anchor-id="b.-examine-the-json-response">1b. Examine the JSON response</h3>
 <p>The API returns a JSON object. Parse it and explore its structure.</p>
-<div id="3d2c1ab9" class="cell" data-execution_count="3">
+<div id="5f417270" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> response.json()</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
@@ -2324,8 +2324,8 @@ Request URL: https://api.themoviedb.org/3/discover/movie?api_key=c4d84fc4d49e2e6
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Print how many movies are on this page (hint: len(data.get(&#39;results&#39;, [])))</span></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Number of movies on this page: </span><span class="sc">{</span><span class="bu">len</span>(data.get(<span class="st">&#39;results&#39;</span>, []))<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Total number of results: 1100659
-Total number of pages: 55033
+<pre><code>Total number of results: 1103828
+Total number of pages: 55192
 Number of movies on this page: 20</code></pre>
 </div>
 </div>
@@ -2337,7 +2337,7 @@ Number of movies on this page: 20</code></pre>
 <p><strong>Important:</strong> Use <code>time.sleep(0.1)</code> between requests to respect rate limits.</p>
 <section id="step-1-get-the-movie-ids" class="level4">
 <h4 class="anchored" data-anchor-id="step-1-get-the-movie-ids">Step 1: Get the movie IDs</h4>
-<div id="625e8ad1" class="cell" data-execution_count="4">
+<div id="2af74940" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
@@ -2378,7 +2378,7 @@ Number of movies on this page: 20</code></pre>
 </section>
 <section id="step-2-for-each-movie-id-fetch-details" class="level4">
 <h4 class="anchored" data-anchor-id="step-2-for-each-movie-id-fetch-details">Step 2: For each movie ID, fetch details</h4>
-<div id="70d3cdb9" class="cell" data-execution_count="5">
+<div id="b75175fd" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop through all_movie_ids and for each movie:</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   1. GET f&quot;{BASE_URL}/movie/{mid}&quot; with api_key param -&gt; parse JSON</span></span>
@@ -2449,10 +2449,10 @@ Fetched details for 100 movies</code></pre>
 <td>19995</td>
 <td>Avatar</td>
 <td>2009-12-16</td>
-<td>39.4260</td>
+<td>64.6544</td>
 <td>2923706026</td>
 <td>237000000</td>
-<td>7.600</td>
+<td>7.599</td>
 <td>[{&#39;id&#39;: 28, &#39;name&#39;: &#39;Action&#39;}, {&#39;id&#39;: 12, &#39;nam...</td>
 </tr>
 <tr class="even">
@@ -2460,7 +2460,7 @@ Fetched details for 100 movies</code></pre>
 <td>299534</td>
 <td>Avengers: Endgame</td>
 <td>2019-04-24</td>
-<td>15.5834</td>
+<td>24.4649</td>
 <td>2799439100</td>
 <td>356000000</td>
 <td>8.236</td>
@@ -2471,10 +2471,10 @@ Fetched details for 100 movies</code></pre>
 <td>76600</td>
 <td>Avatar: The Way of Water</td>
 <td>2022-12-14</td>
-<td>36.0293</td>
+<td>33.9041</td>
 <td>2353096253</td>
 <td>350000000</td>
-<td>7.600</td>
+<td>7.599</td>
 <td>[{&#39;id&#39;: 28, &#39;name&#39;: &#39;Action&#39;}, {&#39;id&#39;: 12, &#39;nam...</td>
 </tr>
 <tr class="even">
@@ -2482,7 +2482,7 @@ Fetched details for 100 movies</code></pre>
 <td>597</td>
 <td>Titanic</td>
 <td>1997-12-18</td>
-<td>30.7236</td>
+<td>29.8839</td>
 <td>2264162353</td>
 <td>200000000</td>
 <td>7.902</td>
@@ -2493,10 +2493,10 @@ Fetched details for 100 movies</code></pre>
 <td>980477</td>
 <td>Ne Zha 2</td>
 <td>2025-01-29</td>
-<td>32.3843</td>
+<td>29.3181</td>
 <td>2259822417</td>
 <td>80000000</td>
-<td>8.111</td>
+<td>8.108</td>
 <td>[{&#39;id&#39;: 16, &#39;name&#39;: &#39;Animation&#39;}, {&#39;id&#39;: 14, &#39;...</td>
 </tr>
 <tr class="even">
@@ -2504,10 +2504,10 @@ Fetched details for 100 movies</code></pre>
 <td>140607</td>
 <td>Star Wars: The Force Awakens</td>
 <td>2015-12-15</td>
-<td>9.0032</td>
+<td>13.1939</td>
 <td>2068223624</td>
 <td>245000000</td>
-<td>7.300</td>
+<td>7.251</td>
 <td>[{&#39;id&#39;: 12, &#39;name&#39;: &#39;Adventure&#39;}, {&#39;id&#39;: 28, &#39;...</td>
 </tr>
 <tr class="odd">
@@ -2515,10 +2515,10 @@ Fetched details for 100 movies</code></pre>
 <td>299536</td>
 <td>Avengers: Infinity War</td>
 <td>2018-04-25</td>
-<td>26.1459</td>
+<td>35.4315</td>
 <td>2052415039</td>
 <td>300000000</td>
-<td>8.234</td>
+<td>8.235</td>
 <td>[{&#39;id&#39;: 12, &#39;name&#39;: &#39;Adventure&#39;}, {&#39;id&#39;: 28, &#39;...</td>
 </tr>
 <tr class="even">
@@ -2526,7 +2526,7 @@ Fetched details for 100 movies</code></pre>
 <td>634649</td>
 <td>Spider-Man: No Way Home</td>
 <td>2021-12-15</td>
-<td>22.6142</td>
+<td>31.2664</td>
 <td>1921847111</td>
 <td>200000000</td>
 <td>7.933</td>
@@ -2537,10 +2537,10 @@ Fetched details for 100 movies</code></pre>
 <td>1084242</td>
 <td>Zootopia 2</td>
 <td>2025-11-26</td>
-<td>370.8550</td>
-<td>1744338246</td>
+<td>206.7752</td>
+<td>1802806721</td>
 <td>150000000</td>
-<td>7.600</td>
+<td>7.615</td>
 <td>[{&#39;id&#39;: 16, &#39;name&#39;: &#39;Animation&#39;}, {&#39;id&#39;: 35, &#39;...</td>
 </tr>
 <tr class="even">
@@ -2548,10 +2548,10 @@ Fetched details for 100 movies</code></pre>
 <td>1022789</td>
 <td>Inside Out 2</td>
 <td>2024-06-11</td>
-<td>18.4380</td>
+<td>20.9537</td>
 <td>1698863816</td>
 <td>200000000</td>
-<td>7.546</td>
+<td>7.547</td>
 <td>[{&#39;id&#39;: 16, &#39;name&#39;: &#39;Animation&#39;}, {&#39;id&#39;: 12, &#39;...</td>
 </tr>
 </tbody>
@@ -2561,7 +2561,7 @@ Fetched details for 100 movies</code></pre>
 </div>
 </div>
 <p>To save time, read in the saved dataset of 10,000 movies and do a summary so we know what to clean.</p>
-<div id="854d3721" class="cell" data-execution_count="6">
+<div id="79955ef0" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_movies <span class="op">=</span> pd.read_csv(<span class="st">&quot;movies.csv&quot;</span>) </span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df_movies.describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
@@ -2655,7 +2655,7 @@ Fetched details for 100 movies</code></pre>
 <section id="d.-clean-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="d.-clean-the-data">1d. Clean the data</h3>
 <p>Examine the data with <code>df_movies.describe()</code>. Look for variables with unrealistic values (e.g., budget of 0, extreme popularity values). Clean as needed and extract the year from <code>release_date</code>.</p>
-<div id="e0bdb68d" class="cell" data-execution_count="7">
+<div id="e3f008ca" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Examine the data with describe() to identify issues</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>display(df_movies.describe())</span>
@@ -2765,7 +2765,7 @@ Fetched details for 100 movies</code></pre>
 <section id="a.-fetch-and-parse-the-wikipedia-page" class="level3">
 <h3 class="anchored" data-anchor-id="a.-fetch-and-parse-the-wikipedia-page">2a. Fetch and parse the Wikipedia page</h3>
 <p>Look at what tables are on this website.</p>
-<div id="1f0308a5" class="cell" data-execution_count="8">
+<div id="0829ac9b" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>OSCARS_URL <span class="op">=</span> <span class="st">&quot;https://en.wikipedia.org/wiki/List_of_Academy_Award</span><span class="sc">%E</span><span class="st">2</span><span class="sc">%80%</span><span class="st">93winning_films&quot;</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Include headers to identify ourselves</span></span>
@@ -2801,7 +2801,7 @@ Table 1: 10 rows x 2 cols
 <section id="b.-extract-the-main-oscar-winners-table" class="level3">
 <h3 class="anchored" data-anchor-id="b.-extract-the-main-oscar-winners-table">2b. Extract the main Oscar winners table</h3>
 <p>Extract the first table on the website, summarize the data you get.</p>
-<div id="1f6a9e8f" class="cell" data-execution_count="9">
+<div id="3cfa6591" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE: Select the correct table index based on the output above</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The main table should have columns like: Film, Year, Awards, Nominations</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2903,7 +2903,7 @@ Table 1: 10 rows x 2 cols
 </div>
 </div>
 <p>Check variable types to see if we need to clean.</p>
-<div id="ec4d9681" class="cell" data-execution_count="10">
+<div id="b6df01af" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE: Check the dtypes of the Oscar table</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Hint: osc.dtypes</span></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>display(osc.dtypes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2920,7 +2920,7 @@ dtype: object</code></pre>
 <h3 class="anchored" data-anchor-id="c.-clean-the-columns-using-regular-expressions">2c. Clean the columns using regular expressions</h3>
 <p>Make <code>Year</code>, <code>Awards</code>, and <code>Nominations</code> numeric. You may need to remove footnotes like <code>[1]</code> and handle strings like <code>2020/21</code>.</p>
 <p>Use regex to extract just the 4-digit <code>Year</code> and integers for <code>Awards</code> and <code>Nominations</code>.</p>
-<div id="ec2bf02a" class="cell" data-execution_count="11">
+<div id="0e821c54" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For each of Year, Awards, Nominations:</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   1. Convert to string</span></span>
@@ -2969,7 +2969,7 @@ dtype: object</code></pre>
 <section id="d.-explore-the-oscar-data" class="level3">
 <h3 class="anchored" data-anchor-id="d.-explore-the-oscar-data">2d. Explore the Oscar data</h3>
 <p>Do some summary statistics on the scraped Oscar data.</p>
-<div id="20b95fe0" class="cell" data-execution_count="12">
+<div id="055a3667" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Do a general summary with describe()</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. How many films are in the Oscar dataset?</span></span>
@@ -3066,7 +3066,7 @@ Average number of nominations: 3.62</code></pre>
 <section id="a.-prepare-both-datasets-for-merging" class="level3">
 <h3 class="anchored" data-anchor-id="a.-prepare-both-datasets-for-merging">3a. Prepare both datasets for merging</h3>
 <p>Before merging, make sure the title and year columns are clean and compatible across both datasets.</p>
-<div id="b90c51c2" class="cell" data-execution_count="13">
+<div id="ce01fad2" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Make sure df_movies has a clean year column</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>df_movies[<span class="st">&#39;year&#39;</span>] <span class="op">=</span> df_movies[<span class="st">&#39;release_date&#39;</span>].astype(<span class="bu">str</span>).<span class="bu">str</span>.extract(<span class="vs">r&#39;</span><span class="kw">(</span><span class="dv">\d</span><span class="op">{4}</span><span class="kw">)</span><span class="vs">&#39;</span>)[<span class="dv">0</span>]</span>
@@ -3196,7 +3196,7 @@ Sample Oscar titles:</code></pre>
 <section id="b.-merge-the-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="b.-merge-the-datasets">3b. Merge the datasets</h3>
 <p>Perform a left join to keep all TMDB movies and add the Awards and Nominations columns from the Oscar data. Fill missing awards with 0 (movies that didn’t win any Oscars).</p>
-<div id="08fc3de0" class="cell" data-execution_count="14">
+<div id="3e8b0e14" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Left join df_movies with osc on title and year</span></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co">#    Hint: df_movies has &#39;title&#39; and &#39;year&#39;, osc has &#39;Film&#39; and &#39;Year&#39;</span></span>
@@ -3428,7 +3428,7 @@ Merged dataset shape: (7829, 14)</code></pre>
 </section>
 <section id="c.-examine-the-merged-data" class="level3">
 <h3 class="anchored" data-anchor-id="c.-examine-the-merged-data">3c. Examine the merged data</h3>
-<div id="8de3b1c7" class="cell" data-execution_count="15">
+<div id="a7ca3053" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Show the Oscar-winning movies in the dataset</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Oscar-winning movies: </span><span class="sc">{</span>merged[merged[<span class="st">&#39;won_oscar&#39;</span>] <span class="op">==</span> <span class="dv">1</span>][<span class="st">&#39;title&#39;</span>]<span class="sc">.</span>unique()<span class="sc">}</span><span class="ss">&quot;</span>)</span>
@@ -3610,7 +3610,7 @@ Top-budget Oscar winner: Avatar: The Way of Water (budget=350000000)</code></pre
 <h2 class="anchored" data-anchor-id="question-4-visualize-the-results">Question 4: Visualize the results</h2>
 <section id="a.-compare-revenue-for-oscar-winners-vs-non-winners" class="level3">
 <h3 class="anchored" data-anchor-id="a.-compare-revenue-for-oscar-winners-vs-non-winners">4a. Compare revenue for Oscar winners vs non-winners</h3>
-<div id="b50e87aa" class="cell" data-execution_count="16">
+<div id="52ccafd9" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE: Create a boxplot with plotnine comparing TMDB revenue</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co"># for Oscar winners vs non-winners</span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>(</span>
@@ -3635,7 +3635,7 @@ Top-budget Oscar winner: Avatar: The Way of Water (budget=350000000)</code></pre
 <section id="b.-scatter-plot-of-budget-vs-revenue-colored-by-oscar-status" class="level3">
 <h3 class="anchored" data-anchor-id="b.-scatter-plot-of-budget-vs-revenue-colored-by-oscar-status">4b. Scatter plot of budget vs revenue colored by Oscar status</h3>
 <p>TMDB provides budget data that Wikipedia doesn’t have, so we can explore the budget-revenue relationship.</p>
-<div id="2f97520c" class="cell" data-execution_count="17">
+<div id="30f046e4" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE: Create a scatter plot with plotnine</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co"># - x-axis: budget</span></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co"># - y-axis: revenue</span></span>
@@ -3666,7 +3666,7 @@ Top-budget Oscar winner: Avatar: The Way of Water (budget=350000000)</code></pre
 <section id="c.-return-on-investment" class="level3">
 <h3 class="anchored" data-anchor-id="c.-return-on-investment">4c. Return on investment</h3>
 <p>Calculate the return on investment (revenue / budget) and compare Oscar winners vs non-winners.</p>
-<div id="99cdd892" class="cell" data-execution_count="18">
+<div id="96dc98b7" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># YOUR CODE HERE:</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Calculate ROI: merged[&#39;roi&#39;] = merged[&#39;revenue&#39;] / merged[&#39;budget&#39;]</span></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>merged[<span class="st">&#39;roi&#39;</span>] <span class="op">=</span> merged[<span class="st">&#39;revenue&#39;</span>] <span class="op">/</span> merged[<span class="st">&#39;budget&#39;</span>]</span>
