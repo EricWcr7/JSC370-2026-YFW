@@ -291,7 +291,6 @@ print(f"population_df rows: {len(population_df)}")
 print(f"gdp_per_capita_df rows: {len(gdp_per_capita_df)}")
 print(f"Merged world_bank_df shape: {world_bank_df.shape}")
 display(world_bank_df.head(10))
-
 ```
 
 ### 1b.
