@@ -22,10 +22,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="hw2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="hw2_files/libs/clipboard/clipboard.min.js"></script>
 <script src="hw2_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="hw2_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="hw2_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -41,13 +76,16 @@ ul.task-list li input[type="checkbox"] {
 <link href="hw2_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
 <script type="module" src="hw2_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
 <link href="hw2_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
 
 <body class="quarto-light">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
@@ -55,6 +93,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link active" data-scroll-target="#learning-goals">Learning Goals</a></li>
   <li><a href="#assignment-description" id="toc-assignment-description" class="nav-link" data-scroll-target="#assignment-description">Assignment Description</a></li>
+  <li><a href="#environment-setup" id="toc-environment-setup" class="nav-link" data-scroll-target="#environment-setup">Environment Setup</a></li>
   <li><a href="#data-acquisition-and-wrangling" id="toc-data-acquisition-and-wrangling" class="nav-link" data-scroll-target="#data-acquisition-and-wrangling">Data Acquisition and Wrangling</a>
   <ul class="collapse">
   <li><a href="#points-obtain-two-datasets-life-expectancy-via-api-and-alcohol-consumption-via-web-scraping." id="toc-points-obtain-two-datasets-life-expectancy-via-api-and-alcohol-consumption-via-web-scraping." class="nav-link" data-scroll-target="#points-obtain-two-datasets-life-expectancy-via-api-and-alcohol-consumption-via-web-scraping.">1. (15 points) Obtain two datasets: life expectancy (via API) and alcohol consumption (via web scraping).</a>
@@ -67,12 +106,12 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#f." id="toc-f." class="nav-link" data-scroll-target="#f.">1f.</a></li>
   <li><a href="#g." id="toc-g." class="nav-link" data-scroll-target="#g.">1g.</a></li>
   </ul></li>
-  <li><a href="#points" id="toc-points" class="nav-link" data-scroll-target="#points">2. (4 points)</a></li>
-  <li><a href="#points-1" id="toc-points-1" class="nav-link" data-scroll-target="#points-1">3. (4 points)</a></li>
+  <li><a href="#points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize." id="toc-points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize." class="nav-link" data-scroll-target="#points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize.">2. (4 points) Create a summary table of the merged dataset showing the mean and sd of life expectancy, alcohol consumption, population, and GDP per capita by year. Briefly summarize.</a></li>
+  <li><a href="#points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category." id="toc-points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category." class="nav-link" data-scroll-target="#points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category.">3. (4 points) Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.</a></li>
   </ul></li>
   <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization">Visualization</a>
   <ul class="collapse">
-  <li><a href="#points-2" id="toc-points-2" class="nav-link" data-scroll-target="#points-2">4. (15 points)</a>
+  <li><a href="#points-create-the-following-figures-with-plotnine-and-interpret-them.-be-sure-to-include-easily-understandable-axes-titles-and-legends." id="toc-points-create-the-following-figures-with-plotnine-and-interpret-them.-be-sure-to-include-easily-understandable-axes-titles-and-legends." class="nav-link" data-scroll-target="#points-create-the-following-figures-with-plotnine-and-interpret-them.-be-sure-to-include-easily-understandable-axes-titles-and-legends.">4. (15 points) Create the following figures with plotnine and interpret them. Be sure to include easily understandable axes, titles, and legends.</a>
   <ul class="collapse">
   <li><a href="#a.-1" id="toc-a.-1" class="nav-link" data-scroll-target="#a.-1">4a.</a></li>
   <li><a href="#b.-1" id="toc-b.-1" class="nav-link" data-scroll-target="#b.-1">4b.</a></li>
@@ -83,7 +122,7 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#advanced-regression" id="toc-advanced-regression" class="nav-link" data-scroll-target="#advanced-regression">Advanced Regression</a>
   <ul class="collapse">
-  <li><a href="#points-3" id="toc-points-3" class="nav-link" data-scroll-target="#points-3">5. (8 points)</a>
+  <li><a href="#points-construct-a-multiple-linear-regression-model-to-examine-the-association-between-life-expectancy-and-alcohol-consumption-adjusted-for-gdp-per-capita-and-year.-note-you-should-scale-gdp-by-population-to-get-gdp-per-capita-since-the-values-can-be-very-large.-then-fit-a-gam-model-where-you-put-a-smooth-on-gdp-per-capita-and-alcohol-consumption.provide-the-following-in-your-analyses" id="toc-points-construct-a-multiple-linear-regression-model-to-examine-the-association-between-life-expectancy-and-alcohol-consumption-adjusted-for-gdp-per-capita-and-year.-note-you-should-scale-gdp-by-population-to-get-gdp-per-capita-since-the-values-can-be-very-large.-then-fit-a-gam-model-where-you-put-a-smooth-on-gdp-per-capita-and-alcohol-consumption.provide-the-following-in-your-analyses" class="nav-link" data-scroll-target="#points-construct-a-multiple-linear-regression-model-to-examine-the-association-between-life-expectancy-and-alcohol-consumption-adjusted-for-gdp-per-capita-and-year.-note-you-should-scale-gdp-by-population-to-get-gdp-per-capita-since-the-values-can-be-very-large.-then-fit-a-gam-model-where-you-put-a-smooth-on-gdp-per-capita-and-alcohol-consumption.provide-the-following-in-your-analyses">5. (8 points) Construct a multiple linear regression model to examine the association between life expectancy and alcohol consumption adjusted for GDP per capita, and year. Note you should scale GDP by population to get GDP per capita since the values can be very large. Then fit a gam model where you put a smooth on GDP per capita and alcohol consumption.Provide the following in your analyses:</a>
   <ul class="collapse">
   <li><a href="#a.-2" id="toc-a.-2" class="nav-link" data-scroll-target="#a.-2">5a.</a></li>
   <li><a href="#b.-2" id="toc-b.-2" class="nav-link" data-scroll-target="#b.-2">5b.</a></li>
@@ -92,7 +131,7 @@ ul.task-list li input[type="checkbox"] {
   </ul>
 </nav>
 </div>
-<main class="content" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -102,7 +141,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page-left">
 
     <div>
     <div class="quarto-title-meta-heading">Author</div>
@@ -144,6 +183,15 @@ ul.task-list li input[type="checkbox"] {
 <li>Do other country specific factors such as per capita gross domestic product or population play a role in the relationship between alcohol consumption and life expectancy?</li>
 </ul>
 </section>
+<section id="environment-setup" class="level1">
+<h1>Environment Setup</h1>
+<div id="environment-setup" class="cell" data-message="false" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
 <section id="data-acquisition-and-wrangling" class="level1">
 <h1>Data Acquisition and Wrangling</h1>
 <section id="points-obtain-two-datasets-life-expectancy-via-api-and-alcohol-consumption-via-web-scraping." class="level2">
@@ -167,6 +215,839 @@ ul.task-list li input[type="checkbox"] {
 <section id="a." class="level3">
 <h3 class="anchored" data-anchor-id="a.">1a.</h3>
 <p>World Bank API data: Parse the JSON responses from the World Bank API into DataFrames. The API response contains nested dictionaries with fields like country, date, and value. Extract the relevant fields into clean DataFrames for each indicator (life expectancy, population, and GDP per capita), then merge them together by country and year.</p>
+<div id="world-bank-api-data" class="cell" data-message="false" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BASE_URL <span class="op">=</span> <span class="st">"https://api.worldbank.org/v2/country/all/indicator"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>COUNTRY_META_URL <span class="op">=</span> <span class="st">"https://api.worldbank.org/v2/country"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>INDICATORS <span class="op">=</span> {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"life_expectancy"</span>: <span class="st">"SP.DYN.LE00.IN"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population"</span>: <span class="st">"SP.POP.TOTL"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gdp_per_capita"</span>: <span class="st">"NY.GDP.PCAP.CD"</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_world_bank_pages(indicator_code):</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Fetch all pages for one World Bank indicator.</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns a list of raw records from the JSON response.</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    indicator_url <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>BASE_URL<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>indicator_code<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    page <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    all_records <span class="op">=</span> []</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        params <span class="op">=</span> {</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">"format"</span>: <span class="st">"json"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">"per_page"</span>: <span class="dv">20000</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">"page"</span>: page,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> requests.get(indicator_url, params<span class="op">=</span>params, timeout<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        response.raise_for_status()</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        payload <span class="op">=</span> response.json()</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># JSON structure: payload[0] = metadata, payload[1] = records</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>        metadata <span class="op">=</span> payload[<span class="dv">0</span>]</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        records <span class="op">=</span> payload[<span class="dv">1</span>]</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        all_records.extend(records)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> page <span class="op">&gt;=</span> <span class="bu">int</span>(metadata[<span class="st">"pages"</span>]):</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        page <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> all_records</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_country_metadata():</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="co">    Fetch country metadata.</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    page <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    all_countries <span class="op">=</span> []</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>        params <span class="op">=</span> {</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>            <span class="st">"format"</span>: <span class="st">"json"</span>,</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>            <span class="st">"per_page"</span>: <span class="dv">400</span>,</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>            <span class="st">"page"</span>: page,</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> requests.get(COUNTRY_META_URL, params<span class="op">=</span>params, timeout<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>        response.raise_for_status()</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        payload <span class="op">=</span> response.json()</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>        metadata <span class="op">=</span> payload[<span class="dv">0</span>]</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>        rows <span class="op">=</span> payload[<span class="dv">1</span>]</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>        all_countries.extend(rows)</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> page <span class="op">&gt;=</span> <span class="bu">int</span>(metadata[<span class="st">"pages"</span>]):</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        page <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>    countries_df <span class="op">=</span> pd.DataFrame(all_countries)</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    countries_df[<span class="st">"region_name"</span>] <span class="op">=</span> countries_df[<span class="st">"region"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.get(<span class="st">"value"</span>) <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> np.nan)</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> countries_df</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_indicator_records(records, value_name):</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a><span class="co">    Parse nested JSON fields and keep relevant columns.</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract nested values from API response</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"country"</span>] <span class="op">=</span> df[<span class="st">"country"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.get(<span class="st">"value"</span>) <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> np.nan)</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"year"</span>] <span class="op">=</span> pd.to_numeric(df[<span class="st">"date"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>    df[value_name] <span class="op">=</span> pd.to_numeric(df[<span class="st">"value"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df[[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>, <span class="st">"year"</span>, value_name]].copy()</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Fetch and parse indicator data</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>life_records <span class="op">=</span> get_world_bank_pages(INDICATORS[<span class="st">"life_expectancy"</span>])</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>pop_records <span class="op">=</span> get_world_bank_pages(INDICATORS[<span class="st">"population"</span>])</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>gdp_records <span class="op">=</span> get_world_bank_pages(INDICATORS[<span class="st">"gdp_per_capita"</span>])</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>life_expectancy_raw <span class="op">=</span> parse_indicator_records(life_records, <span class="st">"life_expectancy"</span>)</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>population_raw <span class="op">=</span> parse_indicator_records(pop_records, <span class="st">"population"</span>)</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>gdp_per_capita_raw <span class="op">=</span> parse_indicator_records(gdp_records, <span class="st">"gdp_per_capita"</span>)</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Build official non-aggregate country list from metadata</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>countries_df <span class="op">=</span> get_country_metadata()</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>valid_iso3 <span class="op">=</span> <span class="bu">set</span>(countries_df.loc[countries_df[<span class="st">"region_name"</span>] <span class="op">!=</span> <span class="st">"Aggregates"</span>, <span class="st">"id"</span>].dropna())</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Aggregate Checks before removing aggregates</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows before removing aggregates:"</span>)</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"life_expectancy_raw:"</span>, <span class="bu">len</span>(life_expectancy_raw))</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"population_raw:"</span>, <span class="bu">len</span>(population_raw))</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"gdp_per_capita_raw:"</span>, <span class="bu">len</span>(gdp_per_capita_raw))</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>life_aggregate_rows <span class="op">=</span> life_expectancy_raw[<span class="op">~</span>life_expectancy_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3)].copy()</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>life_aggregate_pairs <span class="op">=</span> life_aggregate_rows[[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>]].drop_duplicates()</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique (countryiso3code, country) aggregate pairs in life data:"</span>, life_aggregate_pairs.shape[<span class="dv">0</span>])</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Aggregate rows before filtering (all years/values) in life data:"</span>, life_aggregate_rows.shape[<span class="dv">0</span>])</span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>display(life_aggregate_pairs.head(<span class="dv">10</span>))</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>all_raw <span class="op">=</span> pd.concat(</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>        life_expectancy_raw[[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>]],</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>        population_raw[[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>]],</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>        gdp_per_capita_raw[[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>]],</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>    ignore_index<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>).drop_duplicates()</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>all_aggregate_names_in_original_data <span class="op">=</span> <span class="bu">sorted</span>(</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>    all_raw.loc[<span class="op">~</span>all_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3), <span class="st">"country"</span>].dropna().unique()</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"All aggregate/group names in original fetched data:"</span>, <span class="bu">len</span>(all_aggregate_names_in_original_data))</span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({<span class="st">"aggregate_name_in_original_data"</span>: all_aggregate_names_in_original_data}))</span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a><span class="co"># 4) Remove aggregates</span></span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>life_expectancy_raw <span class="op">=</span> life_expectancy_raw[life_expectancy_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3)].copy()</span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>population_raw <span class="op">=</span> population_raw[population_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3)].copy()</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>gdp_per_capita_raw <span class="op">=</span> gdp_per_capita_raw[gdp_per_capita_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3)].copy()</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after removing aggregates:"</span>)</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"life_expectancy_raw:"</span>, <span class="bu">len</span>(life_expectancy_raw))</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"population_raw:"</span>, <span class="bu">len</span>(population_raw))</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"gdp_per_capita_raw:"</span>, <span class="bu">len</span>(gdp_per_capita_raw))</span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Sample rows after removing aggregates:"</span>)</span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"life_expectancy_raw:"</span>)</span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>display(life_expectancy_raw.head())</span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"population_raw:"</span>)</span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>display(population_raw.head())</span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"gdp_per_capita_raw:"</span>)</span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>display(gdp_per_capita_raw.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows before removing aggregates:
+life_expectancy_raw: 17290
+population_raw: 17290
+gdp_per_capita_raw: 17290
+Unique (countryiso3code, country) aggregate pairs in life data: 49
+Aggregate rows before filtering (all years/values) in life data: 3185</code></pre>
+</div>
+<div id="world-bank-api-data-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">countryiso3code</th>
+<th data-quarto-table-cell-role="th">country</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>AFE</td>
+<td>Africa Eastern and Southern</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">65</th>
+<td>AFW</td>
+<td>Africa Western and Central</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">130</th>
+<td>ARB</td>
+<td>Arab World</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">195</th>
+<td>CSS</td>
+<td>Caribbean small states</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">260</th>
+<td>CEB</td>
+<td>Central Europe and the Baltics</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">325</th>
+<td>EAR</td>
+<td>Early-demographic dividend</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">390</th>
+<td>EAS</td>
+<td>East Asia &amp; Pacific</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">455</th>
+<td>EAP</td>
+<td>East Asia &amp; Pacific (excluding high income)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">520</th>
+<td>TEA</td>
+<td>East Asia &amp; Pacific (IDA &amp; IBRD countries)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">585</th>
+<td>EMU</td>
+<td>Euro area</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>All aggregate/group names in original fetched data: 49</code></pre>
+</div>
+<div id="world-bank-api-data-2" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">aggregate_name_in_original_data</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Africa Eastern and Southern</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Africa Western and Central</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Arab World</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Caribbean small states</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Central Europe and the Baltics</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Early-demographic dividend</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>East Asia &amp; Pacific</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>East Asia &amp; Pacific (IDA &amp; IBRD countries)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>East Asia &amp; Pacific (excluding high income)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Euro area</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Europe &amp; Central Asia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Europe &amp; Central Asia (IDA &amp; IBRD countries)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Europe &amp; Central Asia (excluding high income)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>European Union</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Fragile and conflict affected situations</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Heavily indebted poor countries (HIPC)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>High income</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>IBRD only</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>IDA &amp; IBRD total</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>IDA blend</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>IDA only</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>IDA total</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>Late-demographic dividend</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>Latin America &amp; Caribbean</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>Latin America &amp; Caribbean (excluding high income)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>Latin America &amp; the Caribbean (IDA &amp; IBRD coun...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>Least developed countries: UN classification</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>Low &amp; middle income</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>Low income</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>Lower middle income</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>Middle East, North Africa, Afghanistan &amp; Pakistan</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">31</th>
+<td>Middle East, North Africa, Afghanistan &amp; Pakis...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">32</th>
+<td>Middle East, North Africa, Afghanistan &amp; Pakis...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">33</th>
+<td>Middle income</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34</th>
+<td>North America</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">35</th>
+<td>Not classified</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>OECD members</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">37</th>
+<td>Other small states</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">38</th>
+<td>Pacific island small states</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39</th>
+<td>Post-demographic dividend</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">40</th>
+<td>Pre-demographic dividend</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">41</th>
+<td>Small states</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">42</th>
+<td>South Asia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">43</th>
+<td>South Asia (IDA &amp; IBRD)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">44</th>
+<td>Sub-Saharan Africa</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">45</th>
+<td>Sub-Saharan Africa (IDA &amp; IBRD countries)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">46</th>
+<td>Sub-Saharan Africa (excluding high income)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">47</th>
+<td>Upper middle income</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">48</th>
+<td>World</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows after removing aggregates:
+life_expectancy_raw: 14105
+population_raw: 14105
+gdp_per_capita_raw: 14105
+Sample rows after removing aggregates:
+life_expectancy_raw:</code></pre>
+</div>
+<div id="world-bank-api-data-3" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">countryiso3code</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">life_expectancy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3185</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2024</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3186</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2023</td>
+<td>66.035</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3187</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2022</td>
+<td>65.617</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3188</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2021</td>
+<td>60.417</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3189</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2020</td>
+<td>61.454</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>population_raw:</code></pre>
+</div>
+<div id="world-bank-api-data-4" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">countryiso3code</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">population</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3185</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2024</td>
+<td>42647492.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3186</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2023</td>
+<td>41454761.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3187</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2022</td>
+<td>40578842.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3188</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2021</td>
+<td>40000412.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3189</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2020</td>
+<td>39068979.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>gdp_per_capita_raw:</code></pre>
+</div>
+<div id="world-bank-api-data-5" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">countryiso3code</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">gdp_per_capita</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3185</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2024</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3186</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2023</td>
+<td>413.757895</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3187</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2022</td>
+<td>357.261153</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3188</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2021</td>
+<td>356.496214</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3189</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>2020</td>
+<td>510.787063</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="world-bank-handling-missing-values" class="cell" data-message="false" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check missing values (Lab 3 style: inspect first, then drop)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing values before handling:"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"life_expectancy_raw:"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(life_expectancy_raw[[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"life_expectancy"</span>]].isna().<span class="bu">sum</span>())</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"population_raw:"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(population_raw[[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"population"</span>]].isna().<span class="bu">sum</span>())</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"gdp_per_capita_raw:"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gdp_per_capita_raw[[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"gdp_per_capita"</span>]].isna().<span class="bu">sum</span>())</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop rows with missing key fields / indicator values</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>life_expectancy_df <span class="op">=</span> life_expectancy_raw.dropna(</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    subset<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"life_expectancy"</span>]</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>).copy()</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>population_df <span class="op">=</span> population_raw.dropna(</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    subset<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"population"</span>]</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>).copy()</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>gdp_per_capita_df <span class="op">=</span> gdp_per_capita_raw.dropna(</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    subset<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"gdp_per_capita"</span>]</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>).copy()</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep year as integer after dropping missing values</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>life_expectancy_df[<span class="st">"year"</span>] <span class="op">=</span> life_expectancy_df[<span class="st">"year"</span>].astype(<span class="bu">int</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>population_df[<span class="st">"year"</span>] <span class="op">=</span> population_df[<span class="st">"year"</span>].astype(<span class="bu">int</span>)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>gdp_per_capita_df[<span class="st">"year"</span>] <span class="op">=</span> gdp_per_capita_df[<span class="st">"year"</span>].astype(<span class="bu">int</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after missing-value handling:"</span>)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"life_expectancy_df:"</span>, life_expectancy_df.shape)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"population_df:"</span>, population_df.shape)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"gdp_per_capita_df:"</span>, gdp_per_capita_df.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Missing values before handling:
+life_expectancy_raw:
+countryiso3code      0
+country              0
+year                 0
+life_expectancy    251
+dtype: int64
+population_raw:
+countryiso3code     0
+country             0
+year                0
+population         30
+dtype: int64
+gdp_per_capita_raw:
+countryiso3code       0
+country               0
+year                  0
+gdp_per_capita     2536
+dtype: int64
+Rows after missing-value handling:
+life_expectancy_df: (13854, 4)
+population_df: (14075, 4)
+gdp_per_capita_df: (11569, 4)</code></pre>
+</div>
+</div>
+<div id="cell-world-bank-merge-data" class="cell" data-message="false" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Merge life expectancy with population</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>world_bank_df <span class="op">=</span> life_expectancy_df.merge(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    population_df,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"outer"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    on<span class="op">=</span>[<span class="st">"country"</span>, <span class="st">"year"</span>],</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Merge in GDP per capita</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>world_bank_df <span class="op">=</span> world_bank_df.merge(</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    gdp_per_capita_df,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"outer"</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    on<span class="op">=</span>[<span class="st">"country"</span>, <span class="st">"year"</span>],</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) Sort for readability</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>world_bank_df <span class="op">=</span> world_bank_df.sort_values([<span class="st">"country"</span>, <span class="st">"year"</span>]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 4) Merge summary (Lab 5 style)</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"life_expectancy_df rows: </span><span class="sc">{</span><span class="bu">len</span>(life_expectancy_df)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"population_df rows: </span><span class="sc">{</span><span class="bu">len</span>(population_df)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"gdp_per_capita_df rows: </span><span class="sc">{</span><span class="bu">len</span>(gdp_per_capita_df)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Merged world_bank_df shape: </span><span class="sc">{</span>world_bank_df<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>display(world_bank_df.head(<span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>life_expectancy_df rows: 13854
+population_df rows: 14075
+gdp_per_capita_df rows: 11569
+Merged world_bank_df shape: (14075, 8)</code></pre>
+</div>
+<div id="world-bank-merge-data" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">countryiso3code_x</th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">life_expectancy</th>
+<th data-quarto-table-cell-role="th">countryiso3code_y</th>
+<th data-quarto-table-cell-role="th">population</th>
+<th data-quarto-table-cell-role="th">countryiso3code</th>
+<th data-quarto-table-cell-role="th">gdp_per_capita</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1960</td>
+<td>32.799</td>
+<td>AFG</td>
+<td>9035043.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1961</td>
+<td>33.291</td>
+<td>AFG</td>
+<td>9214083.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1962</td>
+<td>33.757</td>
+<td>AFG</td>
+<td>9404406.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1963</td>
+<td>34.201</td>
+<td>AFG</td>
+<td>9604487.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1964</td>
+<td>34.673</td>
+<td>AFG</td>
+<td>9814318.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1965</td>
+<td>35.124</td>
+<td>AFG</td>
+<td>10036008.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1966</td>
+<td>35.583</td>
+<td>AFG</td>
+<td>10266395.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1967</td>
+<td>36.042</td>
+<td>AFG</td>
+<td>10505959.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1968</td>
+<td>36.510</td>
+<td>AFG</td>
+<td>10756922.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>AFG</td>
+<td>Afghanistan</td>
+<td>1969</td>
+<td>36.979</td>
+<td>AFG</td>
+<td>11017409.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
 <section id="b." class="level3">
 <h3 class="anchored" data-anchor-id="b.">1b.</h3>
@@ -193,20 +1074,17 @@ ul.task-list li input[type="checkbox"] {
 <p>Write a paragraph describing your scraping and cleaning steps. Include a written summary of the variables and the number of observations before and after merging. Document any countries that didn’t match and how you handled them. Also summarize your findings from the basic EDA.</p>
 </section>
 </section>
-<section id="points" class="level2">
-<h2 class="anchored" data-anchor-id="points">2. (4 points)</h2>
-<p>Create a summary table of the merged dataset showing the mean and sd of life expectancy, alcohol consumption, population, and GDP per capita by year. Briefly summarize.</p>
+<section id="points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize." class="level2">
+<h2 class="anchored" data-anchor-id="points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize.">2. (4 points) Create a summary table of the merged dataset showing the mean and sd of life expectancy, alcohol consumption, population, and GDP per capita by year. Briefly summarize.</h2>
 </section>
-<section id="points-1" class="level2">
-<h2 class="anchored" data-anchor-id="points-1">3. (4 points)</h2>
-<p>Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.</p>
+<section id="points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category." class="level2">
+<h2 class="anchored" data-anchor-id="points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category.">3. (4 points) Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.</h2>
 </section>
 </section>
 <section id="visualization" class="level1">
 <h1>Visualization</h1>
-<section id="points-2" class="level2">
-<h2 class="anchored" data-anchor-id="points-2">4. (15 points)</h2>
-<p>Create the following figures with plotnine and interpret them. Be sure to include easily understandable axes, titles, and legends.</p>
+<section id="points-create-the-following-figures-with-plotnine-and-interpret-them.-be-sure-to-include-easily-understandable-axes-titles-and-legends." class="level2">
+<h2 class="anchored" data-anchor-id="points-create-the-following-figures-with-plotnine-and-interpret-them.-be-sure-to-include-easily-understandable-axes-titles-and-legends.">4. (15 points) Create the following figures with plotnine and interpret them. Be sure to include easily understandable axes, titles, and legends.</h2>
 <section id="a.-1" class="level3">
 <h3 class="anchored" data-anchor-id="a.-1">4a.</h3>
 <p>Two line plots: one of life expectancy by year and the other of alcohol consumption by year with lines for Canada and 3 other contrasting countries.</p>
@@ -231,9 +1109,8 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="advanced-regression" class="level1">
 <h1>Advanced Regression</h1>
-<section id="points-3" class="level2">
-<h2 class="anchored" data-anchor-id="points-3">5. (8 points)</h2>
-<p>Construct a multiple linear regression model to examine the association between life expectancy and alcohol consumption adjusted for GDP per capita, and year. Note you should scale GDP by population to get GDP per capita since the values can be very large. Then fit a gam model where you put a smooth on GDP per capita and alcohol consumption.Provide the following in your analyses:</p>
+<section id="points-construct-a-multiple-linear-regression-model-to-examine-the-association-between-life-expectancy-and-alcohol-consumption-adjusted-for-gdp-per-capita-and-year.-note-you-should-scale-gdp-by-population-to-get-gdp-per-capita-since-the-values-can-be-very-large.-then-fit-a-gam-model-where-you-put-a-smooth-on-gdp-per-capita-and-alcohol-consumption.provide-the-following-in-your-analyses" class="level2">
+<h2 class="anchored" data-anchor-id="points-construct-a-multiple-linear-regression-model-to-examine-the-association-between-life-expectancy-and-alcohol-consumption-adjusted-for-gdp-per-capita-and-year.-note-you-should-scale-gdp-by-population-to-get-gdp-per-capita-since-the-values-can-be-very-large.-then-fit-a-gam-model-where-you-put-a-smooth-on-gdp-per-capita-and-alcohol-consumption.provide-the-following-in-your-analyses">5. (8 points) Construct a multiple linear regression model to examine the association between life expectancy and alcohol consumption adjusted for GDP per capita, and year. Note you should scale GDP by population to get GDP per capita since the values can be very large. Then fit a gam model where you put a smooth on GDP per capita and alcohol consumption.Provide the following in your analyses:</h2>
 <section id="a.-2" class="level3">
 <h3 class="anchored" data-anchor-id="a.-2">5a.</h3>
 <p>Summaries of your models, including overall model fit and interpretation of the parameter estimates (linear and non-linear).</p>
