@@ -83,7 +83,7 @@ per capita.
 World Bank API data: Parse the JSON responses from the World Bank API into DataFrames. The API response contains nested dictionaries with fields like country, date, and value. Extract the relevant fields into clean DataFrames for each indicator (life expectancy, population, and GDP per capita), then merge them together by country and year.
 
 ```{python}
-#| label: world-bank-api-data
+#| label: 1a-World-Bank-API-Data
 #| message: false
 #| warning: false
 
@@ -229,7 +229,7 @@ display(gdp_per_capita_raw.head())
 ```
 
 ```{python}
-#| label: world-bank-handling-missing-values
+#| label: 1a-World-Bank-Data-Handling-Missing-Values
 #| message: false
 #| warning: false
 
@@ -270,7 +270,7 @@ print("gdp_per_capita_df:", gdp_per_capita_df.shape)
 ```
 
 ```{python}
-#| label: world-bank-merge-data
+#| label: 1a-World-Bank-Data-Merge
 #| message: false
 #| warning: false
 
@@ -303,7 +303,7 @@ display(world_bank_df.head(10))
 Alcohol (scraped data): Identify which Wikipedia table contains the historical data (1996, 2016, 2019) and extract it. Clean the scraped data: remove any footnote markers (e.g., [1]), convert columns to appropriate data types, and handle any missing values.
 
 ```{python}
-#| label: alcohol-datas-web-scraping
+#| label: 1b-Alcohol-Data-Web-Scraping
 #| message: false
 #| warning: false
 
@@ -329,7 +329,7 @@ display(alcohol_raw.head(10))
 ```
 
 ```{python}
-#| label: alcohol-data-footnotes-removal-and-adjust-data-types
+#| label: 1b-Alcohol-Data-Footnotes-Removal-and-Adjust-Data-Types
 #| message: false
 #| warning: false
 
@@ -364,7 +364,7 @@ print(alcohol_df.shape)
 ```
 
 ```{python}
-#| label: alcohol-data-inspect-missing-values
+#| label: 1b-Alcohol-Data-Inspect-Missing-Values
 #| message: false
 #| warning: false
 
@@ -385,7 +385,7 @@ print((alcohol_df[["1996", "2016", "2019"]].isna().mean() * 100).round(2))
 Reshape the alcohol data from wide to long format, creating a “Year” column with values 1996, 2016, and 2019. You can use pd.melt() in Python.
 
 ```{python}
-#| label: alcohol-data-reshape
+#| label: 1c-Alcohol-Data-Reshape
 #| message: false
 #| warning: false
 
@@ -409,11 +409,318 @@ display(alcohol_long.head(10))
 ### 1d.
 Filter the life expectancy data to include only the years that match the alcohol data (1996, 2016, 2019).
 
+```{python}
+#| label: 1d-World-Bank-Data-Filter-By-Year
+#| message: false
+#| warning: false
+
+target_years = [1996, 2016, 2019]
+
+print("world_bank_df shape before year filter:", world_bank_df.shape)
+
+world_bank_df = world_bank_df[world_bank_df["year"].isin(target_years)].copy()
+
+print("world_bank_df shape after year filter:", world_bank_df.shape)
+
+display(world_bank_df.head(10))
+```
+
 ### Merge these datasets by country name and year. Note: You may need to standardize country names between datasets (e.g., “United States” vs “United States of America”).
+
+```{python}
+#| label: 1-Country-Name-Inspection
+#| message: false
+#| warning: false
+
+# Step 1: normalize country-name text formatting only (no mapping/merge yet)
+def normalize_country_name(series):
+    return (
+        series.astype(str)
+        .str.strip()
+        .str.replace(r"\s+", " ", regex=True)
+    )
+
+world_bank_df["country_std"] = normalize_country_name(world_bank_df["country"])
+alcohol_long["country_std"] = normalize_country_name(alcohol_long["Country"])
+
+print("world_bank_df shape:", world_bank_df.shape)
+print("alcohol_long shape:", alcohol_long.shape)
+
+print("\nSample standardized country names (World Bank):")
+display(world_bank_df[["country", "country_std"]].drop_duplicates().head(10))
+
+print("Sample standardized country names (Alcohol):")
+display(alcohol_long[["Country", "country_std"]].drop_duplicates().head(10))
+
+# Step 2: inspect unmatched standardized country names
+wb_countries = set(world_bank_df["country_std"].dropna().unique())
+alcohol_countries = set(alcohol_long["country_std"].dropna().unique())
+
+wb_not_in_alcohol = sorted(wb_countries - alcohol_countries)
+alcohol_not_in_wb = sorted(alcohol_countries - wb_countries)
+
+print("\nWorld Bank names not found in alcohol data:", len(wb_not_in_alcohol))
+display(pd.DataFrame({"wb_not_in_alcohol": wb_not_in_alcohol}).head(60))
+
+print("Alcohol names not found in World Bank data:", len(alcohol_not_in_wb))
+display(pd.DataFrame({"alcohol_not_in_wb": alcohol_not_in_wb}).head(60))
+```
+
+```{python}
+#| label: 1-Country-Name-Standardization
+#| message: false
+#| warning: false
+
+# Manual mapping for country mismatches
+country_name_map = {
+    "Bahamas": "Bahamas, The",
+    "Brunei": "Brunei Darussalam",
+    "Cape Verde": "Cabo Verde",
+    "Congo": "Congo, Rep.",
+    "DR Congo": "Congo, Dem. Rep.",
+    "Czech Republic": "Czechia",
+    "Egypt": "Egypt, Arab Rep.",
+    "Gambia": "Gambia, The",
+    "Iran": "Iran, Islamic Rep.",
+    "Ivory Coast": "Cote d'Ivoire",
+    "Kyrgyzstan": "Kyrgyz Republic",
+    "Laos": "Lao PDR",
+    "Macedonia": "North Macedonia",
+    "Micronesia": "Micronesia, Fed. Sts.",
+    "North Korea": "Korea, Dem. People's Rep.",
+    "South Korea": "Korea, Rep.",
+    "Russia": "Russian Federation",
+    "Slovakia": "Slovak Republic",
+    "Somalia": "Somalia, Fed. Rep.",
+    "Syria": "Syrian Arab Republic",
+    "Turkey": "Turkiye",
+    "Venezuela": "Venezuela, RB",
+    "Vietnam": "Viet Nam",
+    "Yemen": "Yemen, Rep.",
+    "Saint Kitts and Nevis": "St. Kitts and Nevis",
+    "Saint Lucia": "St. Lucia",
+    "Saint Vincent and the Grenadines": "St. Vincent and the Grenadines",
+    "São Tomé and Príncipe": "Sao Tome and Principe",
+}
+
+# Apply mapping on alcohol side to match World Bank naming
+alcohol_long["country_std"] = alcohol_long["country_std"].replace(country_name_map)
+
+# Re-check unmatched names after manual mapping
+wb_countries_after = set(world_bank_df["country_std"].dropna().unique())
+alcohol_countries_after = set(alcohol_long["country_std"].dropna().unique())
+
+wb_not_in_alcohol_after = sorted(wb_countries_after - alcohol_countries_after)
+alcohol_not_in_wb_after = sorted(alcohol_countries_after - wb_countries_after)
+
+print("After manual mapping:")
+print("World Bank names not found in alcohol data:", len(wb_not_in_alcohol_after))
+display(pd.DataFrame({"wb_not_in_alcohol_after": wb_not_in_alcohol_after}).head(30))
+
+print("Alcohol names not found in World Bank data:", len(alcohol_not_in_wb_after))
+display(pd.DataFrame({"alcohol_not_in_wb_after": alcohol_not_in_wb_after}).head(30))
+```
+
+```{python}
+#| label: 1-Datasets-Merging
+#| message: false
+#| warning: false
+
+# 1) Diagnostic merge: outer join to inspect what does/does not match
+merged_outer = world_bank_df.merge(
+    alcohol_long,
+    how="outer",
+    left_on=["country_std", "year"],
+    right_on=["country_std", "Year"],
+    indicator=True,
+    suffixes=("_wb", "_alcohol"),
+)
+
+print("Outer merge shape:", merged_outer.shape)
+print("Merge indicator counts:")
+print(merged_outer["_merge"].value_counts())
+
+# 2) Analysis dataset: inner join keeps only matched country-year pairs
+merged_df = world_bank_df.merge(
+    alcohol_long,
+    how="inner",
+    left_on=["country_std", "year"],
+    right_on=["country_std", "Year"],
+    suffixes=("_wb", "_alcohol"),
+)
+
+# Keep one country/year key and drop redundant merge columns
+merged_df = merged_df[
+    [
+        "country_std",
+        "year",
+        "life_expectancy",
+        "population",
+        "gdp_per_capita",
+        "alcohol_litres_per_capita_15plus",
+    ]
+].copy()
+merged_df = merged_df.rename(columns={"country_std": "country"})
+
+print("\nInner merge shape (analysis dataset):", merged_df.shape)
+display(merged_df.head(10))
+```
 
 ### Conduct basic EDA on the merged dataset: check dimensions, missing values, summary statistics of key variables to look for outliers. Which countries have the lowest and highest life expectancies and alcohol consumption?
 
+```{python}
+#| label: 1-EDA-Inspection
+#| message: false
+#| warning: false
+
+print("shape:", merged_df.shape)
+print("n_rows:", merged_df.shape[0])
+print("n_cols:", merged_df.shape[1])
+print("Unique countries:", merged_df["country"].nunique())
+country_year_counts = merged_df.groupby("country")["year"].nunique()
+print("\nUnique year counts per country:")
+print(country_year_counts.value_counts().sort_index())
+print("\n")
+print("Missing values:\n")
+print(merged_df.isna().sum())
+print("\nMissing percentage (%):\n")
+print((merged_df.isna().mean() * 100).round(2))
+
+print("\n")
+print("Summary statistics:\n")
+print(merged_df.describe())
+```
+
+```{python}
+#| label: 1-Drop-Missing-GDP-Rows
+#| message: false
+#| warning: false
+
+print("Rows before dropping missing gdp_per_capita:", merged_df.shape[0])
+print("Missing gdp_per_capita rows:", merged_df["gdp_per_capita"].isna().sum())
+
+merged_df_drop_missing_gdp = merged_df.dropna(subset=["gdp_per_capita"]).copy()
+
+print("Rows after dropping missing gdp_per_capita:", merged_df_drop_missing_gdp.shape[0])
+print("Unique countries after drop:", merged_df_drop_missing_gdp["country"].nunique())
+```
+
+```{python}
+#| label: 1-EDA-Inspection-After-Drop-GDP-Missing
+#| message: false
+#| warning: false
+
+print("shape (after dropping missing gdp_per_capita):", merged_df_drop_missing_gdp.shape)
+print("n_rows:", merged_df_drop_missing_gdp.shape[0])
+print("n_cols:", merged_df_drop_missing_gdp.shape[1])
+print("Unique countries:", merged_df_drop_missing_gdp["country"].nunique())
+
+country_year_counts_after_drop = merged_df_drop_missing_gdp.groupby("country")["year"].nunique()
+print("\nUnique year counts per country:")
+print(country_year_counts_after_drop.value_counts().sort_index())
+
+print("\nMissing values:\n")
+print(merged_df_drop_missing_gdp.isna().sum())
+print("\nMissing percentage (%):\n")
+print((merged_df_drop_missing_gdp.isna().mean() * 100).round(2))
+
+print("\nSummary statistics:\n")
+print(merged_df_drop_missing_gdp.describe())
+```
+
+```{python}
+#| label: 1-EDA-Outliers
+#| message: false
+#| warning: false
+
+# Show which country/year achieves each extremum
+def print_extremum_context(df, value_col, label):
+    min_idx = df[value_col].idxmin()
+    max_idx = df[value_col].idxmax()
+
+    min_row = df.loc[min_idx, ["country", "year", value_col]]
+    max_row = df.loc[max_idx, ["country", "year", value_col]]
+
+    print(f"\n{label} minimum at:")
+    print(min_row)
+    print(f"{label} maximum at:")
+    print(max_row)
+
+print_extremum_context(merged_df_drop_missing_gdp, "life_expectancy", "Life expectancy")
+print_extremum_context(merged_df_drop_missing_gdp, "alcohol_litres_per_capita_15plus", "Alcohol consumption")
+print_extremum_context(merged_df_drop_missing_gdp, "gdp_per_capita", "GDP per capita")
+print_extremum_context(merged_df_drop_missing_gdp, "population", "Population")
+```
+
+**Summary:**
+
+- **Minimum Life expectancy:** approximately 31.53 years in Central African Republic (2019).
+- **Maximum Life expectancy:** approximately 84.49 years in Andorra (2016).
+- **Minimum Annual Pure Alcohol consumption:** approximately 0.00 liters per person (age 15+) in Bangladesh (2016).
+- **Maximum Annual Pure Alcohol consumption:** approximately 17.00 liters per person (age 15+) in Romania (2019).
+
 ### Write a paragraph describing your scraping and cleaning steps. Include a written summary of the variables and the number of observations before and after merging. Document any countries that didn’t match and how you handled them. Also summarize your findings from the basic EDA.
+
+**Solution:**
+
+First, I pulled life expectancy, population, and GDP per capita data from the World Bank API (with the support of the API documentation) by parsing the nested JSON into tidy `country`–`year`–`indicator` tables, with filtering out aggregate regions using the API’s country metadata by checking the flag of "Aggregates", which indicates this row's data is not for a country, but for a region or group, dropping missing indicator values, and merging the three indicators by country and year through outer joins before restricting to the target years-1996, 2016, and 2019.
+
+Second, I scraped alcohol consumption data from Wikipedia (use provided link) by using lab05 workflow and codes, with removing footnote markers from headers and country names, converting the year column to integer, treating dashed entries as missing values (NaN), and reshaping the dataset to long format with `pd.melt()`.
+
+After that, I standardized country names by trimming whitespace and applying a manual mapping dictionary to make sure the country names in the two datasets are consistent and follow the World Bank naming conventions. (See the mapping details below) 
+
+Finally, I merged the two datasets by standardized country names and year to get the final dataset. The merged dataset contains the following variables:
+
+- `country` (standardized country name following World Bank conventions),
+- `year` (1996/2016/2019),
+- `life_expectancy` (years),
+- `population` (total),
+- `gdp_per_capita` (current US$), and
+- `alcohol_litres_per_capita_15plus` (litres of annual pure alcohol consumption per person age 15+).
+
+Before merging, the World Bank dataset contained **651** observations and the alcohol dataset contained **573** observations (after cleaning). After merging through inner join by `country` and `year`, the final merged dataset contained **564** observations. The reason of using inner join is to keep only the matched `country`-`year` pairs. The unmatched `country`-`year` pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. A groupby validation (`merged_df.groupby("country")["year"].nunique()`) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019). Therefore, the accuracy of future analysis is maintained.
+
+There is no missing value in `life_expectancy` or `population`, but some missingness is in `gdp_per_capita` (8 rows; 1.42%) and `alcohol_litres_per_capita_15plus` (43 rows; 7.62%). Therefore, I dropped the rows with missing `gdp_per_capita` to get the dataset `merged_df_drop_missing_gdp` since there is only 1.42% missingness, which is statistically reliable to drop. After handling the missing values, the observed ranges are calculated:
+
+- Life expectancy from 31.53 years (Central African Republic, 2019) to 84.49 years (Andorra, 2016)
+- Annual pure alcohol consumption per person age 15+ from 0.00 liters (Bangladesh, 2016) to 17.0 liters (Romania, 2019)
+- GDP per capita from 71.41 USD (Liberia, 1996) to 112,696.65 USD (Luxembourg, 2019)
+- Population from 9,342 (Tuvalu, 1996) to about 1.41 billion (China, 2019)
+
+Accroding to the summary statistics, some countries have extreme values in the variables, especially for GDP per capita. After validate some of the extreme values, I found that they are reasonable and not due to data entry errors. For example, Luxembourg’s peak GDP per capita is an accurate reflection of real-world scenarios.
+
+**Mapping Reference during Standardization:**
+
+The following manual country name mappings during standardization were applied to align the Wikipedia alcohol dataset with World Bank naming conventions (Alcohol dataset country name → World Bank dataset country name):
+
+- Bahamas → Bahamas, The  
+- Brunei → Brunei Darussalam  
+- Cape Verde → Cabo Verde  
+- Congo → Congo, Rep.  
+- DR Congo → Congo, Dem. Rep.  
+- Czech Republic → Czechia  
+- Egypt → Egypt, Arab Rep.  
+- Gambia → Gambia, The  
+- Iran → Iran, Islamic Rep.  
+- Ivory Coast → Cote d'Ivoire  
+- Kyrgyzstan → Kyrgyz Republic  
+- Laos → Lao PDR  
+- Macedonia → North Macedonia  
+- Micronesia → Micronesia, Fed. Sts.  
+- North Korea → Korea, Dem. People's Rep.  
+- South Korea → Korea, Rep.  
+- Russia → Russian Federation  
+- Slovakia → Slovak Republic  
+- Somalia → Somalia, Fed. Rep.  
+- Syria → Syrian Arab Republic  
+- Turkey → Turkiye  
+- Venezuela → Venezuela, RB  
+- Vietnam → Viet Nam  
+- Yemen → Yemen, Rep.  
+- Saint Kitts and Nevis → St. Kitts and Nevis  
+- Saint Lucia → St. Lucia  
+- Saint Vincent and the Grenadines → St. Vincent and the Grenadines  
+- São Tomé and Príncipe → Sao Tome and Principe
 
 ## 2. (4 points) Create a summary table of the merged dataset showing the mean and sd of life expectancy, alcohol consumption, population, and GDP per capita by year. Briefly summarize.
 

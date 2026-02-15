@@ -216,7 +216,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="a." class="level3">
 <h3 class="anchored" data-anchor-id="a.">1a.</h3>
 <p>World Bank API data: Parse the JSON responses from the World Bank API into DataFrames. The API response contains nested dictionaries with fields like country, date, and value. Extract the relevant fields into clean DataFrames for each indicator (life expectancy, population, and GDP per capita), then merge them together by country and year.</p>
-<div id="world-bank-api-data" class="cell" data-message="false" data-execution_count="2">
+<div id="a-world-bank-api-data" class="cell" data-message="false" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BASE_URL <span class="op">=</span> <span class="st">"https://api.worldbank.org/v2/country/all/indicator"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>COUNTRY_META_URL <span class="op">=</span> <span class="st">"https://api.worldbank.org/v2/country"</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -364,7 +364,7 @@ gdp_per_capita_raw: 17290
 Unique (countryiso3code, country) aggregate pairs in life data: 49
 Aggregate rows before filtering (all years/values) in life data: 3185</code></pre>
 </div>
-<div id="world-bank-api-data-1" class="cell-output cell-output-display">
+<div id="a-world-bank-api-data-1" class="cell-output cell-output-display">
 <div>
 
 
@@ -435,7 +435,7 @@ Aggregate rows before filtering (all years/values) in life data: 3185</code></pr
 <div class="cell-output cell-output-stdout">
 <pre><code>All aggregate/group names in original fetched data: 49</code></pre>
 </div>
-<div id="world-bank-api-data-2" class="cell-output cell-output-display">
+<div id="a-world-bank-api-data-2" class="cell-output cell-output-display">
 <div>
 
 
@@ -656,7 +656,7 @@ gdp_per_capita_raw: 14105
 Sample rows after removing aggregates:
 life_expectancy_raw:</code></pre>
 </div>
-<div id="world-bank-api-data-3" class="cell-output cell-output-display">
+<div id="a-world-bank-api-data-3" class="cell-output cell-output-display">
 <div>
 
 
@@ -714,7 +714,7 @@ life_expectancy_raw:</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>population_raw:</code></pre>
 </div>
-<div id="world-bank-api-data-4" class="cell-output cell-output-display">
+<div id="a-world-bank-api-data-4" class="cell-output cell-output-display">
 <div>
 
 
@@ -772,7 +772,7 @@ life_expectancy_raw:</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>gdp_per_capita_raw:</code></pre>
 </div>
-<div id="world-bank-api-data-5" class="cell-output cell-output-display">
+<div id="a-world-bank-api-data-5" class="cell-output cell-output-display">
 <div>
 
 
@@ -828,7 +828,7 @@ life_expectancy_raw:</code></pre>
 </div>
 </div>
 </div>
-<div id="world-bank-handling-missing-values" class="cell" data-message="false" data-execution_count="3">
+<div id="a-world-bank-data-handling-missing-values" class="cell" data-message="false" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># keep only country/year/indicator columns before missing-value handling</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>life_expectancy_raw <span class="op">=</span> life_expectancy_raw[[<span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"life_expectancy"</span>]].copy()</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>population_raw <span class="op">=</span> population_raw[[<span class="st">"country"</span>, <span class="st">"year"</span>, <span class="st">"population"</span>]].copy()</span>
@@ -886,7 +886,7 @@ population_df: (14075, 3)
 gdp_per_capita_df: (11569, 3)</code></pre>
 </div>
 </div>
-<div id="cell-world-bank-merge-data" class="cell" data-message="false" data-execution_count="4">
+<div id="cell-1a-World-Bank-Data-Merge" class="cell" data-message="false" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Merge life expectancy with population</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>world_bank_df <span class="op">=</span> life_expectancy_df.merge(</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    population_df,</span>
@@ -916,7 +916,7 @@ population_df rows: 14075
 gdp_per_capita_df rows: 11569
 Merged world_bank_df shape: (14075, 5)</code></pre>
 </div>
-<div id="world-bank-merge-data" class="cell-output cell-output-display">
+<div id="a-world-bank-data-merge" class="cell-output cell-output-display">
 <div>
 
 
@@ -1022,7 +1022,7 @@ Merged world_bank_df shape: (14075, 5)</code></pre>
 <section id="b." class="level3">
 <h3 class="anchored" data-anchor-id="b.">1b.</h3>
 <p>Alcohol (scraped data): Identify which Wikipedia table contains the historical data (1996, 2016, 2019) and extract it. Clean the scraped data: remove any footnote markers (e.g., [1]), convert columns to appropriate data types, and handle any missing values.</p>
-<div id="cell-alcohol-datas-web-scraping" class="cell" data-message="false" data-execution_count="5">
+<div id="cell-1b-Alcohol-Data-Web-Scraping" class="cell" data-message="false" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ALCOHOL_WIKI_URL <span class="op">=</span> <span class="st">"https://en.wikipedia.org/wiki/List_of_countries_by_alcohol_consumption_per_capita"</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>HEADERS <span class="op">=</span> {</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"User-Agent"</span>: <span class="st">"jsc370-class-project/1.0 (educational use)"</span>,</span>
@@ -1049,7 +1049,7 @@ Found 15 tables
 Selected table index: 1
 alcohol_raw shape: (191, 4)</code></pre>
 </div>
-<div id="alcohol-datas-web-scraping" class="cell-output cell-output-display">
+<div id="b-alcohol-data-web-scraping" class="cell-output cell-output-display">
 <div>
 
 
@@ -1140,7 +1140,7 @@ alcohol_raw shape: (191, 4)</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-alcohol-data-footnotes-removal-and-adjust-data-types" class="cell" data-message="false" data-execution_count="6">
+<div id="cell-1b-Alcohol-Data-Footnotes-Removal-and-Adjust-Data-Types" class="cell" data-message="false" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start from extracted table</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>alcohol_df <span class="op">=</span> alcohol_raw.copy()</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1177,7 +1177,7 @@ Country     object
 2019       float64
 dtype: object</code></pre>
 </div>
-<div id="alcohol-data-footnotes-removal-and-adjust-data-types" class="cell-output cell-output-display">
+<div id="b-alcohol-data-footnotes-removal-and-adjust-data-types" class="cell-output cell-output-display">
 <div>
 
 
@@ -1271,7 +1271,7 @@ dtype: object</code></pre>
 <pre><code>(191, 4)</code></pre>
 </div>
 </div>
-<div id="cell-alcohol-data-inspect-missing-values" class="cell" data-message="false" data-execution_count="7">
+<div id="cell-1b-Alcohol-Data-Inspect-Missing-Values" class="cell" data-message="false" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect missingness first (before any dropping/imputation)</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing values in alcohol_df:"</span>)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(alcohol_df[[<span class="st">"Country"</span>, <span class="st">"1996"</span>, <span class="st">"2016"</span>, <span class="st">"2019"</span>]].isna().<span class="bu">sum</span>())</span>
@@ -1294,7 +1294,7 @@ dtype: int64
 Rows with at least one missing alcohol value:
 (45, 4)</code></pre>
 </div>
-<div id="alcohol-data-inspect-missing-values" class="cell-output cell-output-display">
+<div id="b-alcohol-data-inspect-missing-values" class="cell-output cell-output-display">
 <div>
 
 
@@ -1397,7 +1397,7 @@ dtype: float64</code></pre>
 <section id="c." class="level3">
 <h3 class="anchored" data-anchor-id="c.">1c.</h3>
 <p>Reshape the alcohol data from wide to long format, creating a “Year” column with values 1996, 2016, and 2019. You can use pd.melt() in Python.</p>
-<div id="cell-alcohol-data-reshape" class="cell" data-message="false" data-execution_count="8">
+<div id="cell-1c-Alcohol-Data-Reshape" class="cell" data-message="false" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>alcohol_long <span class="op">=</span> alcohol_df.melt(</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    id_vars<span class="op">=</span><span class="st">"Country"</span>,</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    value_vars<span class="op">=</span>[<span class="st">"1996"</span>, <span class="st">"2016"</span>, <span class="st">"2019"</span>],</span>
@@ -1416,7 +1416,7 @@ dtype: float64</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>alcohol_long shape: (573, 3)</code></pre>
 </div>
-<div id="alcohol-data-reshape" class="cell-output cell-output-display">
+<div id="c-alcohol-data-reshape" class="cell-output cell-output-display">
 <div>
 
 
@@ -1500,15 +1500,1399 @@ dtype: float64</code></pre>
 <section id="d." class="level3">
 <h3 class="anchored" data-anchor-id="d.">1d.</h3>
 <p>Filter the life expectancy data to include only the years that match the alcohol data (1996, 2016, 2019).</p>
+<div id="cell-1d-World-Bank-Data-Filter-By-Year" class="cell" data-message="false" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>target_years <span class="op">=</span> [<span class="dv">1996</span>, <span class="dv">2016</span>, <span class="dv">2019</span>]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"world_bank_df shape before year filter:"</span>, world_bank_df.shape)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>world_bank_df <span class="op">=</span> world_bank_df[world_bank_df[<span class="st">"year"</span>].isin(target_years)].copy()</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"world_bank_df shape after year filter:"</span>, world_bank_df.shape)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>display(world_bank_df.head(<span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>world_bank_df shape before year filter: (14075, 5)
+world_bank_df shape after year filter: (651, 5)</code></pre>
+</div>
+<div id="d-world-bank-data-filter-by-year" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">life_expectancy</th>
+<th data-quarto-table-cell-role="th">population</th>
+<th data-quarto-table-cell-role="th">gdp_per_capita</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>Afghanistan</td>
+<td>1996</td>
+<td>52.830</td>
+<td>17763266.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">56</th>
+<td>Afghanistan</td>
+<td>2016</td>
+<td>62.646</td>
+<td>34700612.0</td>
+<td>522.082216</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">59</th>
+<td>Afghanistan</td>
+<td>2019</td>
+<td>62.941</td>
+<td>37856121.0</td>
+<td>496.602504</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">101</th>
+<td>Albania</td>
+<td>1996</td>
+<td>74.113</td>
+<td>3168033.0</td>
+<td>1020.976181</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">121</th>
+<td>Albania</td>
+<td>2016</td>
+<td>78.643</td>
+<td>2689469.0</td>
+<td>4457.634122</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">124</th>
+<td>Albania</td>
+<td>2019</td>
+<td>79.467</td>
+<td>2567801.0</td>
+<td>6069.439031</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">166</th>
+<td>Algeria</td>
+<td>1996</td>
+<td>68.219</td>
+<td>29033044.0</td>
+<td>1616.831987</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">186</th>
+<td>Algeria</td>
+<td>2016</td>
+<td>75.310</td>
+<td>40850721.0</td>
+<td>4424.985290</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">189</th>
+<td>Algeria</td>
+<td>2019</td>
+<td>75.682</td>
+<td>43294546.0</td>
+<td>4468.453419</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">231</th>
+<td>American Samoa</td>
+<td>1996</td>
+<td>71.576</td>
+<td>53353.0</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
 <section id="merge-these-datasets-by-country-name-and-year.-note-you-may-need-to-standardize-country-names-between-datasets-e.g.-united-states-vs-united-states-of-america." class="level3">
 <h3 class="anchored" data-anchor-id="merge-these-datasets-by-country-name-and-year.-note-you-may-need-to-standardize-country-names-between-datasets-e.g.-united-states-vs-united-states-of-america.">Merge these datasets by country name and year. Note: You may need to standardize country names between datasets (e.g., “United States” vs “United States of America”).</h3>
+<div id="country-name-inspection" class="cell" data-message="false" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: normalize country-name text formatting only (no mapping/merge yet)</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> normalize_country_name(series):</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>        series.astype(<span class="bu">str</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.strip()</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">str</span>.replace(<span class="vs">r"</span><span class="dv">\s</span><span class="op">+</span><span class="vs">"</span>, <span class="st">" "</span>, regex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>world_bank_df[<span class="st">"country_std"</span>] <span class="op">=</span> normalize_country_name(world_bank_df[<span class="st">"country"</span>])</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>alcohol_long[<span class="st">"country_std"</span>] <span class="op">=</span> normalize_country_name(alcohol_long[<span class="st">"Country"</span>])</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"world_bank_df shape:"</span>, world_bank_df.shape)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"alcohol_long shape:"</span>, alcohol_long.shape)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Sample standardized country names (World Bank):"</span>)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>display(world_bank_df[[<span class="st">"country"</span>, <span class="st">"country_std"</span>]].drop_duplicates().head(<span class="dv">10</span>))</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Sample standardized country names (Alcohol):"</span>)</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>display(alcohol_long[[<span class="st">"Country"</span>, <span class="st">"country_std"</span>]].drop_duplicates().head(<span class="dv">10</span>))</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: inspect unmatched standardized country names</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>wb_countries <span class="op">=</span> <span class="bu">set</span>(world_bank_df[<span class="st">"country_std"</span>].dropna().unique())</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>alcohol_countries <span class="op">=</span> <span class="bu">set</span>(alcohol_long[<span class="st">"country_std"</span>].dropna().unique())</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>wb_not_in_alcohol <span class="op">=</span> <span class="bu">sorted</span>(wb_countries <span class="op">-</span> alcohol_countries)</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>alcohol_not_in_wb <span class="op">=</span> <span class="bu">sorted</span>(alcohol_countries <span class="op">-</span> wb_countries)</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">World Bank names not found in alcohol data:"</span>, <span class="bu">len</span>(wb_not_in_alcohol))</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({<span class="st">"wb_not_in_alcohol"</span>: wb_not_in_alcohol}).head(<span class="dv">60</span>))</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Alcohol names not found in World Bank data:"</span>, <span class="bu">len</span>(alcohol_not_in_wb))</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({<span class="st">"alcohol_not_in_wb"</span>: alcohol_not_in_wb}).head(<span class="dv">60</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>world_bank_df shape: (651, 6)
+alcohol_long shape: (573, 4)
+
+Sample standardized country names (World Bank):</code></pre>
+</div>
+<div id="country-name-inspection-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">country_std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>Afghanistan</td>
+<td>Afghanistan</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">101</th>
+<td>Albania</td>
+<td>Albania</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">166</th>
+<td>Algeria</td>
+<td>Algeria</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">231</th>
+<td>American Samoa</td>
+<td>American Samoa</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">296</th>
+<td>Andorra</td>
+<td>Andorra</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">361</th>
+<td>Angola</td>
+<td>Angola</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">426</th>
+<td>Antigua and Barbuda</td>
+<td>Antigua and Barbuda</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">491</th>
+<td>Argentina</td>
+<td>Argentina</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">556</th>
+<td>Armenia</td>
+<td>Armenia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">621</th>
+<td>Aruba</td>
+<td>Aruba</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sample standardized country names (Alcohol):</code></pre>
+</div>
+<div id="country-name-inspection-2" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Country</th>
+<th data-quarto-table-cell-role="th">country_std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Afghanistan</td>
+<td>Afghanistan</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Albania</td>
+<td>Albania</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Algeria</td>
+<td>Algeria</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Andorra</td>
+<td>Andorra</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Angola</td>
+<td>Angola</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Antigua and Barbuda</td>
+<td>Antigua and Barbuda</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Argentina</td>
+<td>Argentina</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>Armenia</td>
+<td>Armenia</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>Australia</td>
+<td>Australia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>Austria</td>
+<td>Austria</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+World Bank names not found in alcohol data: 57</code></pre>
+</div>
+<div id="country-name-inspection-3" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">wb_not_in_alcohol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>American Samoa</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Aruba</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Bahamas, The</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Bermuda</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>British Virgin Islands</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Brunei Darussalam</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Cabo Verde</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Cayman Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Channel Islands</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Congo, Dem. Rep.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Congo, Rep.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Cote d'Ivoire</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Curacao</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Czechia</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Egypt, Arab Rep.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Faroe Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>French Polynesia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>Gambia, The</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Gibraltar</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Greenland</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>Guam</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>Hong Kong SAR, China</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>Iran, Islamic Rep.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>Isle of Man</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>Korea, Dem. People's Rep.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>Korea, Rep.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>Kosovo</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>Kyrgyz Republic</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>Lao PDR</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>Liechtenstein</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>Macao SAR, China</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">31</th>
+<td>Marshall Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">32</th>
+<td>Micronesia, Fed. Sts.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">33</th>
+<td>Monaco</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34</th>
+<td>North Macedonia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">35</th>
+<td>Northern Mariana Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>Palau</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">37</th>
+<td>Puerto Rico (US)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">38</th>
+<td>Russian Federation</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39</th>
+<td>San Marino</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">40</th>
+<td>Sao Tome and Principe</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">41</th>
+<td>Sint Maarten (Dutch part)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">42</th>
+<td>Slovak Republic</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">43</th>
+<td>Somalia, Fed. Rep.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">44</th>
+<td>South Sudan</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">45</th>
+<td>St. Kitts and Nevis</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">46</th>
+<td>St. Lucia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">47</th>
+<td>St. Martin (French part)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">48</th>
+<td>St. Vincent and the Grenadines</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">49</th>
+<td>Syrian Arab Republic</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">50</th>
+<td>Turkiye</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">51</th>
+<td>Turks and Caicos Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">52</th>
+<td>Venezuela, RB</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">53</th>
+<td>Viet Nam</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">54</th>
+<td>Virgin Islands (U.S.)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">55</th>
+<td>West Bank and Gaza</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">56</th>
+<td>Yemen, Rep.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Alcohol names not found in World Bank data: 31</code></pre>
+</div>
+<div id="country-name-inspection-4" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">alcohol_not_in_wb</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Bahamas</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Brunei</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Cape Verde</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Congo</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Cook Islands</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Czech Republic</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>DR Congo</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Egypt</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Gambia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Iran</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Ivory Coast</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Kyrgyzstan</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Laos</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Macedonia</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Micronesia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Netherlands Antilles</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>Niue</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>North Korea</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Russia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Saint Kitts and Nevis</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>Saint Lucia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>Saint Vincent and the Grenadines</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>Slovakia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>Somalia</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>South Korea</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>Syria</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>São Tomé and Príncipe</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>Turkey</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>Venezuela</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>Vietnam</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>Yemen</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="country-name-standardization" class="cell" data-message="false" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual mapping for country mismatches</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>country_name_map <span class="op">=</span> {</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Bahamas"</span>: <span class="st">"Bahamas, The"</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Brunei"</span>: <span class="st">"Brunei Darussalam"</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Cape Verde"</span>: <span class="st">"Cabo Verde"</span>,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Congo"</span>: <span class="st">"Congo, Rep."</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DR Congo"</span>: <span class="st">"Congo, Dem. Rep."</span>,</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Czech Republic"</span>: <span class="st">"Czechia"</span>,</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Egypt"</span>: <span class="st">"Egypt, Arab Rep."</span>,</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gambia"</span>: <span class="st">"Gambia, The"</span>,</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Iran"</span>: <span class="st">"Iran, Islamic Rep."</span>,</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ivory Coast"</span>: <span class="st">"Cote d'Ivoire"</span>,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Kyrgyzstan"</span>: <span class="st">"Kyrgyz Republic"</span>,</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Laos"</span>: <span class="st">"Lao PDR"</span>,</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Macedonia"</span>: <span class="st">"North Macedonia"</span>,</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Micronesia"</span>: <span class="st">"Micronesia, Fed. Sts."</span>,</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"North Korea"</span>: <span class="st">"Korea, Dem. People's Rep."</span>,</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"South Korea"</span>: <span class="st">"Korea, Rep."</span>,</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Russia"</span>: <span class="st">"Russian Federation"</span>,</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Slovakia"</span>: <span class="st">"Slovak Republic"</span>,</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Somalia"</span>: <span class="st">"Somalia, Fed. Rep."</span>,</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Syria"</span>: <span class="st">"Syrian Arab Republic"</span>,</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Turkey"</span>: <span class="st">"Turkiye"</span>,</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Venezuela"</span>: <span class="st">"Venezuela, RB"</span>,</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Vietnam"</span>: <span class="st">"Viet Nam"</span>,</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Yemen"</span>: <span class="st">"Yemen, Rep."</span>,</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Saint Kitts and Nevis"</span>: <span class="st">"St. Kitts and Nevis"</span>,</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Saint Lucia"</span>: <span class="st">"St. Lucia"</span>,</span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Saint Vincent and the Grenadines"</span>: <span class="st">"St. Vincent and the Grenadines"</span>,</span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"São Tomé and Príncipe"</span>: <span class="st">"Sao Tome and Principe"</span>,</span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply mapping on alcohol side to match World Bank naming</span></span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>alcohol_long[<span class="st">"country_std"</span>] <span class="op">=</span> alcohol_long[<span class="st">"country_std"</span>].replace(country_name_map)</span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-check unmatched names after manual mapping</span></span>
+<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a>wb_countries_after <span class="op">=</span> <span class="bu">set</span>(world_bank_df[<span class="st">"country_std"</span>].dropna().unique())</span>
+<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a>alcohol_countries_after <span class="op">=</span> <span class="bu">set</span>(alcohol_long[<span class="st">"country_std"</span>].dropna().unique())</span>
+<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a>wb_not_in_alcohol_after <span class="op">=</span> <span class="bu">sorted</span>(wb_countries_after <span class="op">-</span> alcohol_countries_after)</span>
+<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a>alcohol_not_in_wb_after <span class="op">=</span> <span class="bu">sorted</span>(alcohol_countries_after <span class="op">-</span> wb_countries_after)</span>
+<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-43"><a href="#cb29-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"After manual mapping:"</span>)</span>
+<span id="cb29-44"><a href="#cb29-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"World Bank names not found in alcohol data:"</span>, <span class="bu">len</span>(wb_not_in_alcohol_after))</span>
+<span id="cb29-45"><a href="#cb29-45" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({<span class="st">"wb_not_in_alcohol_after"</span>: wb_not_in_alcohol_after}).head(<span class="dv">30</span>))</span>
+<span id="cb29-46"><a href="#cb29-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-47"><a href="#cb29-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Alcohol names not found in World Bank data:"</span>, <span class="bu">len</span>(alcohol_not_in_wb_after))</span>
+<span id="cb29-48"><a href="#cb29-48" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({<span class="st">"alcohol_not_in_wb_after"</span>: alcohol_not_in_wb_after}).head(<span class="dv">30</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>After manual mapping:
+World Bank names not found in alcohol data: 29</code></pre>
+</div>
+<div id="country-name-standardization-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">wb_not_in_alcohol_after</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>American Samoa</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Aruba</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Bermuda</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>British Virgin Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Cayman Islands</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Channel Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Curacao</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Faroe Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>French Polynesia</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Gibraltar</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Greenland</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Guam</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Hong Kong SAR, China</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Isle of Man</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Kosovo</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Liechtenstein</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>Macao SAR, China</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>Marshall Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Monaco</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Northern Mariana Islands</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>Palau</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>Puerto Rico (US)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>San Marino</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>Sint Maarten (Dutch part)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>South Sudan</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>St. Martin (French part)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>Turks and Caicos Islands</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>Virgin Islands (U.S.)</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>West Bank and Gaza</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Alcohol names not found in World Bank data: 3</code></pre>
+</div>
+<div id="country-name-standardization-2" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">alcohol_not_in_wb_after</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Cook Islands</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Netherlands Antilles</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Niue</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-1-Datasets-Merging" class="cell" data-message="false" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) Diagnostic merge: outer join to inspect what does/does not match</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>merged_outer <span class="op">=</span> world_bank_df.merge(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    alcohol_long,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"outer"</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    left_on<span class="op">=</span>[<span class="st">"country_std"</span>, <span class="st">"year"</span>],</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    right_on<span class="op">=</span>[<span class="st">"country_std"</span>, <span class="st">"Year"</span>],</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    indicator<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    suffixes<span class="op">=</span>(<span class="st">"_wb"</span>, <span class="st">"_alcohol"</span>),</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Outer merge shape:"</span>, merged_outer.shape)</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Merge indicator counts:"</span>)</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_outer[<span class="st">"_merge"</span>].value_counts())</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) Analysis dataset: inner join keeps only matched country-year pairs</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> world_bank_df.merge(</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    alcohol_long,</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"inner"</span>,</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    left_on<span class="op">=</span>[<span class="st">"country_std"</span>, <span class="st">"year"</span>],</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    right_on<span class="op">=</span>[<span class="st">"country_std"</span>, <span class="st">"Year"</span>],</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    suffixes<span class="op">=</span>(<span class="st">"_wb"</span>, <span class="st">"_alcohol"</span>),</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep one country/year key and drop redundant merge columns</span></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> merged_df[</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">"country_std"</span>,</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"year"</span>,</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">"life_expectancy"</span>,</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">"population"</span>,</span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gdp_per_capita"</span>,</span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">"alcohol_litres_per_capita_15plus"</span>,</span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>merged_df <span class="op">=</span> merged_df.rename(columns<span class="op">=</span>{<span class="st">"country_std"</span>: <span class="st">"country"</span>})</span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Inner merge shape (analysis dataset):"</span>, merged_df.shape)</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>display(merged_df.head(<span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Outer merge shape: (660, 10)
+Merge indicator counts:
+_merge
+both          564
+left_only      87
+right_only      9
+Name: count, dtype: int64
+
+Inner merge shape (analysis dataset): (564, 6)</code></pre>
+</div>
+<div id="datasets-merging" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">country</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">life_expectancy</th>
+<th data-quarto-table-cell-role="th">population</th>
+<th data-quarto-table-cell-role="th">gdp_per_capita</th>
+<th data-quarto-table-cell-role="th">alcohol_litres_per_capita_15plus</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Afghanistan</td>
+<td>1996</td>
+<td>52.830</td>
+<td>17763266.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Afghanistan</td>
+<td>2016</td>
+<td>62.646</td>
+<td>34700612.0</td>
+<td>522.082216</td>
+<td>0.20</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Afghanistan</td>
+<td>2019</td>
+<td>62.941</td>
+<td>37856121.0</td>
+<td>496.602504</td>
+<td>0.20</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Albania</td>
+<td>1996</td>
+<td>74.113</td>
+<td>3168033.0</td>
+<td>1020.976181</td>
+<td>2.59</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Albania</td>
+<td>2016</td>
+<td>78.643</td>
+<td>2689469.0</td>
+<td>4457.634122</td>
+<td>7.50</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Albania</td>
+<td>2019</td>
+<td>79.467</td>
+<td>2567801.0</td>
+<td>6069.439031</td>
+<td>5.10</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Algeria</td>
+<td>1996</td>
+<td>68.219</td>
+<td>29033044.0</td>
+<td>1616.831987</td>
+<td>0.27</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Algeria</td>
+<td>2016</td>
+<td>75.310</td>
+<td>40850721.0</td>
+<td>4424.985290</td>
+<td>0.90</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Algeria</td>
+<td>2019</td>
+<td>75.682</td>
+<td>43294546.0</td>
+<td>4468.453419</td>
+<td>0.60</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Andorra</td>
+<td>1996</td>
+<td>81.009</td>
+<td>63984.0</td>
+<td>19130.159715</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
 <section id="conduct-basic-eda-on-the-merged-dataset-check-dimensions-missing-values-summary-statistics-of-key-variables-to-look-for-outliers.-which-countries-have-the-lowest-and-highest-life-expectancies-and-alcohol-consumption" class="level3">
 <h3 class="anchored" data-anchor-id="conduct-basic-eda-on-the-merged-dataset-check-dimensions-missing-values-summary-statistics-of-key-variables-to-look-for-outliers.-which-countries-have-the-lowest-and-highest-life-expectancies-and-alcohol-consumption">Conduct basic EDA on the merged dataset: check dimensions, missing values, summary statistics of key variables to look for outliers. Which countries have the lowest and highest life expectancies and alcohol consumption?</h3>
+<div id="eda-inspection" class="cell" data-message="false" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape:"</span>, merged_df.shape)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_rows:"</span>, merged_df.shape[<span class="dv">0</span>])</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_cols:"</span>, merged_df.shape[<span class="dv">1</span>])</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries:"</span>, merged_df[<span class="st">"country"</span>].nunique())</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>country_year_counts <span class="op">=</span> merged_df.groupby(<span class="st">"country"</span>)[<span class="st">"year"</span>].nunique()</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Unique year counts per country:"</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(country_year_counts.value_counts().sort_index())</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing values:</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df.isna().<span class="bu">sum</span>())</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing percentage (%):</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((merged_df.isna().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Summary statistics:</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>shape: (564, 6)
+n_rows: 564
+n_cols: 6
+Unique countries: 188
+
+Unique year counts per country:
+year
+3    188
+Name: count, dtype: int64
+
+
+Missing values:
+
+country                              0
+year                                 0
+life_expectancy                      0
+population                           0
+gdp_per_capita                       8
+alcohol_litres_per_capita_15plus    43
+dtype: int64
+
+Missing percentage (%):
+
+country                             0.00
+year                                0.00
+life_expectancy                     0.00
+population                          0.00
+gdp_per_capita                      1.42
+alcohol_litres_per_capita_15plus    7.62
+dtype: float64
+
+
+Summary statistics:
+
+              year  life_expectancy    population  gdp_per_capita  \
+count   564.000000       564.000000  5.640000e+02      556.000000   
+mean   2010.333333        69.804518  3.719581e+07    11283.244066   
+std      10.217991         9.042869  1.378711e+08    16661.635359   
+min    1996.000000        31.530000  9.342000e+03       71.406525   
+25%    1996.000000        64.421250  2.006572e+06     1287.345659   
+50%    2016.000000        71.236000  7.814162e+06     4125.174909   
+75%    2019.000000        76.554848  2.577110e+07    13270.026950   
+max    2019.000000        84.489000  1.407745e+09   112696.649060   
+
+       alcohol_litres_per_capita_15plus  
+count                        521.000000  
+mean                           5.515355  
+std                            4.128150  
+min                            0.000000  
+25%                            1.600000  
+50%                            5.000000  
+75%                            8.800000  
+max                           17.000000  </code></pre>
+</div>
+</div>
+<div id="drop-missing-gdp-rows" class="cell" data-message="false" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows before dropping missing gdp_per_capita:"</span>, merged_df.shape[<span class="dv">0</span>])</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing gdp_per_capita rows:"</span>, merged_df[<span class="st">"gdp_per_capita"</span>].isna().<span class="bu">sum</span>())</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>merged_df_drop_missing_gdp <span class="op">=</span> merged_df.dropna(subset<span class="op">=</span>[<span class="st">"gdp_per_capita"</span>]).copy()</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after dropping missing gdp_per_capita:"</span>, merged_df_drop_missing_gdp.shape[<span class="dv">0</span>])</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries after drop:"</span>, merged_df_drop_missing_gdp[<span class="st">"country"</span>].nunique())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows before dropping missing gdp_per_capita: 564
+Missing gdp_per_capita rows: 8
+Rows after dropping missing gdp_per_capita: 556
+Unique countries after drop: 187</code></pre>
+</div>
+</div>
+<div id="eda-inspection-after-drop-gdp-missing" class="cell" data-message="false" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape (after dropping missing gdp_per_capita):"</span>, merged_df_drop_missing_gdp.shape)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_rows:"</span>, merged_df_drop_missing_gdp.shape[<span class="dv">0</span>])</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_cols:"</span>, merged_df_drop_missing_gdp.shape[<span class="dv">1</span>])</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries:"</span>, merged_df_drop_missing_gdp[<span class="st">"country"</span>].nunique())</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>country_year_counts_after_drop <span class="op">=</span> merged_df_drop_missing_gdp.groupby(<span class="st">"country"</span>)[<span class="st">"year"</span>].nunique()</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Unique year counts per country:"</span>)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(country_year_counts_after_drop.value_counts().sort_index())</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing values:</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_drop_missing_gdp.isna().<span class="bu">sum</span>())</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing percentage (%):</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((merged_df_drop_missing_gdp.isna().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Summary statistics:</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_drop_missing_gdp.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>shape (after dropping missing gdp_per_capita): (556, 6)
+n_rows: 556
+n_cols: 6
+Unique countries: 187
+
+Unique year counts per country:
+year
+1      1
+2      3
+3    183
+Name: count, dtype: int64
+
+Missing values:
+
+country                              0
+year                                 0
+life_expectancy                      0
+population                           0
+gdp_per_capita                       0
+alcohol_litres_per_capita_15plus    41
+dtype: int64
+
+Missing percentage (%):
+
+country                             0.00
+year                                0.00
+life_expectancy                     0.00
+population                          0.00
+gdp_per_capita                      0.00
+alcohol_litres_per_capita_15plus    7.37
+dtype: float64
+
+Summary statistics:
+
+              year  life_expectancy    population  gdp_per_capita  \
+count   556.000000       556.000000  5.560000e+02      556.000000   
+mean   2010.343525        69.850071  3.748913e+07    11283.244066   
+std      10.211757         9.064931  1.388317e+08    16661.635359   
+min    1996.000000        31.530000  9.342000e+03       71.406525   
+25%    1996.000000        64.421250  1.984576e+06     1287.345659   
+50%    2016.000000        71.246000  7.766518e+06     4125.174909   
+75%    2019.000000        76.596951  2.562692e+07    13270.026950   
+max    2019.000000        84.489000  1.407745e+09   112696.649060   
+
+       alcohol_litres_per_capita_15plus  
+count                        515.000000  
+mean                           5.553670  
+std                            4.133556  
+min                            0.000000  
+25%                            1.600000  
+50%                            5.100000  
+75%                            8.875000  
+max                           17.000000  </code></pre>
+</div>
+</div>
+<div id="eda-outliers" class="cell" data-message="false" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show which country/year achieves each extremum</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_extremum_context(df, value_col, label):</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    min_idx <span class="op">=</span> df[value_col].idxmin()</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    max_idx <span class="op">=</span> df[value_col].idxmax()</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    min_row <span class="op">=</span> df.loc[min_idx, [<span class="st">"country"</span>, <span class="st">"year"</span>, value_col]]</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    max_row <span class="op">=</span> df.loc[max_idx, [<span class="st">"country"</span>, <span class="st">"year"</span>, value_col]]</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss"> minimum at:"</span>)</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(min_row)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss"> maximum at:"</span>)</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(max_row)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_drop_missing_gdp, <span class="st">"life_expectancy"</span>, <span class="st">"Life expectancy"</span>)</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_drop_missing_gdp, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"Alcohol consumption"</span>)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_drop_missing_gdp, <span class="st">"gdp_per_capita"</span>, <span class="st">"GDP per capita"</span>)</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_drop_missing_gdp, <span class="st">"population"</span>, <span class="st">"Population"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Life expectancy minimum at:
+country            Central African Republic
+year                                   2019
+life_expectancy                       31.53
+Name: 98, dtype: object
+Life expectancy maximum at:
+country            Andorra
+year                  2016
+life_expectancy     84.489
+Name: 10, dtype: object
+
+Alcohol consumption minimum at:
+country                             Bangladesh
+year                                      2016
+alcohol_litres_per_capita_15plus           0.0
+Name: 40, dtype: object
+Alcohol consumption maximum at:
+country                             Romania
+year                                   2019
+alcohol_litres_per_capita_15plus       17.0
+Name: 416, dtype: object
+
+GDP per capita minimum at:
+country             Liberia
+year                   1996
+gdp_per_capita    71.406525
+Name: 291, dtype: object
+GDP per capita maximum at:
+country             Luxembourg
+year                      2019
+gdp_per_capita    112696.64906
+Name: 302, dtype: object
+
+Population minimum at:
+country       Tuvalu
+year            1996
+population    9342.0
+Name: 522, dtype: object
+Population maximum at:
+country              China
+year                  2019
+population    1407745000.0
+Name: 107, dtype: object</code></pre>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li><strong>Minimum Life expectancy:</strong> approximately 31.53 years in Central African Republic (2019).</li>
+<li><strong>Maximum Life expectancy:</strong> approximately 84.49 years in Andorra (2016).</li>
+<li><strong>Minimum Annual Pure Alcohol consumption:</strong> approximately 0.00 liters per person (age 15+) in Bangladesh (2016).</li>
+<li><strong>Maximum Annual Pure Alcohol consumption:</strong> approximately 17.00 liters per person (age 15+) in Romania (2019).</li>
+</ul>
 </section>
 <section id="write-a-paragraph-describing-your-scraping-and-cleaning-steps.-include-a-written-summary-of-the-variables-and-the-number-of-observations-before-and-after-merging.-document-any-countries-that-didnt-match-and-how-you-handled-them.-also-summarize-your-findings-from-the-basic-eda." class="level3">
 <h3 class="anchored" data-anchor-id="write-a-paragraph-describing-your-scraping-and-cleaning-steps.-include-a-written-summary-of-the-variables-and-the-number-of-observations-before-and-after-merging.-document-any-countries-that-didnt-match-and-how-you-handled-them.-also-summarize-your-findings-from-the-basic-eda.">Write a paragraph describing your scraping and cleaning steps. Include a written summary of the variables and the number of observations before and after merging. Document any countries that didn’t match and how you handled them. Also summarize your findings from the basic EDA.</h3>
+<p><strong>Solution:</strong></p>
+<p>First, I pulled life expectancy, population, and GDP per capita data from the World Bank API (with the support of the API documentation) by parsing the nested JSON into tidy <code>country</code>–<code>year</code>–<code>indicator</code> tables, with filtering out aggregate regions using the API’s country metadata by checking the flag of “Aggregates”, which indicates this row’s data is not for a country, but for a region or group, dropping missing indicator values, and merging the three indicators by country and year through outer joins before restricting to the target years-1996, 2016, and 2019.</p>
+<p>Second, I scraped alcohol consumption data from Wikipedia (use provided link) by using lab05 workflow and codes, with removing footnote markers from headers and country names, converting the year column to integer, treating dashed entries as missing values (NaN), and reshaping the dataset to long format with <code>pd.melt()</code>.</p>
+<p>After that, I standardized country names by trimming whitespace and applying a manual mapping dictionary to make sure the country names in the two datasets are consistent and follow the World Bank naming conventions. (See the mapping details below)</p>
+<p>Finally, I merged the two datasets by standardized country names and year to get the final dataset. The merged dataset contains the following variables:</p>
+<ul>
+<li><code>country</code> (standardized country name following World Bank conventions),</li>
+<li><code>year</code> (1996/2016/2019),</li>
+<li><code>life_expectancy</code> (years),</li>
+<li><code>population</code> (total),</li>
+<li><code>gdp_per_capita</code> (current US$), and</li>
+<li><code>alcohol_litres_per_capita_15plus</code> (litres of annual pure alcohol consumption per person age 15+).</li>
+</ul>
+<p>Before merging, the World Bank dataset contained <strong>651</strong> observations and the alcohol dataset contained <strong>573</strong> observations (after cleaning). After merging through inner join by <code>country</code> and <code>year</code>, the final merged dataset contained <strong>564</strong> observations. The reason of using inner join is to keep only the matched <code>country</code>-<code>year</code> pairs. The unmatched <code>country</code>-<code>year</code> pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. A groupby validation (<code>merged_df.groupby("country")["year"].nunique()</code>) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019). Therefore, the accuracy of future analysis is maintained.</p>
+<p>There is no missing value in <code>life_expectancy</code> or <code>population</code>, but some missingness is in <code>gdp_per_capita</code> (8 rows; 1.42%) and <code>alcohol_litres_per_capita_15plus</code> (43 rows; 7.62%). Therefore, I dropped the rows with missing <code>gdp_per_capita</code> to get the dataset <code>merged_df_drop_missing_gdp</code> since there is only 1.42% missingness, which is statistically reliable to drop. After handling the missing values, the observed ranges are calculated:</p>
+<ul>
+<li>Life expectancy from 31.53 years (Central African Republic, 2019) to 84.49 years (Andorra, 2016)</li>
+<li>Annual pure alcohol consumption per person age 15+ from 0.00 liters (Bangladesh, 2016) to 17.0 liters (Romania, 2019)</li>
+<li>GDP per capita from 71.41 USD (Liberia, 1996) to 112,696.65 USD (Luxembourg, 2019)</li>
+<li>Population from 9,342 (Tuvalu, 1996) to about 1.41 billion (China, 2019)</li>
+</ul>
+<p>Accroding to the summary statistics, some countries have extreme values in the variables, especially for GDP per capita. After validate some of the extreme values, I found that they are reasonable and not due to data entry errors. For example, Luxembourg’s peak GDP per capita is an accurate reflection of real-world scenarios.</p>
+<p><strong>Mapping Reference during Standardization:</strong></p>
+<p>The following manual country name mappings during standardization were applied to align the Wikipedia alcohol dataset with World Bank naming conventions (Alcohol dataset country name → World Bank dataset country name):</p>
+<ul>
+<li>Bahamas → Bahamas, The<br>
+</li>
+<li>Brunei → Brunei Darussalam<br>
+</li>
+<li>Cape Verde → Cabo Verde<br>
+</li>
+<li>Congo → Congo, Rep.<br>
+</li>
+<li>DR Congo → Congo, Dem. Rep.<br>
+</li>
+<li>Czech Republic → Czechia<br>
+</li>
+<li>Egypt → Egypt, Arab Rep.<br>
+</li>
+<li>Gambia → Gambia, The<br>
+</li>
+<li>Iran → Iran, Islamic Rep.<br>
+</li>
+<li>Ivory Coast → Cote d’Ivoire<br>
+</li>
+<li>Kyrgyzstan → Kyrgyz Republic<br>
+</li>
+<li>Laos → Lao PDR<br>
+</li>
+<li>Macedonia → North Macedonia<br>
+</li>
+<li>Micronesia → Micronesia, Fed. Sts.<br>
+</li>
+<li>North Korea → Korea, Dem. People’s Rep.<br>
+</li>
+<li>South Korea → Korea, Rep.<br>
+</li>
+<li>Russia → Russian Federation<br>
+</li>
+<li>Slovakia → Slovak Republic<br>
+</li>
+<li>Somalia → Somalia, Fed. Rep.<br>
+</li>
+<li>Syria → Syrian Arab Republic<br>
+</li>
+<li>Turkey → Turkiye<br>
+</li>
+<li>Venezuela → Venezuela, RB<br>
+</li>
+<li>Vietnam → Viet Nam<br>
+</li>
+<li>Yemen → Yemen, Rep.<br>
+</li>
+<li>Saint Kitts and Nevis → St.&nbsp;Kitts and Nevis<br>
+</li>
+<li>Saint Lucia → St.&nbsp;Lucia<br>
+</li>
+<li>Saint Vincent and the Grenadines → St.&nbsp;Vincent and the Grenadines<br>
+</li>
+<li>São Tomé and Príncipe → Sao Tome and Principe</li>
+</ul>
 </section>
 </section>
 <section id="points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize." class="level2">
