@@ -2649,81 +2649,91 @@ min                            0.000000
 max                           17.000000  </code></pre>
 </div>
 </div>
-<div id="drop-missing-gdp-rows" class="cell" data-message="false" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows before dropping missing gdp_per_capita:"</span>, merged_df.shape[<span class="dv">0</span>])</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing gdp_per_capita rows:"</span>, merged_df[<span class="st">"gdp_per_capita"</span>].isna().<span class="bu">sum</span>())</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>merged_df_drop_missing_gdp <span class="op">=</span> merged_df.dropna(subset<span class="op">=</span>[<span class="st">"gdp_per_capita"</span>]).copy()</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after dropping missing gdp_per_capita:"</span>, merged_df_drop_missing_gdp.shape[<span class="dv">0</span>])</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries after drop:"</span>, merged_df_drop_missing_gdp[<span class="st">"country"</span>].nunique())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="drop-all-missing-rows" class="cell" data-message="false" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop all rows with any missing value (complete-case dataset)</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows before dropping missing rows:"</span>, merged_df.shape[<span class="dv">0</span>])</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows with any missing value:"</span>, merged_df.isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>).<span class="bu">sum</span>())</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>dropped_rows <span class="op">=</span> merged_df[merged_df.isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>)].copy()</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>affected_countries <span class="op">=</span> <span class="bu">sorted</span>(dropped_rows[<span class="st">"country"</span>].dropna().unique())</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>merged_df_complete_case <span class="op">=</span> merged_df.dropna().copy()</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after dropping all missing rows:"</span>, merged_df_complete_case.shape[<span class="dv">0</span>])</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries after drop:"</span>, merged_df_complete_case[<span class="st">"country"</span>].nunique())</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of affected countries:"</span>, <span class="bu">len</span>(affected_countries))</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Affected countries (had at least one dropped row):"</span>)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(affected_countries)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows before dropping missing gdp_per_capita: 564
-Missing gdp_per_capita rows: 8
-Rows after dropping missing gdp_per_capita: 556
-Unique countries after drop: 187</code></pre>
+<pre><code>Rows before dropping missing rows: 564
+Rows with any missing value: 49
+Rows after dropping all missing rows: 515
+Unique countries after drop: 187
+Number of affected countries: 45
+Affected countries (had at least one dropped row):
+['Afghanistan', 'Andorra', 'Antigua and Barbuda', 'Bahamas, The', 'Bahrain', 'Bangladesh', 'Bhutan', 'Comoros', 'Dominica', 'Equatorial Guinea', 'Eritrea', 'Grenada', 'Iran, Islamic Rep.', 'Jordan', 'Kiribati', "Korea, Dem. People's Rep.", 'Kuwait', 'Libya', 'Mali', 'Mauritania', 'Micronesia, Fed. Sts.', 'Montenegro', 'Namibia', 'Nauru', 'Nepal', 'New Caledonia', 'Niger', 'Oman', 'Pakistan', 'Qatar', 'Samoa', 'Sao Tome and Principe', 'Saudi Arabia', 'Serbia', 'Seychelles', 'Sierra Leone', 'Somalia, Fed. Rep.', 'St. Kitts and Nevis', 'St. Lucia', 'St. Vincent and the Grenadines', 'Timor-Leste', 'Tonga', 'Tuvalu', 'United Kingdom', 'Yemen, Rep.']</code></pre>
 </div>
 </div>
-<div id="eda-inspection-after-drop-gdp-missing" class="cell" data-message="false" data-execution_count="15">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape (after dropping missing gdp_per_capita):"</span>, merged_df_drop_missing_gdp.shape)</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_rows:"</span>, merged_df_drop_missing_gdp.shape[<span class="dv">0</span>])</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_cols:"</span>, merged_df_drop_missing_gdp.shape[<span class="dv">1</span>])</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries:"</span>, merged_df_drop_missing_gdp[<span class="st">"country"</span>].nunique())</span>
+<div id="eda-inspection-after-drop-all-missing-rows" class="cell" data-message="false" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape (after dropping all missing rows):"</span>, merged_df_complete_case.shape)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_rows:"</span>, merged_df_complete_case.shape[<span class="dv">0</span>])</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_cols:"</span>, merged_df_complete_case.shape[<span class="dv">1</span>])</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries:"</span>, merged_df_complete_case[<span class="st">"country"</span>].nunique())</span>
 <span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>country_year_counts_after_drop <span class="op">=</span> merged_df_drop_missing_gdp.groupby(<span class="st">"country"</span>)[<span class="st">"year"</span>].nunique()</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>country_year_counts_after_drop <span class="op">=</span> merged_df_complete_case.groupby(<span class="st">"country"</span>)[<span class="st">"year"</span>].nunique()</span>
 <span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Unique year counts per country:"</span>)</span>
 <span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(country_year_counts_after_drop.value_counts().sort_index())</span>
 <span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing values:</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_drop_missing_gdp.isna().<span class="bu">sum</span>())</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_complete_case.isna().<span class="bu">sum</span>())</span>
 <span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing percentage (%):</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((merged_df_drop_missing_gdp.isna().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((merged_df_complete_case.isna().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>))</span>
 <span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Summary statistics:</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_drop_missing_gdp.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_complete_case.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>shape (after dropping missing gdp_per_capita): (556, 6)
-n_rows: 556
+<pre><code>shape (after dropping all missing rows): (515, 6)
+n_rows: 515
 n_cols: 6
 Unique countries: 187
 
 Unique year counts per country:
 year
-1      1
-2      3
-3    183
+1      2
+2     42
+3    143
 Name: count, dtype: int64
 
 Missing values:
 
-country                              0
-year                                 0
-life_expectancy                      0
-population                           0
-gdp_per_capita                       0
-alcohol_litres_per_capita_15plus    41
+country                             0
+year                                0
+life_expectancy                     0
+population                          0
+gdp_per_capita                      0
+alcohol_litres_per_capita_15plus    0
 dtype: int64
 
 Missing percentage (%):
 
-country                             0.00
-year                                0.00
-life_expectancy                     0.00
-population                          0.00
-gdp_per_capita                      0.00
-alcohol_litres_per_capita_15plus    7.37
+country                             0.0
+year                                0.0
+life_expectancy                     0.0
+population                          0.0
+gdp_per_capita                      0.0
+alcohol_litres_per_capita_15plus    0.0
 dtype: float64
 
 Summary statistics:
 
               year  life_expectancy    population  gdp_per_capita  \
-count   556.000000       556.000000  5.560000e+02      556.000000   
-mean   2010.343525        69.850071  3.748913e+07    11283.244066   
-std      10.211757         9.064931  1.388317e+08    16661.635359   
-min    1996.000000        31.530000  9.342000e+03       71.406525   
-25%    1996.000000        64.421250  1.984576e+06     1287.345659   
-50%    2016.000000        71.246000  7.766518e+06     4125.174909   
-75%    2019.000000        76.596951  2.562692e+07    13270.026950   
+count   515.000000       515.000000  5.150000e+02      515.000000   
+mean   2011.401942        70.198695  3.953295e+07    11678.334159   
+std       9.780450         8.945520  1.438121e+08    17090.436805   
+min    1996.000000        31.530000  1.058100e+04       71.406525   
+25%    1996.000000        64.764500  2.457033e+06     1343.857976   
+50%    2016.000000        71.540000  8.865631e+06     4170.114400   
+75%    2019.000000        76.778402  2.807424e+07    14180.327188   
 max    2019.000000        84.489000  1.407745e+09   112696.649060   
 
        alcohol_litres_per_capita_15plus  
@@ -2751,10 +2761,10 @@ max                           17.000000  </code></pre>
 <span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss"> maximum at:"</span>)</span>
 <span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(max_row)</span>
 <span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_drop_missing_gdp, <span class="st">"life_expectancy"</span>, <span class="st">"Life expectancy"</span>)</span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_drop_missing_gdp, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"Alcohol consumption"</span>)</span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_drop_missing_gdp, <span class="st">"gdp_per_capita"</span>, <span class="st">"GDP per capita"</span>)</span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_drop_missing_gdp, <span class="st">"population"</span>, <span class="st">"Population"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_complete_case, <span class="st">"life_expectancy"</span>, <span class="st">"Life expectancy"</span>)</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_complete_case, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"Alcohol consumption"</span>)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_complete_case, <span class="st">"gdp_per_capita"</span>, <span class="st">"GDP per capita"</span>)</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_complete_case, <span class="st">"population"</span>, <span class="st">"Population"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Life expectancy minimum at:
@@ -2791,10 +2801,10 @@ gdp_per_capita    112696.64906
 Name: 302, dtype: object
 
 Population minimum at:
-country       Tuvalu
-year            1996
-population    9342.0
-Name: 522, dtype: object
+country        Tuvalu
+year             2019
+population    10581.0
+Name: 524, dtype: object
 Population maximum at:
 country              China
 year                  2019
@@ -2825,8 +2835,8 @@ Name: 107, dtype: object</code></pre>
 <li><code>gdp_per_capita</code> (current US$), and</li>
 <li><code>alcohol_litres_per_capita_15plus</code> (litres of annual pure alcohol consumption per person age 15+).</li>
 </ul>
-<p>Before merging, the World Bank dataset contained <strong>651</strong> observations and the alcohol dataset contained <strong>573</strong> observations (after cleaning). After merging through inner join by <code>country</code> and <code>year</code>, the final merged dataset contained <strong>564</strong> observations. The reason of using inner join is to keep only the matched <code>country</code>-<code>year</code> pairs. The unmatched <code>country</code>-<code>year</code> pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. A groupby validation (<code>merged_df.groupby("country")["year"].nunique()</code>) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019). Therefore, the accuracy of future analysis is maintained.</p>
-<p>There is no missing value in <code>life_expectancy</code> or <code>population</code>, but some missingness is in <code>gdp_per_capita</code> (8 rows; 1.42%) and <code>alcohol_litres_per_capita_15plus</code> (43 rows; 7.62%). Therefore, I dropped the rows with missing <code>gdp_per_capita</code> to get the dataset <code>merged_df_drop_missing_gdp</code> since there is only 1.42% missingness, which is statistically reliable to drop. After handling the missing values, the observed ranges are calculated:</p>
+<p>Before merging, the World Bank dataset contained <strong>651</strong> observations and the alcohol dataset contained <strong>573</strong> observations (after cleaning). After merging through inner join by <code>country</code> and <code>year</code>, the final merged dataset contained <strong>564</strong> observations. The reason of using inner join is to keep only the matched <code>country</code>-<code>year</code> pairs. The unmatched <code>country</code>-<code>year</code> pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. <strong>A groupby validation (<code>merged_df.groupby("country")["year"].nunique()</code>) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019).</strong> Therefore, the accuracy of future analysis is maintained.</p>
+<p>There is no missing value in <code>life_expectancy</code> or <code>population</code>, but some missingness is in <code>gdp_per_capita</code> (8 rows; 1.42%) and <code>alcohol_litres_per_capita_15plus</code> (43 rows; 7.62%). Therefore, I dropped all rows with any missing values to create a complete-case dataset (<code>merged_df_complete_case</code>) for downstream summaries and comparisons. Therefore, there are <strong>515</strong> observations in the complete-case dataset. After handling missing values, the observed ranges are calculated:</p>
 <ul>
 <li>Life expectancy from 31.53 years (Central African Republic, 2019) to 84.49 years (Andorra, 2016)</li>
 <li>Annual pure alcohol consumption per person age 15+ from 0.00 liters (Bangladesh, 2016) to 17.0 liters (Romania, 2019)</li>
@@ -2897,6 +2907,88 @@ Name: 107, dtype: object</code></pre>
 </section>
 <section id="points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize." class="level2">
 <h2 class="anchored" data-anchor-id="points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize.">2. (4 points) Create a summary table of the merged dataset showing the mean and sd of life expectancy, alcohol consumption, population, and GDP per capita by year. Briefly summarize.</h2>
+<div id="cell-2-Summary-Table" class="cell" data-message="false" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> (</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    merged_df_complete_case</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"year"</span>)[[<span class="st">"life_expectancy"</span>, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"population"</span>, <span class="st">"gdp_per_capita"</span>]]</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    .agg([<span class="st">"mean"</span>, <span class="st">"std"</span>])</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten column names for readability</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>summary_table.columns <span class="op">=</span> [<span class="ss">f"</span><span class="sc">{</span>var<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>stat<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> var, stat <span class="kw">in</span> summary_table.columns]</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> summary_table.reset_index()</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>display(summary_table)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="summary-table" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">life_expectancy_mean</th>
+<th data-quarto-table-cell-role="th">life_expectancy_std</th>
+<th data-quarto-table-cell-role="th">alcohol_litres_per_capita_15plus_mean</th>
+<th data-quarto-table-cell-role="th">alcohol_litres_per_capita_15plus_std</th>
+<th data-quarto-table-cell-role="th">population_mean</th>
+<th data-quarto-table-cell-role="th">population_std</th>
+<th data-quarto-table-cell-role="th">gdp_per_capita_mean</th>
+<th data-quarto-table-cell-role="th">gdp_per_capita_std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1996</td>
+<td>65.766</td>
+<td>9.820</td>
+<td>4.855</td>
+<td>4.274</td>
+<td>3.598496e+07</td>
+<td>1.319311e+08</td>
+<td>6795.270</td>
+<td>10828.240</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2016</td>
+<td>71.633</td>
+<td>7.867</td>
+<td>6.184</td>
+<td>4.108</td>
+<td>4.024900e+07</td>
+<td>1.466055e+08</td>
+<td>12810.489</td>
+<td>17795.480</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2019</td>
+<td>72.274</td>
+<td>8.002</td>
+<td>5.474</td>
+<td>3.968</td>
+<td>4.162826e+07</td>
+<td>1.505760e+08</td>
+<td>14414.632</td>
+<td>19525.001</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li><strong>Life expectancy:</strong> increased from 1996 to 2019 (mean rose by 6.5 years overall), while the cross-country variation was large (sd was approximately 8–10 years).</li>
+<li>The average <strong>Annual Pure Alcohol consumption per person age 15+</strong> increased from 1996 to 2016, then decreased by 2019; variation across countries was approximately constant over years, but extremely high since the sd was close to the means.</li>
+<li><strong>GDP per capita:</strong> increased strongly over time, and the sd was larger than the mean in every year, indicating substantial inequality across countries.</li>
+<li><strong>Population:</strong> mean population increased over time, but the very large sd reflects the mix of very small and very large countries in terms of population.</li>
+</ul>
 </section>
 <section id="points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category." class="level2">
 <h2 class="anchored" data-anchor-id="points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category.">3. (4 points) Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.</h2>

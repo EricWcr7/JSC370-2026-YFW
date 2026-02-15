@@ -592,40 +592,47 @@ print(merged_df.describe())
 ```
 
 ```{python}
-#| label: 1-Drop-Missing-GDP-Rows
+#| label: 1-Drop-All-Missing-Rows
 #| message: false
 #| warning: false
 
-print("Rows before dropping missing gdp_per_capita:", merged_df.shape[0])
-print("Missing gdp_per_capita rows:", merged_df["gdp_per_capita"].isna().sum())
+# Drop all rows with any missing value (complete-case dataset)
+print("Rows before dropping missing rows:", merged_df.shape[0])
+print("Rows with any missing value:", merged_df.isna().any(axis=1).sum())
 
-merged_df_drop_missing_gdp = merged_df.dropna(subset=["gdp_per_capita"]).copy()
+dropped_rows = merged_df[merged_df.isna().any(axis=1)].copy()
+affected_countries = sorted(dropped_rows["country"].dropna().unique())
 
-print("Rows after dropping missing gdp_per_capita:", merged_df_drop_missing_gdp.shape[0])
-print("Unique countries after drop:", merged_df_drop_missing_gdp["country"].nunique())
+merged_df_complete_case = merged_df.dropna().copy()
+
+print("Rows after dropping all missing rows:", merged_df_complete_case.shape[0])
+print("Unique countries after drop:", merged_df_complete_case["country"].nunique())
+print("Number of affected countries:", len(affected_countries))
+print("Affected countries (had at least one dropped row):")
+print(affected_countries)
 ```
 
 ```{python}
-#| label: 1-EDA-Inspection-After-Drop-GDP-Missing
+#| label: 1-EDA-Inspection-After-Drop-All-Missing-Rows
 #| message: false
 #| warning: false
 
-print("shape (after dropping missing gdp_per_capita):", merged_df_drop_missing_gdp.shape)
-print("n_rows:", merged_df_drop_missing_gdp.shape[0])
-print("n_cols:", merged_df_drop_missing_gdp.shape[1])
-print("Unique countries:", merged_df_drop_missing_gdp["country"].nunique())
+print("shape (after dropping all missing rows):", merged_df_complete_case.shape)
+print("n_rows:", merged_df_complete_case.shape[0])
+print("n_cols:", merged_df_complete_case.shape[1])
+print("Unique countries:", merged_df_complete_case["country"].nunique())
 
-country_year_counts_after_drop = merged_df_drop_missing_gdp.groupby("country")["year"].nunique()
+country_year_counts_after_drop = merged_df_complete_case.groupby("country")["year"].nunique()
 print("\nUnique year counts per country:")
 print(country_year_counts_after_drop.value_counts().sort_index())
 
 print("\nMissing values:\n")
-print(merged_df_drop_missing_gdp.isna().sum())
+print(merged_df_complete_case.isna().sum())
 print("\nMissing percentage (%):\n")
-print((merged_df_drop_missing_gdp.isna().mean() * 100).round(2))
+print((merged_df_complete_case.isna().mean() * 100).round(2))
 
 print("\nSummary statistics:\n")
-print(merged_df_drop_missing_gdp.describe())
+print(merged_df_complete_case.describe())
 ```
 
 ```{python}
@@ -646,10 +653,10 @@ def print_extremum_context(df, value_col, label):
     print(f"{label} maximum at:")
     print(max_row)
 
-print_extremum_context(merged_df_drop_missing_gdp, "life_expectancy", "Life expectancy")
-print_extremum_context(merged_df_drop_missing_gdp, "alcohol_litres_per_capita_15plus", "Alcohol consumption")
-print_extremum_context(merged_df_drop_missing_gdp, "gdp_per_capita", "GDP per capita")
-print_extremum_context(merged_df_drop_missing_gdp, "population", "Population")
+print_extremum_context(merged_df_complete_case, "life_expectancy", "Life expectancy")
+print_extremum_context(merged_df_complete_case, "alcohol_litres_per_capita_15plus", "Alcohol consumption")
+print_extremum_context(merged_df_complete_case, "gdp_per_capita", "GDP per capita")
+print_extremum_context(merged_df_complete_case, "population", "Population")
 ```
 
 **Summary:**
@@ -678,9 +685,9 @@ Finally, I merged the two datasets by standardized country names and year to get
 - `gdp_per_capita` (current US$), and
 - `alcohol_litres_per_capita_15plus` (litres of annual pure alcohol consumption per person age 15+).
 
-Before merging, the World Bank dataset contained **651** observations and the alcohol dataset contained **573** observations (after cleaning). After merging through inner join by `country` and `year`, the final merged dataset contained **564** observations. The reason of using inner join is to keep only the matched `country`-`year` pairs. The unmatched `country`-`year` pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. A groupby validation (`merged_df.groupby("country")["year"].nunique()`) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019). Therefore, the accuracy of future analysis is maintained.
+Before merging, the World Bank dataset contained **651** observations and the alcohol dataset contained **573** observations (after cleaning). After merging through inner join by `country` and `year`, the final merged dataset contained **564** observations. The reason of using inner join is to keep only the matched `country`-`year` pairs. The unmatched `country`-`year` pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. **A groupby validation (`merged_df.groupby("country")["year"].nunique()`) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019).** Therefore, the accuracy of future analysis is maintained.
 
-There is no missing value in `life_expectancy` or `population`, but some missingness is in `gdp_per_capita` (8 rows; 1.42%) and `alcohol_litres_per_capita_15plus` (43 rows; 7.62%). Therefore, I dropped the rows with missing `gdp_per_capita` to get the dataset `merged_df_drop_missing_gdp` since there is only 1.42% missingness, which is statistically reliable to drop. After handling the missing values, the observed ranges are calculated:
+There is no missing value in `life_expectancy` or `population`, but some missingness is in `gdp_per_capita` (8 rows; 1.42%) and `alcohol_litres_per_capita_15plus` (43 rows; 7.62%). Therefore, I dropped all rows with any missing values to create a complete-case dataset (`merged_df_complete_case`) for downstream summaries and comparisons. Therefore, there are **515** observations in the complete-case dataset. After handling missing values, the observed ranges are calculated:
 
 - Life expectancy from 31.53 years (Central African Republic, 2019) to 84.49 years (Andorra, 2016)
 - Annual pure alcohol consumption per person age 15+ from 0.00 liters (Bangladesh, 2016) to 17.0 liters (Romania, 2019)
@@ -723,6 +730,32 @@ The following manual country name mappings during standardization were applied t
 - São Tomé and Príncipe → Sao Tome and Principe
 
 ## 2. (4 points) Create a summary table of the merged dataset showing the mean and sd of life expectancy, alcohol consumption, population, and GDP per capita by year. Briefly summarize.
+
+```{python}
+#| label: 2-Summary-Table
+#| message: false
+#| warning: false
+
+summary_table = (
+    merged_df_complete_case
+    .groupby("year")[["life_expectancy", "alcohol_litres_per_capita_15plus", "population", "gdp_per_capita"]]
+    .agg(["mean", "std"])
+    .round(3)
+)
+
+# Flatten column names for readability
+summary_table.columns = [f"{var}_{stat}" for var, stat in summary_table.columns]
+summary_table = summary_table.reset_index()
+
+display(summary_table)
+```
+
+**Summary:**
+
+- **Life expectancy:** increased from 1996 to 2019 (mean rose by 6.5 years overall), while the cross-country variation was large (sd was approximately 8–10 years).
+- The average **Annual Pure Alcohol consumption per person age 15+** increased from 1996 to 2016, then decreased by 2019; variation across countries was approximately constant over years, but extremely high since the sd was close to the means.
+- **GDP per capita:** increased strongly over time, and the sd was larger than the mean in every year, indicating substantial inequality across countries.
+- **Population:** mean population increased over time, but the very large sd reflects the mix of very small and very large countries in terms of population.
 
 ## 3. (4 points) Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.
 
