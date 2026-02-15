@@ -740,7 +740,7 @@ summary_table = (
     merged_df_complete_case
     .groupby("year")[["life_expectancy", "alcohol_litres_per_capita_15plus", "population", "gdp_per_capita"]]
     .agg(["mean", "std"])
-    .round(3)
+    .round(2)
 )
 
 # Flatten column names for readability
@@ -752,12 +752,42 @@ display(summary_table)
 
 **Summary:**
 
-- **Life expectancy:** increased from 1996 to 2019 (mean rose by 6.5 years overall), while the cross-country variation was large (sd was approximately 8–10 years).
+- **Life expectancy:** increased from 1996 to 2019 (mean rose by approximately 6.5 years overall), while the cross-country variation was large (sd was approximately 8–10 years).
 - The average **Annual Pure Alcohol consumption per person age 15+** increased from 1996 to 2016, then decreased by 2019; variation across countries was approximately constant over years, but extremely high since the sd was close to the means.
 - **GDP per capita:** increased strongly over time, and the sd was larger than the mean in every year, indicating substantial inequality across countries.
 - **Population:** mean population increased over time, but the very large sd reflects the mix of very small and very large countries in terms of population.
 
 ## 3. (4 points) Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.
+
+```{python}
+#| label: 3-GDP-Level-Categorization
+#| message: false
+#| warning: false
+
+# Use complete-case dataset created above
+q1 = merged_df_complete_case["gdp_per_capita"].quantile(0.25)
+q3 = merged_df_complete_case["gdp_per_capita"].quantile(0.75)
+
+print(f"GDP per capita Q1 (25th percentile): {q1:.3f}")
+print(f"GDP per capita Q3 (75th percentile): {q3:.3f}")
+
+merged_df_complete_case["gdp_level"] = pd.cut(
+    merged_df_complete_case["gdp_per_capita"],
+    bins=[-np.inf, q1, q3, np.inf],
+    labels=["low", "medium", "high"],
+    include_lowest=True,
+)
+
+gdp_level_summary = (
+    merged_df_complete_case
+    .groupby("gdp_level", observed=False)["gdp_per_capita"]
+    .agg(min_gdp_per_capita="min", max_gdp_per_capita="max", n_obs="count")
+    .reset_index()
+    .round(2)
+)
+
+display(gdp_level_summary)
+```
 
 # Visualization
 

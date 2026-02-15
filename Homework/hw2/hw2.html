@@ -2912,7 +2912,7 @@ Name: 107, dtype: object</code></pre>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    merged_df_complete_case</span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"year"</span>)[[<span class="st">"life_expectancy"</span>, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"population"</span>, <span class="st">"gdp_per_capita"</span>]]</span>
 <span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    .agg([<span class="st">"mean"</span>, <span class="st">"std"</span>])</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
 <span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten column names for readability</span></span>
@@ -2943,38 +2943,38 @@ Name: 107, dtype: object</code></pre>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>1996</td>
-<td>65.766</td>
-<td>9.820</td>
-<td>4.855</td>
-<td>4.274</td>
-<td>3.598496e+07</td>
+<td>65.77</td>
+<td>9.82</td>
+<td>4.86</td>
+<td>4.27</td>
+<td>35984958.51</td>
 <td>1.319311e+08</td>
-<td>6795.270</td>
-<td>10828.240</td>
+<td>6795.27</td>
+<td>10828.24</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>2016</td>
-<td>71.633</td>
-<td>7.867</td>
-<td>6.184</td>
-<td>4.108</td>
-<td>4.024900e+07</td>
+<td>71.63</td>
+<td>7.87</td>
+<td>6.18</td>
+<td>4.11</td>
+<td>40248995.29</td>
 <td>1.466055e+08</td>
-<td>12810.489</td>
-<td>17795.480</td>
+<td>12810.49</td>
+<td>17795.48</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>2019</td>
-<td>72.274</td>
-<td>8.002</td>
-<td>5.474</td>
-<td>3.968</td>
-<td>4.162826e+07</td>
+<td>72.27</td>
+<td>8.00</td>
+<td>5.47</td>
+<td>3.97</td>
+<td>41628261.91</td>
 <td>1.505760e+08</td>
-<td>14414.632</td>
-<td>19525.001</td>
+<td>14414.63</td>
+<td>19525.00</td>
 </tr>
 </tbody>
 </table>
@@ -2984,7 +2984,7 @@ Name: 107, dtype: object</code></pre>
 </div>
 <p><strong>Summary:</strong></p>
 <ul>
-<li><strong>Life expectancy:</strong> increased from 1996 to 2019 (mean rose by 6.5 years overall), while the cross-country variation was large (sd was approximately 8–10 years).</li>
+<li><strong>Life expectancy:</strong> increased from 1996 to 2019 (mean rose by approximately 6.5 years overall), while the cross-country variation was large (sd was approximately 8–10 years).</li>
 <li>The average <strong>Annual Pure Alcohol consumption per person age 15+</strong> increased from 1996 to 2016, then decreased by 2019; variation across countries was approximately constant over years, but extremely high since the sd was close to the means.</li>
 <li><strong>GDP per capita:</strong> increased strongly over time, and the sd was larger than the mean in every year, indicating substantial inequality across countries.</li>
 <li><strong>Population:</strong> mean population increased over time, but the very large sd reflects the mix of very small and very large countries in terms of population.</li>
@@ -2992,6 +2992,76 @@ Name: 107, dtype: object</code></pre>
 </section>
 <section id="points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category." class="level2">
 <h2 class="anchored" data-anchor-id="points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category.">3. (4 points) Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.</h2>
+<div id="cell-3-GDP-Level-Categorization" class="cell" data-message="false" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use complete-case dataset created above</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> merged_df_complete_case[<span class="st">"gdp_per_capita"</span>].quantile(<span class="fl">0.25</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>q3 <span class="op">=</span> merged_df_complete_case[<span class="st">"gdp_per_capita"</span>].quantile(<span class="fl">0.75</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GDP per capita Q1 (25th percentile): </span><span class="sc">{</span>q1<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GDP per capita Q3 (75th percentile): </span><span class="sc">{</span>q3<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>merged_df_complete_case[<span class="st">"gdp_level"</span>] <span class="op">=</span> pd.cut(</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>    merged_df_complete_case[<span class="st">"gdp_per_capita"</span>],</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>[<span class="op">-</span>np.inf, q1, q3, np.inf],</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>[<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>],</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>    include_lowest<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>gdp_level_summary <span class="op">=</span> (</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>    merged_df_complete_case</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"gdp_level"</span>, observed<span class="op">=</span><span class="va">False</span>)[<span class="st">"gdp_per_capita"</span>]</span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>    .agg(min_gdp_per_capita<span class="op">=</span><span class="st">"min"</span>, max_gdp_per_capita<span class="op">=</span><span class="st">"max"</span>, n_obs<span class="op">=</span><span class="st">"count"</span>)</span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>display(gdp_level_summary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>GDP per capita Q1 (25th percentile): 1343.858
+GDP per capita Q3 (75th percentile): 14180.327</code></pre>
+</div>
+<div id="gdp-level-categorization" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gdp_level</th>
+<th data-quarto-table-cell-role="th">min_gdp_per_capita</th>
+<th data-quarto-table-cell-role="th">max_gdp_per_capita</th>
+<th data-quarto-table-cell-role="th">n_obs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>low</td>
+<td>71.41</td>
+<td>1335.54</td>
+<td>129</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>medium</td>
+<td>1352.17</td>
+<td>13864.94</td>
+<td>257</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>high</td>
+<td>14495.72</td>
+<td>112696.65</td>
+<td>129</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="visualization" class="level1">
