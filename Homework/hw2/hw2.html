@@ -190,7 +190,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="data-acquisition-and-wrangling" class="level1">
@@ -2649,122 +2650,61 @@ min                            0.000000
 max                           17.000000  </code></pre>
 </div>
 </div>
-<div id="drop-all-missing-rows" class="cell" data-message="false" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop all rows with any missing value (complete-case dataset)</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows before dropping missing rows:"</span>, merged_df.shape[<span class="dv">0</span>])</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows with any missing value:"</span>, merged_df.isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>).<span class="bu">sum</span>())</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>dropped_rows <span class="op">=</span> merged_df[merged_df.isna().<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>)].copy()</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>affected_countries <span class="op">=</span> <span class="bu">sorted</span>(dropped_rows[<span class="st">"country"</span>].dropna().unique())</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>merged_df_complete_case <span class="op">=</span> merged_df.dropna().copy()</span>
+<div id="missing-handling-country-level" class="cell" data-message="false" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Country-level rule:</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># if a country has any missing value in any of the 3 rows, drop that country entirely.</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>core_vars <span class="op">=</span> [</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"life_expectancy"</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population"</span>,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gdp_per_capita"</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"alcohol_litres_per_capita_15plus"</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>]</span>
 <span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after dropping all missing rows:"</span>, merged_df_complete_case.shape[<span class="dv">0</span>])</span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries after drop:"</span>, merged_df_complete_case[<span class="st">"country"</span>].nunique())</span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of affected countries:"</span>, <span class="bu">len</span>(affected_countries))</span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Affected countries (had at least one dropped row):"</span>)</span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(affected_countries)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>country_has_missing <span class="op">=</span> (</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    merged_df.groupby(<span class="st">"country"</span>)[core_vars]</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> d: d.isna().<span class="bu">any</span>().<span class="bu">any</span>())</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>countries_to_drop <span class="op">=</span> <span class="bu">sorted</span>(country_has_missing[country_has_missing].index.tolist())</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>merged_df_q1_clean <span class="op">=</span> merged_df[<span class="op">~</span>merged_df[<span class="st">"country"</span>].isin(countries_to_drop)].copy()</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Countries before filtering:"</span>, merged_df[<span class="st">"country"</span>].nunique())</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Countries dropped (had at least one missing value):"</span>, <span class="bu">len</span>(countries_to_drop))</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Countries after filtering:"</span>, merged_df_q1_clean[<span class="st">"country"</span>].nunique())</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after country-level missing handling:"</span>, merged_df_q1_clean.shape[<span class="dv">0</span>])</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Any missing left in core variables:"</span>, merged_df_q1_clean[core_vars].isna().<span class="bu">any</span>().<span class="bu">any</span>())</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Unique year counts per country after filtering:"</span>)</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_q1_clean.groupby(<span class="st">"country"</span>)[<span class="st">"year"</span>].nunique().value_counts().sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows before dropping missing rows: 564
-Rows with any missing value: 49
-Rows after dropping all missing rows: 515
-Unique countries after drop: 187
-Number of affected countries: 45
-Affected countries (had at least one dropped row):
-['Afghanistan', 'Andorra', 'Antigua and Barbuda', 'Bahamas, The', 'Bahrain', 'Bangladesh', 'Bhutan', 'Comoros', 'Dominica', 'Equatorial Guinea', 'Eritrea', 'Grenada', 'Iran, Islamic Rep.', 'Jordan', 'Kiribati', "Korea, Dem. People's Rep.", 'Kuwait', 'Libya', 'Mali', 'Mauritania', 'Micronesia, Fed. Sts.', 'Montenegro', 'Namibia', 'Nauru', 'Nepal', 'New Caledonia', 'Niger', 'Oman', 'Pakistan', 'Qatar', 'Samoa', 'Sao Tome and Principe', 'Saudi Arabia', 'Serbia', 'Seychelles', 'Sierra Leone', 'Somalia, Fed. Rep.', 'St. Kitts and Nevis', 'St. Lucia', 'St. Vincent and the Grenadines', 'Timor-Leste', 'Tonga', 'Tuvalu', 'United Kingdom', 'Yemen, Rep.']</code></pre>
-</div>
-</div>
-<div id="eda-inspection-after-drop-all-missing-rows" class="cell" data-message="false" data-execution_count="15">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape (after dropping all missing rows):"</span>, merged_df_complete_case.shape)</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_rows:"</span>, merged_df_complete_case.shape[<span class="dv">0</span>])</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_cols:"</span>, merged_df_complete_case.shape[<span class="dv">1</span>])</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries:"</span>, merged_df_complete_case[<span class="st">"country"</span>].nunique())</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>country_year_counts_after_drop <span class="op">=</span> merged_df_complete_case.groupby(<span class="st">"country"</span>)[<span class="st">"year"</span>].nunique()</span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Unique year counts per country:"</span>)</span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(country_year_counts_after_drop.value_counts().sort_index())</span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing values:</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_complete_case.isna().<span class="bu">sum</span>())</span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing percentage (%):</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((merged_df_complete_case.isna().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>))</span>
-<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Summary statistics:</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_complete_case.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>shape (after dropping all missing rows): (515, 6)
-n_rows: 515
-n_cols: 6
-Unique countries: 187
+<pre><code>Countries before filtering: 188
+Countries dropped (had at least one missing value): 45
+Countries after filtering: 143
+Rows after country-level missing handling: 429
+Any missing left in core variables: False
 
-Unique year counts per country:
+Unique year counts per country after filtering:
 year
-1      2
-2     42
 3    143
-Name: count, dtype: int64
-
-Missing values:
-
-country                             0
-year                                0
-life_expectancy                     0
-population                          0
-gdp_per_capita                      0
-alcohol_litres_per_capita_15plus    0
-dtype: int64
-
-Missing percentage (%):
-
-country                             0.0
-year                                0.0
-life_expectancy                     0.0
-population                          0.0
-gdp_per_capita                      0.0
-alcohol_litres_per_capita_15plus    0.0
-dtype: float64
-
-Summary statistics:
-
-              year  life_expectancy    population  gdp_per_capita  \
-count   515.000000       515.000000  5.150000e+02      515.000000   
-mean   2011.401942        70.198695  3.953295e+07    11678.334159   
-std       9.780450         8.945520  1.438121e+08    17090.436805   
-min    1996.000000        31.530000  1.058100e+04       71.406525   
-25%    1996.000000        64.764500  2.457033e+06     1343.857976   
-50%    2016.000000        71.540000  8.865631e+06     4170.114400   
-75%    2019.000000        76.778402  2.807424e+07    14180.327188   
-max    2019.000000        84.489000  1.407745e+09   112696.649060   
-
-       alcohol_litres_per_capita_15plus  
-count                        515.000000  
-mean                           5.553670  
-std                            4.133556  
-min                            0.000000  
-25%                            1.600000  
-50%                            5.100000  
-75%                            8.875000  
-max                           17.000000  </code></pre>
+Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="eda-outliers" class="cell" data-message="false" data-execution_count="16">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show which country/year achieves each extremum</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_extremum_context(df, value_col, label):</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    min_idx <span class="op">=</span> df[value_col].idxmin()</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    max_idx <span class="op">=</span> df[value_col].idxmax()</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    min_row <span class="op">=</span> df.loc[min_idx, [<span class="st">"country"</span>, <span class="st">"year"</span>, value_col]]</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    max_row <span class="op">=</span> df.loc[max_idx, [<span class="st">"country"</span>, <span class="st">"year"</span>, value_col]]</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss"> minimum at:"</span>)</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(min_row)</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss"> maximum at:"</span>)</span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(max_row)</span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_complete_case, <span class="st">"life_expectancy"</span>, <span class="st">"Life expectancy"</span>)</span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_complete_case, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"Alcohol consumption"</span>)</span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_complete_case, <span class="st">"gdp_per_capita"</span>, <span class="st">"GDP per capita"</span>)</span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_complete_case, <span class="st">"population"</span>, <span class="st">"Population"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="eda-outliers" class="cell" data-message="false" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show which country/year achieves each extremum</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_extremum_context(df, value_col, label):</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    min_idx <span class="op">=</span> df[value_col].idxmin()</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    max_idx <span class="op">=</span> df[value_col].idxmax()</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    min_row <span class="op">=</span> df.loc[min_idx, [<span class="st">"country"</span>, <span class="st">"year"</span>, value_col]]</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    max_row <span class="op">=</span> df.loc[max_idx, [<span class="st">"country"</span>, <span class="st">"year"</span>, value_col]]</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss"> minimum at:"</span>)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(min_row)</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss"> maximum at:"</span>)</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(max_row)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_q1_clean, <span class="st">"life_expectancy"</span>, <span class="st">"Life expectancy"</span>)</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_q1_clean, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"Alcohol consumption"</span>)</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_q1_clean, <span class="st">"gdp_per_capita"</span>, <span class="st">"GDP per capita"</span>)</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>print_extremum_context(merged_df_q1_clean, <span class="st">"population"</span>, <span class="st">"Population"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Life expectancy minimum at:
@@ -2773,16 +2713,16 @@ year                                   2019
 life_expectancy                       31.53
 Name: 98, dtype: object
 Life expectancy maximum at:
-country            Andorra
-year                  2016
-life_expectancy     84.489
-Name: 10, dtype: object
+country                Japan
+year                    2019
+life_expectancy    84.356341
+Name: 254, dtype: object
 
 Alcohol consumption minimum at:
-country                             Bangladesh
-year                                      2016
-alcohol_litres_per_capita_15plus           0.0
-Name: 40, dtype: object
+country                             Egypt, Arab Rep.
+year                                            2019
+alcohol_litres_per_capita_15plus                 0.1
+Name: 155, dtype: object
 Alcohol consumption maximum at:
 country                             Romania
 year                                   2019
@@ -2801,10 +2741,10 @@ gdp_per_capita    112696.64906
 Name: 302, dtype: object
 
 Population minimum at:
-country        Tuvalu
-year             2019
-population    10581.0
-Name: 524, dtype: object
+country        Vanuatu
+year              1996
+population    170911.0
+Name: 546, dtype: object
 Population maximum at:
 country              China
 year                  2019
@@ -2815,8 +2755,8 @@ Name: 107, dtype: object</code></pre>
 <p><strong>Summary:</strong></p>
 <ul>
 <li><strong>Minimum Life expectancy:</strong> approximately 31.53 years in Central African Republic (2019).</li>
-<li><strong>Maximum Life expectancy:</strong> approximately 84.49 years in Andorra (2016).</li>
-<li><strong>Minimum Annual Pure Alcohol consumption:</strong> approximately 0.00 liters per person (age 15+) in Bangladesh (2016).</li>
+<li><strong>Maximum Life expectancy:</strong> approximately 84.35 years in Japan (2019).</li>
+<li><strong>Minimum Annual Pure Alcohol consumption:</strong> approximately 0.10 liters per person (age 15+) in Egypt, Arab Rep.&nbsp;(2019).</li>
 <li><strong>Maximum Annual Pure Alcohol consumption:</strong> approximately 17.00 liters per person (age 15+) in Romania (2019).</li>
 </ul>
 </section>
@@ -2835,15 +2775,15 @@ Name: 107, dtype: object</code></pre>
 <li><code>gdp_per_capita</code> (current US$), and</li>
 <li><code>alcohol_litres_per_capita_15plus</code> (litres of annual pure alcohol consumption per person age 15+).</li>
 </ul>
-<p>Before merging, the World Bank dataset contained <strong>651</strong> observations and the alcohol dataset contained <strong>573</strong> observations (after cleaning). After merging through inner join by <code>country</code> and <code>year</code>, the final merged dataset contained <strong>564</strong> observations. The reason of using inner join is to keep only the matched <code>country</code>-<code>year</code> pairs. The unmatched <code>country</code>-<code>year</code> pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. <strong>A groupby validation (<code>merged_df.groupby("country")["year"].nunique()</code>) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019).</strong> Therefore, the accuracy of future analysis is maintained.</p>
-<p>There is no missing value in <code>life_expectancy</code> or <code>population</code>, but some missingness is in <code>gdp_per_capita</code> (8 rows; 1.42%) and <code>alcohol_litres_per_capita_15plus</code> (43 rows; 7.62%). Therefore, I dropped all rows with any missing values to create a complete-case dataset (<code>merged_df_complete_case</code>) for downstream summaries and comparisons. Therefore, there are <strong>515</strong> observations in the complete-case dataset. After handling missing values, the observed ranges are calculated:</p>
+<p>Before merging, the World Bank dataset contained <strong>651</strong> observations and the alcohol dataset contained <strong>573</strong> observations (after cleaning). After merging through inner join by <code>country</code> and <code>year</code>, the merged dataset contained <strong>564</strong> observations, where <strong>188</strong> countries left. The reason of using inner join is to keep only the matched <code>country</code>-<code>year</code> pairs. The unmatched <code>country</code>-<code>year</code> pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. <strong>A groupby validation (<code>merged_df.groupby("country")["year"].nunique()</code>) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019).</strong> Therefore, the accuracy of future analysis is maintained.</p>
+<p>There is no missing value in <code>life_expectancy</code> or <code>population</code>, but some missingness is in <code>gdp_per_capita</code> (8 rows; 1.42%) and <code>alcohol_litres_per_capita_15plus</code> (43 rows; 7.62%). In Q1, I handled missing values using a country-level rule: if one of the three rows for a country had a missing value in key analysis variables, I dropped that entire country (all three rows). The cleaned dataset is then used for the remaining analyses, which is perfectly balanced since each country appears in all three target years (1996, 2016, and 2019). After removing information incomplete countries, the number of observations is reduced to <strong>429</strong>, where <strong>143</strong> countries left. The observed ranges are:</p>
 <ul>
-<li>Life expectancy from 31.53 years (Central African Republic, 2019) to 84.49 years (Andorra, 2016)</li>
-<li>Annual pure alcohol consumption per person age 15+ from 0.00 liters (Bangladesh, 2016) to 17.0 liters (Romania, 2019)</li>
+<li>Life expectancy from 31.53 years (Central African Republic, 2019) to 84.35 years (Japan, 2019)</li>
+<li>Annual pure alcohol consumption per person age 15+ from 0.10 liters (Egypt, Arab Rep., 2019) to 17.0 liters (Romania, 2019)</li>
 <li>GDP per capita from 71.41 USD (Liberia, 1996) to 112,696.65 USD (Luxembourg, 2019)</li>
-<li>Population from 9,342 (Tuvalu, 1996) to about 1.41 billion (China, 2019)</li>
+<li>Population from 170,911 (Vanuatu, 1996) to about 1.41 billion (China, 2019)</li>
 </ul>
-<p>Accroding to the summary statistics, some countries have extreme values in the variables, especially for GDP per capita. After validate some of the extreme values, I found that they are reasonable and not due to data entry errors. For example, Luxembourg’s peak GDP per capita is an accurate reflection of real-world scenarios.</p>
+<p>Accroding to the summary statistics, some countries have extreme values in the variables, especially for GDP per capita. After validate some of the extreme values, I found that they are reasonable and not due to data entry errors. For example, Luxembourg’s peak GDP per capita is an accurate reflection of real-world scenarios. Therefore, I decided to keep all the observations including the extreme values in the dataset as they are reflecting the real-life scenarios.</p>
 <p><strong>Mapping Reference during Standardization:</strong></p>
 <p>The following manual country name mappings during standardization were applied to align the Wikipedia alcohol dataset with World Bank naming conventions (Alcohol dataset country name → World Bank dataset country name):</p>
 <ul>
@@ -2907,19 +2847,19 @@ Name: 107, dtype: object</code></pre>
 </section>
 <section id="points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize." class="level2">
 <h2 class="anchored" data-anchor-id="points-create-a-summary-table-of-the-merged-dataset-showing-the-mean-and-sd-of-life-expectancy-alcohol-consumption-population-and-gdp-per-capita-by-year.-briefly-summarize.">2. (4 points) Create a summary table of the merged dataset showing the mean and sd of life expectancy, alcohol consumption, population, and GDP per capita by year. Briefly summarize.</h2>
-<div id="cell-2-Summary-Table" class="cell" data-message="false" data-execution_count="17">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> (</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    merged_df_complete_case</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"year"</span>)[[<span class="st">"life_expectancy"</span>, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"population"</span>, <span class="st">"gdp_per_capita"</span>]]</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    .agg([<span class="st">"mean"</span>, <span class="st">"std"</span>])</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten column names for readability</span></span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>summary_table.columns <span class="op">=</span> [<span class="ss">f"</span><span class="sc">{</span>var<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>stat<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> var, stat <span class="kw">in</span> summary_table.columns]</span>
-<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> summary_table.reset_index()</span>
-<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>display(summary_table)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="cell-2-Summary-Table" class="cell" data-message="false" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> (</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    merged_df_q1_clean</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"year"</span>)[[<span class="st">"life_expectancy"</span>, <span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"population"</span>, <span class="st">"gdp_per_capita"</span>]]</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    .agg([<span class="st">"mean"</span>, <span class="st">"std"</span>])</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten column names for readability</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>summary_table.columns <span class="op">=</span> [<span class="ss">f"</span><span class="sc">{</span>var<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>stat<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> var, stat <span class="kw">in</span> summary_table.columns]</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> summary_table.reset_index()</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>display(summary_table)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="summary-table" class="cell-output cell-output-display">
 <div>
 
@@ -2943,38 +2883,38 @@ Name: 107, dtype: object</code></pre>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>1996</td>
-<td>65.77</td>
-<td>9.82</td>
-<td>4.86</td>
-<td>4.27</td>
-<td>35984958.51</td>
-<td>1.319311e+08</td>
-<td>6795.27</td>
-<td>10828.24</td>
+<td>65.83</td>
+<td>9.86</td>
+<td>4.87</td>
+<td>4.25</td>
+<td>36602498.37</td>
+<td>1.332426e+08</td>
+<td>6809.90</td>
+<td>10877.58</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>2016</td>
-<td>71.63</td>
-<td>7.87</td>
-<td>6.18</td>
-<td>4.11</td>
-<td>40248995.29</td>
-<td>1.466055e+08</td>
-<td>12810.49</td>
-<td>17795.48</td>
+<td>72.04</td>
+<td>7.99</td>
+<td>6.78</td>
+<td>3.87</td>
+<td>46708060.97</td>
+<td>1.646918e+08</td>
+<td>13503.01</td>
+<td>18892.67</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>2019</td>
-<td>72.27</td>
-<td>8.00</td>
-<td>5.47</td>
-<td>3.97</td>
-<td>41628261.91</td>
-<td>1.505760e+08</td>
-<td>14414.63</td>
-<td>19525.00</td>
+<td>72.66</td>
+<td>8.23</td>
+<td>6.05</td>
+<td>3.83</td>
+<td>48210775.40</td>
+<td>1.686411e+08</td>
+<td>15122.49</td>
+<td>20704.15</td>
 </tr>
 </tbody>
 </table>
@@ -2984,7 +2924,7 @@ Name: 107, dtype: object</code></pre>
 </div>
 <p><strong>Summary:</strong></p>
 <ul>
-<li><strong>Life expectancy:</strong> increased from 1996 to 2019 (mean rose by approximately 6.5 years overall), while the cross-country variation was large (sd was approximately 8–10 years).</li>
+<li><strong>Life expectancy:</strong> increased from 1996 to 2019 (mean rose by approximately 7 years overall), while the cross-country variation was large (sd was approximately 8–10 years).</li>
 <li>The average <strong>Annual Pure Alcohol consumption per person age 15+</strong> increased from 1996 to 2016, then decreased by 2019; variation across countries was approximately constant over years, but extremely high since the sd was close to the means.</li>
 <li><strong>GDP per capita:</strong> increased strongly over time, and the sd was larger than the mean in every year, indicating substantial inequality across countries.</li>
 <li><strong>Population:</strong> mean population increased over time, but the very large sd reflects the mix of very small and very large countries in terms of population.</li>
@@ -2992,33 +2932,33 @@ Name: 107, dtype: object</code></pre>
 </section>
 <section id="points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category." class="level2">
 <h2 class="anchored" data-anchor-id="points-create-a-new-categorical-variable-named-gdp_level-using-the-gdp-per-capita-variable.-calculate-the-quartiles-of-gdp-per-capita.-categorize-gdp-level-as-low-0-q1-medium-q1-q3-and-high-q3.-to-make-sure-the-variable-is-correctly-coded-create-a-summary-table-that-contains-the-minimum-gdp-per-capita-maximum-gdp-per-capita-and-number-of-observations-for-each-category.">3. (4 points) Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.</h2>
-<div id="cell-3-GDP-Level-Categorization" class="cell" data-message="false" data-execution_count="18">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use complete-case dataset created above</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> merged_df_complete_case[<span class="st">"gdp_per_capita"</span>].quantile(<span class="fl">0.25</span>)</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>q3 <span class="op">=</span> merged_df_complete_case[<span class="st">"gdp_per_capita"</span>].quantile(<span class="fl">0.75</span>)</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GDP per capita Q1 (25th percentile): </span><span class="sc">{</span>q1<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GDP per capita Q3 (75th percentile): </span><span class="sc">{</span>q3<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>merged_df_complete_case[<span class="st">"gdp_level"</span>] <span class="op">=</span> pd.cut(</span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>    merged_df_complete_case[<span class="st">"gdp_per_capita"</span>],</span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>[<span class="op">-</span>np.inf, q1, q3, np.inf],</span>
-<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>[<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>],</span>
-<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>    include_lowest<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>gdp_level_summary <span class="op">=</span> (</span>
-<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>    merged_df_complete_case</span>
-<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"gdp_level"</span>, observed<span class="op">=</span><span class="va">False</span>)[<span class="st">"gdp_per_capita"</span>]</span>
-<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>    .agg(min_gdp_per_capita<span class="op">=</span><span class="st">"min"</span>, max_gdp_per_capita<span class="op">=</span><span class="st">"max"</span>, n_obs<span class="op">=</span><span class="st">"count"</span>)</span>
-<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
-<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>display(gdp_level_summary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="cell-3-GDP-Level-Categorization" class="cell" data-message="false" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>q3_df <span class="op">=</span> merged_df_q1_clean.copy()</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>quartile_1 <span class="op">=</span> q3_df[<span class="st">"gdp_per_capita"</span>].quantile(<span class="fl">0.25</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>quartile_3 <span class="op">=</span> q3_df[<span class="st">"gdp_per_capita"</span>].quantile(<span class="fl">0.75</span>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GDP per capita Q1 (25th percentile): </span><span class="sc">{</span>quartile_1<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GDP per capita Q3 (75th percentile): </span><span class="sc">{</span>quartile_3<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>q3_df[<span class="st">"gdp_level"</span>] <span class="op">=</span> pd.cut(</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>    q3_df[<span class="st">"gdp_per_capita"</span>],</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>[<span class="dv">0</span>, quartile_1, quartile_3, np.inf],</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>[<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>],</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    include_lowest<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>gdp_level_summary <span class="op">=</span> (</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>    q3_df</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"gdp_level"</span>, observed<span class="op">=</span><span class="va">False</span>)[<span class="st">"gdp_per_capita"</span>]</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>    .agg(min_gdp_per_capita<span class="op">=</span><span class="st">"min"</span>, max_gdp_per_capita<span class="op">=</span><span class="st">"max"</span>, n_obs<span class="op">=</span><span class="st">"count"</span>)</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>display(gdp_level_summary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>GDP per capita Q1 (25th percentile): 1343.858
-GDP per capita Q3 (75th percentile): 14180.327</code></pre>
+<pre><code>GDP per capita Q1 (25th percentile): 1258.986
+GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 </div>
 <div id="gdp-level-categorization" class="cell-output cell-output-display">
 <div>
@@ -3039,22 +2979,22 @@ GDP per capita Q3 (75th percentile): 14180.327</code></pre>
 <th data-quarto-table-cell-role="th">0</th>
 <td>low</td>
 <td>71.41</td>
-<td>1335.54</td>
-<td>129</td>
+<td>1258.99</td>
+<td>108</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>medium</td>
-<td>1352.17</td>
-<td>13864.94</td>
-<td>257</td>
+<td>1266.44</td>
+<td>13838.53</td>
+<td>214</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>high</td>
-<td>14495.72</td>
+<td>13864.94</td>
 <td>112696.65</td>
-<td>129</td>
+<td>107</td>
 </tr>
 </tbody>
 </table>
@@ -3071,22 +3011,230 @@ GDP per capita Q3 (75th percentile): 14180.327</code></pre>
 <section id="a.-1" class="level3">
 <h3 class="anchored" data-anchor-id="a.-1">4a.</h3>
 <p>Two line plots: one of life expectancy by year and the other of alcohol consumption by year with lines for Canada and 3 other contrasting countries.</p>
+<div id="a-select-countries" class="cell" data-message="false" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use one consistent dataset for all Q4 plots</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>q4_df <span class="op">=</span> q3_df.copy()</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Use globally significant countries for comparison</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>selected_countries <span class="op">=</span> [<span class="st">"Canada"</span>, <span class="st">"Australia"</span>, <span class="st">"China"</span>, <span class="st">"United States"</span>]</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected countries for 4a:"</span>, selected_countries)</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>selected_country_title <span class="op">=</span> <span class="st">", "</span>.join(selected_countries)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected countries for 4a: ['Canada', 'Australia', 'China', 'United States']</code></pre>
+</div>
+</div>
+<div id="cell-4a-Life-Expectancy-Plot" class="cell" data-message="false" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>plot_df <span class="op">=</span> q4_df[q4_df[<span class="st">"country"</span>].isin(selected_countries)].copy()</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>life_plot <span class="op">=</span> (</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    ggplot(plot_df, aes(x<span class="op">=</span><span class="st">"year"</span>, y<span class="op">=</span><span class="st">"life_expectancy"</span>, color<span class="op">=</span><span class="st">"country"</span>, group<span class="op">=</span><span class="st">"country"</span>))</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_line(size<span class="op">=</span><span class="fl">1.1</span>)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_point(size<span class="op">=</span><span class="fl">2.2</span>)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_x_continuous(breaks<span class="op">=</span>[<span class="dv">1996</span>, <span class="dv">2016</span>, <span class="dv">2019</span>])</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="ss">f"Life Expectancy Over Time: </span><span class="sc">{</span>selected_country_title<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Year"</span>,</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Life Expectancy (years)"</span>,</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span><span class="st">"Country"</span>,</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>life_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="88">
+<div>
+<figure class="figure">
+<p><img src="hw2_files/figure-html/a-life-expectancy-plot-output-1.png" id="a-life-expectancy-plot" width="960" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-4a-Alcohol-Consumption-Plot" class="cell" data-message="false" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>alcohol_plot <span class="op">=</span> (</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>    ggplot(plot_df, aes(x<span class="op">=</span><span class="st">"year"</span>, y<span class="op">=</span><span class="st">"alcohol_litres_per_capita_15plus"</span>, color<span class="op">=</span><span class="st">"country"</span>, group<span class="op">=</span><span class="st">"country"</span>))</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_line(size<span class="op">=</span><span class="fl">1.1</span>)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_point(size<span class="op">=</span><span class="fl">2.2</span>)</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_x_continuous(breaks<span class="op">=</span>[<span class="dv">1996</span>, <span class="dv">2016</span>, <span class="dv">2019</span>])</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="ss">f"Annual Pure Alcohol Consumption Over Time: </span><span class="sc">{</span>selected_country_title<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Year"</span>,</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Annual Pure Alcohol Consumption (litres per person age 15+)"</span>,</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span><span class="st">"Country"</span>,</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>alcohol_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="89">
+<div>
+<figure class="figure">
+<p><img src="hw2_files/figure-html/a-alcohol-consumption-plot-output-1.png" id="a-alcohol-consumption-plot" width="960" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="b.-1" class="level3">
 <h3 class="anchored" data-anchor-id="b.-1">4b.</h3>
 <p>Facet plot by year for 1996, 2016, and 2019 showing scatterplots with linear and lowess regression lines of life expectancy and alcohol consumption. regression lines of life expectancy and alcohol consumption.</p>
+<div id="cell-4b-Facet-Scatter-Linear-Lowess" class="cell" data-message="false" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>plot_4b_df <span class="op">=</span> q4_df.copy()</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>plot_4b_df[<span class="st">"year"</span>] <span class="op">=</span> plot_4b_df[<span class="st">"year"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>plot_4b <span class="op">=</span> (</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    ggplot(</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>        plot_4b_df,</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>        aes(</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span><span class="st">"alcohol_litres_per_capita_15plus"</span>,</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>            y<span class="op">=</span><span class="st">"life_expectancy"</span>,</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_point(alpha<span class="op">=</span><span class="fl">0.55</span>, size<span class="op">=</span><span class="fl">1.8</span>, color<span class="op">=</span><span class="st">"#4D4D4D"</span>)</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_smooth(method<span class="op">=</span><span class="st">"lm"</span>, se<span class="op">=</span><span class="va">False</span>, color<span class="op">=</span><span class="st">"#D55E00"</span>, size<span class="op">=</span><span class="fl">1.1</span>)</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_smooth(method<span class="op">=</span><span class="st">"lowess"</span>, se<span class="op">=</span><span class="va">False</span>, color<span class="op">=</span><span class="st">"#0072B2"</span>, size<span class="op">=</span><span class="fl">1.1</span>)</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> facet_wrap(<span class="st">"~year"</span>, nrow<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Life Expectancy vs Annual Pure Alcohol Consumption by Year"</span>,</span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>        subtitle<span class="op">=</span><span class="st">"Orange: linear fit, Blue: lowess fit"</span>,</span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Annual Pure Alcohol Consumption (litres per person age 15+)"</span>,</span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Life Expectancy (years)"</span>,</span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">13</span>, <span class="fl">4.5</span>))</span>
+<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a>plot_4b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="90">
+<div>
+<figure class="figure">
+<p><img src="hw2_files/figure-html/b-facet-scatter-linear-lowess-output-1.png" id="b-facet-scatter-linear-lowess" width="1248" height="432" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="c.-1" class="level3">
 <h3 class="anchored" data-anchor-id="c.-1">4c.</h3>
 <p>Facet plot by year for 1996, 2016, and 2019 showing boxplots of alcohol consumption by GDP level.</p>
+<div id="cell-4c-Facet-Boxplot-Alcohol-By-GDP-Level" class="cell" data-message="false" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>plot_4c_df <span class="op">=</span> q4_df.copy()</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>plot_4c_df[<span class="st">"year"</span>] <span class="op">=</span> plot_4c_df[<span class="st">"year"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>plot_4c <span class="op">=</span> (</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    ggplot(plot_4c_df, aes(x<span class="op">=</span><span class="st">"gdp_level"</span>, y<span class="op">=</span><span class="st">"alcohol_litres_per_capita_15plus"</span>, fill<span class="op">=</span><span class="st">"gdp_level"</span>))</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_boxplot(alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> facet_wrap(<span class="st">"~year"</span>, nrow<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Alcohol Consumption by GDP Level Across Years"</span>,</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"GDP level"</span>,</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Alcohol consumption (litres per person age 15+)"</span>,</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>        fill<span class="op">=</span><span class="st">"GDP level"</span>,</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">12</span>, <span class="fl">4.8</span>))</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>plot_4c</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="91">
+<div>
+<figure class="figure">
+<p><img src="hw2_files/figure-html/c-facet-boxplot-alcohol-by-gdp-level-output-1.png" id="c-facet-boxplot-alcohol-by-gdp-level" width="1152" height="461" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="d.-1" class="level3">
 <h3 class="anchored" data-anchor-id="d.-1">4d.</h3>
 <p>A barplot showing life expectancy in 1996 and 2019 for the 10 countries with the largest change in life expectancy between 1996 and 2019. change in life expectancy between 1996 and 2019.</p>
+<div id="cell-4d-Top10-Life-Expectancy-Change-Barplot" class="cell" data-message="false" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute life expectancy change (2019 - 1996) by country</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>le_wide <span class="op">=</span> (</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    q4_df[q4_df[<span class="st">"year"</span>].isin([<span class="dv">1996</span>, <span class="dv">2019</span>])]</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    .pivot(index<span class="op">=</span><span class="st">"country"</span>, columns<span class="op">=</span><span class="st">"year"</span>, values<span class="op">=</span><span class="st">"life_expectancy"</span>)</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>    .dropna(subset<span class="op">=</span>[<span class="dv">1996</span>, <span class="dv">2019</span>])</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>le_wide[<span class="st">"life_expectancy_change"</span>] <span class="op">=</span> le_wide[<span class="dv">2019</span>] <span class="op">-</span> le_wide[<span class="dv">1996</span>]</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>le_wide[<span class="st">"abs_change"</span>] <span class="op">=</span> le_wide[<span class="st">"life_expectancy_change"</span>].<span class="bu">abs</span>()</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Select 10 countries with largest absolute change</span></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>top10_change <span class="op">=</span> (</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>    le_wide.sort_values(<span class="st">"abs_change"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">10</span>)</span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>    .copy()</span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only 1996 and 2019 observations for these countries</span></span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>plot_4d_df <span class="op">=</span> q4_df[</span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>    q4_df[<span class="st">"country"</span>].isin(top10_change[<span class="st">"country"</span>]) <span class="op">&amp;</span> q4_df[<span class="st">"year"</span>].isin([<span class="dv">1996</span>, <span class="dv">2019</span>])</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>plot_4d_df[<span class="st">"year"</span>] <span class="op">=</span> plot_4d_df[<span class="st">"year"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-25"><a href="#cb49-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Order countries by absolute change for readability</span></span>
+<span id="cb49-26"><a href="#cb49-26" aria-hidden="true" tabindex="-1"></a>country_order <span class="op">=</span> top10_change.sort_values(<span class="st">"abs_change"</span>, ascending<span class="op">=</span><span class="va">True</span>)[<span class="st">"country"</span>].tolist()</span>
+<span id="cb49-27"><a href="#cb49-27" aria-hidden="true" tabindex="-1"></a>plot_4d_df[<span class="st">"country"</span>] <span class="op">=</span> pd.Categorical(plot_4d_df[<span class="st">"country"</span>], categories<span class="op">=</span>country_order, ordered<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb49-28"><a href="#cb49-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-29"><a href="#cb49-29" aria-hidden="true" tabindex="-1"></a>plot_4d <span class="op">=</span> (</span>
+<span id="cb49-30"><a href="#cb49-30" aria-hidden="true" tabindex="-1"></a>    ggplot(plot_4d_df, aes(x<span class="op">=</span><span class="st">"country"</span>, y<span class="op">=</span><span class="st">"life_expectancy"</span>, fill<span class="op">=</span><span class="st">"year"</span>))</span>
+<span id="cb49-31"><a href="#cb49-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_col(position<span class="op">=</span><span class="st">"dodge"</span>)</span>
+<span id="cb49-32"><a href="#cb49-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> coord_flip()</span>
+<span id="cb49-33"><a href="#cb49-33" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb49-34"><a href="#cb49-34" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Life Expectancy in 1996 vs 2019 for Top 10 Countries by Largest Change"</span>,</span>
+<span id="cb49-35"><a href="#cb49-35" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Country (ordered by absolute change)"</span>,</span>
+<span id="cb49-36"><a href="#cb49-36" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Life Expectancy (years)"</span>,</span>
+<span id="cb49-37"><a href="#cb49-37" aria-hidden="true" tabindex="-1"></a>        fill<span class="op">=</span><span class="st">"Year"</span>,</span>
+<span id="cb49-38"><a href="#cb49-38" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-39"><a href="#cb49-39" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">6</span>))</span>
+<span id="cb49-40"><a href="#cb49-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-41"><a href="#cb49-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-42"><a href="#cb49-42" aria-hidden="true" tabindex="-1"></a>plot_4d</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="92">
+<div>
+<figure class="figure">
+<p><img src="hw2_files/figure-html/d-top10-life-expectancy-change-barplot-output-1.png" id="d-top10-life-expectancy-change-barplot" width="1056" height="576" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="e." class="level3">
 <h3 class="anchored" data-anchor-id="e.">4e.</h3>
 <p>Come up with your own plot that will help to understand the role of GDP in the association between alcohol and life expectancy.</p>
+<div id="cell-4e-GDP-Role-Scatter-By-GDP-Level" class="cell" data-message="false" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>plot_4e_df <span class="op">=</span> q4_df.copy()</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>plot_4e_df[<span class="st">"year"</span>] <span class="op">=</span> plot_4e_df[<span class="st">"year"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>plot_4e <span class="op">=</span> (</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    ggplot(</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>        plot_4e_df,</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>        aes(</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span><span class="st">"alcohol_litres_per_capita_15plus"</span>,</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>            y<span class="op">=</span><span class="st">"life_expectancy"</span>,</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">"year"</span>,</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_point(alpha<span class="op">=</span><span class="fl">0.45</span>, size<span class="op">=</span><span class="fl">1.8</span>)</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_smooth(method<span class="op">=</span><span class="st">"lm"</span>, se<span class="op">=</span><span class="va">False</span>, size<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> facet_wrap(<span class="st">"~gdp_level"</span>)</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Alcohol vs Life Expectancy by GDP Level"</span>,</span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Annual Pure Alcohol Consumption (litres per person age 15+)"</span>,</span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Life Expectancy (years)"</span>,</span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span><span class="st">"Year"</span>,</span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">12</span>, <span class="fl">4.8</span>))</span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>plot_4e</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="93">
+<div>
+<figure class="figure">
+<p><img src="hw2_files/figure-html/e-gdp-role-scatter-by-gdp-level-output-1.png" id="e-gdp-role-scatter-by-gdp-level" width="1152" height="461" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 </section>
