@@ -49,6 +49,9 @@ import numpy as np
 import pandas as pd
 from io import StringIO
 from plotnine import *
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+from pygam import LinearGAM, s, l
 
 ```
 
@@ -292,7 +295,6 @@ world_bank_df = world_bank_df.merge(
 # 3) Sort for readability
 world_bank_df = world_bank_df.sort_values(["country", "year"]).reset_index(drop=True)
 
-# 4) Merge summary (Lab 5 style)
 print(f"life_expectancy_df rows: {len(life_expectancy_df)}")
 print(f"population_df rows: {len(population_df)}")
 print(f"gdp_per_capita_df rows: {len(gdp_per_capita_df)}")
@@ -334,10 +336,8 @@ display(alcohol_raw.head(10))
 #| message: false
 #| warning: false
 
-# Start from extracted table
 alcohol_df = alcohol_raw.copy()
 
-# Lab 5 style for column names: string -> extract target text
 col_series = pd.Series(alcohol_df.columns.astype(str))
 clean_year_cols = col_series.str.extract(r"(\d{4})")[0]
 alcohol_df.columns = np.where(col_series.str.contains("Country"), "Country", clean_year_cols)
@@ -353,7 +353,6 @@ alcohol_df["Country"] = (
     .str.strip()
 )
 
-# Lab 5 logic: string -> extract first numeric -> numeric
 for col in ["1996", "2016", "2019"]:
     alcohol_df[col] = alcohol_df[col].astype(str).str.extract(r"(\d+(?:\.\d+)?)")[0]
     alcohol_df[col] = pd.to_numeric(alcohol_df[col], errors="coerce")
@@ -397,10 +396,7 @@ alcohol_long = alcohol_df.melt(
     value_name="alcohol_litres_per_capita_15plus",
 )
 
-# Keep year as integer after reshaping
 alcohol_long["Year"] = pd.to_numeric(alcohol_long["Year"], errors="coerce").astype(int)
-
-# Sort for readability before preview
 alcohol_long = alcohol_long.sort_values(["Country", "Year"]).reset_index(drop=True)
 
 print("alcohol_long shape:", alcohol_long.shape)
@@ -472,7 +468,7 @@ display(pd.DataFrame({"alcohol_not_in_wb": alcohol_not_in_wb}).head(60))
 #| message: false
 #| warning: false
 
-# Manual mapping for country mismatches
+# Manual mapping for country mismatches after reading the above outputs
 country_name_map = {
     "Bahamas": "Bahamas, The",
     "Brunei": "Brunei Darussalam",
@@ -527,21 +523,6 @@ display(pd.DataFrame({"alcohol_not_in_wb_after": alcohol_not_in_wb_after}).head(
 #| message: false
 #| warning: false
 
-# 1) Diagnostic merge: outer join to inspect what does/does not match
-merged_outer = world_bank_df.merge(
-    alcohol_long,
-    how="outer",
-    left_on=["country_std", "year"],
-    right_on=["country_std", "Year"],
-    indicator=True,
-    suffixes=("_wb", "_alcohol"),
-)
-
-print("Outer merge shape:", merged_outer.shape)
-print("Merge indicator counts:")
-print(merged_outer["_merge"].value_counts())
-
-# 2) Analysis dataset: inner join keeps only matched country-year pairs
 merged_df = world_bank_df.merge(
     alcohol_long,
     how="inner",
@@ -550,7 +531,6 @@ merged_df = world_bank_df.merge(
     suffixes=("_wb", "_alcohol"),
 )
 
-# Keep one country/year key and drop redundant merge columns
 merged_df = merged_df[
     [
         "country_std",
@@ -597,7 +577,7 @@ print(merged_df.describe())
 #| message: false
 #| warning: false
 
-# Country-level rule:
+# Handling missing values at the country-level:
 # if a country has any missing value in any of the 3 rows, drop that country entirely.
 core_vars = [
     "life_expectancy",
@@ -661,9 +641,9 @@ First, I pulled life expectancy, population, and GDP per capita data from the Wo
 
 Second, I scraped alcohol consumption data from Wikipedia (use provided link) by using lab05 workflow and codes, with removing footnote markers from headers and country names, converting the year column to integer, treating dashed entries as missing values (NaN), and reshaping the dataset to long format with `pd.melt()`.
 
-After that, I standardized country names by trimming whitespace and applying a manual mapping dictionary to make sure the country names in the two datasets are consistent and follow the World Bank naming conventions. (See the mapping details below) 
+After that, I standardized country names by trimming whitespace and applying a manual mapping dictionary to make sure the country names in the two datasets are consistent and follow the World Bank naming conventions. (See the mapping reference below) 
 
-Finally, I merged the two datasets by standardized country names and year to get the final dataset. The merged dataset contains the following variables:
+Finally, I merged the two datasets by standardized country names and year to get the merged dataset. The merged dataset contains the following variables:
 
 - `country` (standardized country name following World Bank conventions),
 - `year` (1996/2016/2019),
@@ -674,7 +654,7 @@ Finally, I merged the two datasets by standardized country names and year to get
 
 Before merging, the World Bank dataset contained **651** observations and the alcohol dataset contained **573** observations (after cleaning). After merging through inner join by `country` and `year`, the merged dataset contained **564** observations, where **188** countries left. The reason of using inner join is to keep only the matched `country`-`year` pairs. The unmatched `country`-`year` pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. **A groupby validation (`merged_df.groupby("country")["year"].nunique()`) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019).** Therefore, the accuracy of future analysis is maintained.
 
-There is no missing value in `life_expectancy` or `population`, but some missingness is in `gdp_per_capita` (8 rows; 1.42%) and `alcohol_litres_per_capita_15plus` (43 rows; 7.62%). In Q1, I handled missing values using a country-level rule: if one of the three rows for a country had a missing value in key analysis variables, I dropped that entire country (all three rows). The cleaned dataset is then used for the remaining analyses, which is perfectly balanced since each country appears in all three target years (1996, 2016, and 2019). After removing information incomplete countries, the number of observations is reduced to **429**, where **143** countries left. The observed ranges are:
+There is no missing value in `life_expectancy` or `population`, but some missingness is in `gdp_per_capita` (8 rows; 1.42%) and `alcohol_litres_per_capita_15plus` (43 rows; 7.62%). In Q1, I handled missing values using a country-level rule: if one of the three rows for a country had a missing value in key analysis variables, I dropped that entire country (all three rows). The cleaned dataset is then used for the remaining analyses, which is perfectly balanced since each country appears in all three target years (1996, 2016, and 2019). After removing information incomplete countries, the number of observations reduced to **429**, where **143** countries left. The observed ranges for the cleaned and merged dataset are:
 
 - Life expectancy from 31.53 years (Central African Republic, 2019) to 84.35 years (Japan, 2019)
 - Annual pure alcohol consumption per person age 15+ from 0.10 liters (Egypt, Arab Rep., 2019) to 17.0 liters (Romania, 2019)
@@ -740,9 +720,9 @@ display(summary_table)
 **Summary:**
 
 - **Life expectancy:** increased from 1996 to 2019 (mean rose by approximately 7 years overall), while the cross-country variation was large (sd was approximately 8–10 years).
-- The average **Annual Pure Alcohol consumption per person age 15+** increased from 1996 to 2016, then decreased by 2019; variation across countries was approximately constant over years, but extremely high since the sd was close to the means.
-- **GDP per capita:** increased strongly over time, and the sd was larger than the mean in every year, indicating substantial inequality across countries.
-- **Population:** mean population increased over time, but the very large sd reflects the mix of very small and very large countries in terms of population.
+- The average **Annual Pure Alcohol consumption per person age 15+** increased from 1996 to 2016, then decreased by 2019; variation across countries was approximately constant over years, but extremely high since the standard deviation was close to the means.
+- **GDP per capita:** increased strongly over time, and the standard deviation was larger than the mean in every year, indicating substantial inequality across countries.
+- **Population:** mean population increased over time, but the very large standard deviation reflects the mix of very small and very large countries in terms of population.
 
 ## 3. (4 points) Create a new categorical variable named “gdp_level” using the GDP per capita variable. Calculate the quartiles of GDP per capita. Categorize GDP level as low (0-q1), medium (q1-q3), and high (q3+). To make sure the variable is correctly coded, create a summary table that contains the minimum GDP per capita, maximum GDP per capita, and number of observations for each category.
 
@@ -793,7 +773,7 @@ q4_df = q3_df.copy()
 
 # Use globally significant countries for comparison
 selected_countries = ["Canada", "Australia", "China", "United States"]
-print("Selected countries for 4a:", selected_countries)
+print("Contrasting countries:", selected_countries)
 
 selected_country_title = ", ".join(selected_countries)
 ```
@@ -805,7 +785,7 @@ selected_country_title = ", ".join(selected_countries)
 
 plot_df = q4_df[q4_df["country"].isin(selected_countries)].copy()
 
-life_plot = (
+life_expectancy_plot = (
     ggplot(plot_df, aes(x="year", y="life_expectancy", color="country", group="country"))
     + geom_line(size=1.1)
     + geom_point(size=2.2)
@@ -819,14 +799,14 @@ life_plot = (
     + theme(figure_size=(10, 5))
 )
 
-life_plot
+life_expectancy_plot
 ```
 ```{python}
 #| label: 4a-Alcohol-Consumption-Plot
 #| message: false
 #| warning: false
 
-alcohol_plot = (
+alcohol_consumption_plot = (
     ggplot(plot_df, aes(x="year", y="alcohol_litres_per_capita_15plus", color="country", group="country"))
     + geom_line(size=1.1)
     + geom_point(size=2.2)
@@ -840,7 +820,7 @@ alcohol_plot = (
     + theme(figure_size=(10, 5))
 )
 
-alcohol_plot
+alcohol_consumption_plot
 ```
 
 ### 4b.
@@ -854,7 +834,7 @@ Facet plot by year for 1996, 2016, and 2019 showing scatterplots with linear and
 plot_4b_df = q4_df.copy()
 plot_4b_df["year"] = plot_4b_df["year"].astype(str)
 
-plot_4b = (
+life_expectancy_vs_alcohol_consumption_plot = (
     ggplot(
         plot_4b_df,
         aes(
@@ -875,7 +855,7 @@ plot_4b = (
     + theme(figure_size=(13, 4.5))
 )
 
-plot_4b
+life_expectancy_vs_alcohol_consumption_plot
 ```
 
 ### 4c.
@@ -889,7 +869,7 @@ Facet plot by year for 1996, 2016, and 2019 showing boxplots of alcohol consumpt
 plot_4c_df = q4_df.copy()
 plot_4c_df["year"] = plot_4c_df["year"].astype(str)
 
-plot_4c = (
+alcohol_consumption_by_gdp_level_plot = (
     ggplot(plot_4c_df, aes(x="gdp_level", y="alcohol_litres_per_capita_15plus", fill="gdp_level"))
     + geom_boxplot(alpha=0.8)
     + facet_wrap("~year", nrow=1)
@@ -902,7 +882,7 @@ plot_4c = (
     + theme(figure_size=(12, 4.8))
 )
 
-plot_4c
+alcohol_consumption_by_gdp_level_plot
 ```
 
 ### 4d.
@@ -968,7 +948,7 @@ Come up with your own plot that will help to understand the role of GDP in the a
 plot_4e_df = q4_df.copy()
 plot_4e_df["year"] = plot_4e_df["year"].astype(str)
 
-plot_4e = (
+alcohol_vs_life_expectancy_by_gdp_level_plot = (
     ggplot(
         plot_4e_df,
         aes(
@@ -989,7 +969,7 @@ plot_4e = (
     + theme(figure_size=(12, 4.8))
 )
 
-plot_4e
+alcohol_vs_life_expectancy_by_gdp_level_plot
 ```
 
 # Advanced Regression
@@ -999,6 +979,98 @@ plot_4e
 ### 5a.
 Summaries of your models, including overall model fit and interpretation of the parameter estimates (linear and non-linear).
 
+```{python}
+#| label: 5a-Linear-and-GAM-Models
+#| message: false
+#| warning: false
+
+q5_df = (
+    q4_df[
+        [
+            "life_expectancy",
+            "alcohol_litres_per_capita_15plus",
+            "gdp_per_capita",
+            "year",
+        ]
+    ]
+    .dropna()
+    .copy()
+)
+
+# Center year to get a more interpretable year coefficient
+q5_df["year_c"] = q5_df["year"] - q5_df["year"].mean()
+
+y = q5_df["life_expectancy"].values
+X_linear = q5_df[["alcohol_litres_per_capita_15plus", "gdp_per_capita", "year_c"]].values
+X_linear_const = sm.add_constant(X_linear)
+
+linear_mod_5 = sm.OLS(y, X_linear_const).fit()
+print("Multiple Linear Regression (OLS) Summary")
+print(linear_mod_5.summary())
+
+X_gam = q5_df[["alcohol_litres_per_capita_15plus", "gdp_per_capita", "year_c"]].values
+gam_mod_5 = LinearGAM(
+    s(0, n_splines=20) +  # smooth alcohol
+    s(1, n_splines=20) +  # smooth GDP per capita
+    l(2)                  # linear year adjustment since it only has three possible values (1996, 2016, 2019) before centering
+).fit(X_gam, y)
+
+print("\nGAM Summary")
+print(gam_mod_5.summary())
+```
+
+**Interpretation:**
+
+Linear Model (OLS) Estimates:
+
+- **Alcohol (`x1`):** $\hat{\beta} = 0.590$ ($p < 0.001 < 0.05$, therefore statistically significant). While holding other variables constant, a one litre increase in annual alcohol consumption per capita leads to an increase of approximately 0.59 years on average in expected life expectancy.
+- **GDP per capita (`x2`):** $\hat{\beta} = 0.0002$ ($p < 0.001 < 0.05$, therefore statistically significant). While holding other variables constant, a 1 current US dollar increase in GDP per capita leads to an approximately 0.0002 years increase on average in expected life expectancy.
+- **Year (`x3`, centered):** $\hat{\beta} = 0.176$ ($p < 0.001 < 0.05$, therefore statistically significant). While holding other variables constant, each additional year is associated with an approximately 0.18 years increase on average in expected life expectancy.
+- **Overall Fit:** The adjusted $R^2$ is 0.485, indicating the linear model explains about 48.5% of the variance.
+
+GAM (Non-linear) Estimates:
+
+- **Alcohol (`s(0)`):** The smooth term for alcohol has an EDoF of 12.2 but a p-value of 0.848 which is greater than 0.05 (the threshold for statistical significance), suggesting that after adjusting for the non-linear effect of GDP and linear effect of year, the relationship between alcohol and life expectancy is not statistically significant in this flexible model.
+- **GDP per capita (`s(1)`):** The smooth term for GDP has an EDoF of 8.8 and is highly statistically significant ($p < 0.001 < 0.05$). The EDoF > 1 indicates a strong non-linear relationship (likely diminishing returns where life expectancy rises with GDP but plateaus at higher levels).
+- **Overall Fit:** The Pseudo $R^2$ is 0.712, which is substantially higher than the linear model, suggesting that incorporating non-linearity provides a much better fit to the data.
+
 ### 5b.
 Plot of the smoothed variables from the gam model and interpret.
 
+```{python}
+#| label: 5b-gam-smooth-plots
+#| fig-align: center
+#| message: false
+#| warning: false
+
+# Plot partial dependence curves for smooth predictors in gam_mod_5
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+spec = [
+    (0, 0, "Annual Pure Alcohol Consumption (litres per capita)", "blue", "Effect of Alcohol"),
+    (1, 1, "GDP per Capita (current US$)", "red", "Effect of GDP per Capita"),
+]
+
+for ax, (term, xcol, xlabel, color, title) in zip(axes, spec):
+    XX = gam_mod_5.generate_X_grid(term=term)
+    x = XX[:, xcol]
+    pd_effect = gam_mod_5.partial_dependence(term=term, X=XX)
+    _, ci = gam_mod_5.partial_dependence(term=term, X=XX, width=0.95)
+
+    ax.plot(x, pd_effect, color=color, lw=2)
+    ax.plot(x, ci, color=color, ls="--", lw=1)
+    ax.set(
+        xlabel=xlabel,
+        ylabel="Partial Effect on Life Expectancy",
+        title=title,
+    )
+
+plt.tight_layout()
+plt.show()
+```
+
+**Interpretation:**
+
+- **Alcohol:** The plot for alcohol consumption shows a line that wiggles around zero with wide confidence intervals. This plot confirms the not statistically significant p-value ($p \approx 0.85 > 0.05$) from the model summary, indicating that once we account for GDP and year, alcohol consumption does not have a statistically significant non-linear association with life expectancy in this dataset.
+
+- **GDP per Capita:** The plot for GDP shows a distinct non-linear pattern: a steep positive slope at lower income levels (below approximately $20,000). Then it flattens out significantly as GDP increases. This reflects GDP per capita has a significant impact on health for poorer/developing countries, but adding more GDP per capita to already rich/developed countries yields smaller and smaller gains in life expectancy.
