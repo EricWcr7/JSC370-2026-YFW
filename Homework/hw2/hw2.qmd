@@ -573,12 +573,12 @@ print(merged_df.describe())
 ```
 
 ```{python}
-#| label: 1-Missing-Handling-Country-Level
+#| label: 1-Missing-Handling-Row-Level
 #| message: false
 #| warning: false
 
-# Handling missing values at the country-level:
-# if a country has any missing value in any of the 3 rows, drop that country entirely.
+# Handle missing values at the row level:
+# drop only rows where any core analysis variable is missing.
 core_vars = [
     "life_expectancy",
     "population",
@@ -586,19 +586,21 @@ core_vars = [
     "alcohol_litres_per_capita_15plus",
 ]
 
-country_has_missing = (
-    merged_df.groupby("country")[core_vars]
-    .apply(lambda d: d.isna().any().any())
-)
-countries_to_drop = sorted(country_has_missing[country_has_missing].index.tolist())
-merged_df_q1_clean = merged_df[~merged_df["country"].isin(countries_to_drop)].copy()
+rows_before = merged_df.shape[0]
+countries_before = merged_df["country"].nunique()
+
+merged_df_q1_clean = merged_df.dropna(subset=core_vars).copy()
+
+rows_after = merged_df_q1_clean.shape[0]
+countries_after = merged_df_q1_clean["country"].nunique()
 
 print("Countries before filtering:", merged_df["country"].nunique())
-print("Countries dropped (had at least one missing value):", len(countries_to_drop))
-print("Countries after filtering:", merged_df_q1_clean["country"].nunique())
-print("Rows after country-level missing handling:", merged_df_q1_clean.shape[0])
+print("Countries after filtering:", countries_after)
+print("Rows before row-level missing handling:", rows_before)
+print("Rows dropped (had missing in core variables):", rows_before - rows_after)
+print("Rows after row-level missing handling:", rows_after)
 print("Any missing left in core variables:", merged_df_q1_clean[core_vars].isna().any().any())
-print("\nUnique year counts per country after filtering:")
+print("\nUnique year counts per country after row-level filtering:")
 print(merged_df_q1_clean.groupby("country")["year"].nunique().value_counts().sort_index())
 print("\n")
 print("Summary statistics:\n")
@@ -610,7 +612,7 @@ print(merged_df_q1_clean.describe())
 #| message: false
 #| warning: false
 
-# Show which country/year achieves each extremum
+# Show which country-year achieves each extremum
 def print_extremum_context(df, value_col, label):
     min_idx = df[value_col].idxmin()
     max_idx = df[value_col].idxmax()
@@ -632,8 +634,8 @@ print_extremum_context(merged_df_q1_clean, "population", "Population")
 **Summary:**
 
 - **Minimum Life expectancy:** approximately 31.53 years in Central African Republic (2019).
-- **Maximum Life expectancy:** approximately 84.35 years in Japan (2019).
-- **Minimum Annual Pure Alcohol consumption:** approximately 0.10 liters per person (age 15+) in Egypt, Arab Rep. (2019).
+- **Maximum Life expectancy:** approximately 84.49 years in Andorra (2016).
+- **Minimum Annual Pure Alcohol consumption:** approximately 0.00 liters per person (age 15+) in Bangladesh (2016).
 - **Maximum Annual Pure Alcohol consumption:** approximately 17.00 liters per person (age 15+) in Romania (2019).
 
 ### Write a paragraph describing your scraping and cleaning steps. Include a written summary of the variables and the number of observations before and after merging. Document any countries that didn’t match and how you handled them. Also summarize your findings from the basic EDA.
@@ -657,12 +659,12 @@ Finally, I merged the two datasets by standardized country names and year to get
 
 Before merging, the World Bank dataset contained **651** observations and the alcohol dataset contained **573** observations (after cleaning). After merging through inner join by `country` and `year`, the merged dataset contained **564** observations, where **188** countries left. The reason of using inner join is to keep only the matched `country`-`year` pairs. The unmatched `country`-`year` pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. **A groupby validation (`merged_df.groupby("country")["year"].nunique()`) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019).** Therefore, the accuracy of future analysis is maintained.
 
-There is no missing value in `life_expectancy` or `population`, but some missingness is in `gdp_per_capita` (8 rows; 1.42%) and `alcohol_litres_per_capita_15plus` (43 rows; 7.62%). In Q1, I handled missing values using a country-level rule: if one of the three rows for a country had a missing value in key analysis variables, I dropped that entire country (all three rows). The cleaned dataset is then used for the remaining analyses, which is perfectly balanced since each country appears in all three target years (1996, 2016, and 2019). After removing information incomplete countries, the number of observations reduced to **429**, where **143** countries left. The observed ranges for the cleaned and merged dataset are:
+There is no missing value in `life_expectancy` or `population`, but some missingness is in `gdp_per_capita` (8 rows; 1.42%) and `alcohol_litres_per_capita_15plus` (43 rows; 7.62%). In Q1, I handled missing values using a row-level rule by dropping only rows with missing values in `gdp_per_capita`, `alcohol_litres_per_capita_15plus`. The cleaned dataset is then used for the remaining analyses. After the removal of rows with missing values, the number of countries is reduced to **187**, and the number of observations is reduced to **515**. This row-level approach preserves more information overall, but some countries may no longer have all three target years after cleaning. The observed ranges for the cleaned and merged dataset are:
 
-- Life expectancy from 31.53 years (Central African Republic, 2019) to 84.35 years (Japan, 2019)
-- Annual pure alcohol consumption per person age 15+ from 0.10 liters (Egypt, Arab Rep., 2019) to 17.0 liters (Romania, 2019)
+- Life expectancy from 31.53 years (Central African Republic, 2019) to 84.49 years (Andorra, 2016)
+- Annual pure alcohol consumption per person age 15+ from 0.00 liters (Bangladesh, 2016) to 17.0 liters (Romania, 2019)
 - GDP per capita from 71.41 USD (Liberia, 1996) to 112,696.65 USD (Luxembourg, 2019)
-- Population from 170,911 (Vanuatu, 1996) to about 1.41 billion (China, 2019)
+- Population from 10581 (Tuvalu, 2019) to about 1.41 billion (China, 2019)
 
 Accroding to the summary statistics, some countries have extreme values in the variables, especially for GDP per capita. After validate some of the extreme values, I found that they are reasonable and not due to data entry errors. For example, Luxembourg’s peak GDP per capita is an accurate reflection of real-world scenarios. Therefore, I decided to keep all the observations including the extreme values in the dataset as they are reflecting the real-life scenarios.
 
@@ -774,8 +776,8 @@ Two line plots: one of life expectancy by year and the other of alcohol consumpt
 # Use one consistent dataset for all Q4 plots
 q4_df = q3_df.copy()
 
-# Use globally significant countries for comparison
-selected_countries = ["Canada", "Australia", "China", "United States"]
+# Use Canada(developed), India(developing), China(developing), United States(developed) for comparison
+selected_countries = ["Canada", "India", "China", "United States"]
 print("Contrasting countries:", selected_countries)
 
 selected_country_title = ", ".join(selected_countries)
@@ -804,6 +806,12 @@ life_expectancy_plot = (
 
 life_expectancy_plot
 ```
+
+**Interpretation:**
+
+Canada maintains the highest life expectancy among the selected countries from 1996 to 2019, followed by the United States, which shows that developed countries generally have higher life expectancy. However, both China and India demonstrate steeper upward trends, reflecting rapid improvements in health outcomes from 1996 to 2019. Even though China and India are developing countries, their life expectancy is catching up with the developed countries. The gap between the developed nations (Canada, United States) and the developing nations (China, India) is visibly narrowing, particularly for China which was approaching United States level in 2019.
+
+
 ```{python}
 #| label: 4a-Alcohol-Consumption-Plot
 #| message: false
@@ -826,6 +834,11 @@ alcohol_consumption_plot = (
 alcohol_consumption_plot
 ```
 
+**Interpretation:**
+
+Annual Pure Alchohol Consumption patterns become complex between each of the selected countries. As a developed country, Canada and the United States show consistently higher levels of alcohol consumption with relatively stable trends. Only from 2016 to 2019, the trend of alcohol consumption in the United States was slightly decreasing unlike Canada. In contrast, India started with very low consumption in 1996 but experienced a sharp increase by 2016, followed by a slight decline in 2019. China exhibits a similar pattern of increase followed by a decrease. This suggests that economic growth in developing nations may initially drive higher alcohol consumption at the beginning, which might later stabilize or decline due to changing in lifestyle and health awareness.
+
+
 ### 4b.
 Facet plot by year for 1996, 2016, and 2019 showing scatterplots with linear and lowess regression lines of life expectancy and alcohol consumption. regression lines of life expectancy and alcohol consumption.
 
@@ -847,8 +860,8 @@ life_expectancy_vs_alcohol_consumption_plot = (
     )
     + geom_point(alpha=0.55, size=1.8, color="#4D4D4D")
     + geom_smooth(aes(color='"Linear fit"'), method="lm", se=False, size=1.1)
-    + geom_smooth(aes(color='"LOWESS fit"'), method="lowess", se=False, size=1.1)
-    + scale_color_manual(values={"Linear fit": "#D55E00", "LOWESS fit": "#0072B2"})
+    + geom_smooth(aes(color='"Lowess fit"'), method="lowess", se=False, size=1.1)
+    + scale_color_manual(values={"Linear fit": "#D55E00", "Lowess fit": "#0072B2"})
     + facet_wrap("~year", nrow=1)
     + labs(
         title="Life Expectancy vs Annual Pure Alcohol Consumption by Year",
@@ -861,6 +874,11 @@ life_expectancy_vs_alcohol_consumption_plot = (
 
 life_expectancy_vs_alcohol_consumption_plot
 ```
+
+**Interpretation:**
+
+The scatterplots for 1996, 2016, and 2019 reveal a generally positive relationship between annual pure alcohol consumption per person age 15+ and life expectancy. The linear regression lines (orange) suggest a steady upward trend across all three years, which indicates that life expectancy increases as pure alcohol consumption increases. However, the Lowess curves (blue) provide more nuance, showing that life expectancy rises rapidly at lower levels of pure alcohol consumption and then tends to increase more slowly at higher levels of alcohol consumption. This pattern likely reflects a confounding variable, such as economic development (GDP), where wealthier nations tend to have both better healthcare (leading to higher life expectancy) and higher alcohol consumption.
+
 
 ### 4c.
 Facet plot by year for 1996, 2016, and 2019 showing boxplots of alcohol consumption by GDP level.
@@ -888,6 +906,11 @@ alcohol_consumption_by_gdp_level_plot = (
 
 alcohol_consumption_by_gdp_level_plot
 ```
+
+**Interpretation:**
+
+The boxplots reveal a clear positive relationship between GDP level and alcohol consumption that persists across all three observed years (1996, 2016, and 2019). Countries classified as "high" GDP consistently display the highest median alcohol consumption, followed by the "medium" group, while "low" GDP countries report the lowest median consumption. This suggests that as countries become wealthier, annual pure alcohol consumption per person age 15+ tends to increase. The IQRs for the low GDP group are generally smaller, but includes several high outliers, whereas the medium and high GDP groups show greater variability since the IQRs are larger.
+
 
 ### 4d.
 A barplot showing life expectancy in 1996 and 2019 for the 10 countries with the largest change in life expectancy between 1996 and 2019. change in life expectancy between 1996 and 2019.
@@ -942,6 +965,11 @@ plot_4d = (
 plot_4d
 ```
 
+**Interpretation:**
+
+This plot highlights the 10 countries with the highest absolute change in life expectancy between 1996 and 2019. The majority of these nations (9 out of 10), including Rwanda, Malawi, and Uganda, experienced remarkable improvements, with life expectancy increasing by approximately 10-20 years. This trend likely reflects successful public health interventions, greater stability, and economic development in these African nations. However, the Central African Republic stands out as the only country in this group where life expectancy significantly descreased. This deviation is notable and may point to severe internal instability or health crises. 
+
+
 ### 4e.
 Come up with your own plot that will help to understand the role of GDP in the association between alcohol and life expectancy.
 
@@ -976,6 +1004,17 @@ alcohol_vs_life_expectancy_by_gdp_level_plot = (
 
 alcohol_vs_life_expectancy_by_gdp_level_plot
 ```
+
+**Interpretation:**
+
+- **Low GDP:** In 1996 (red), there is a visible positive slope, suggesting that higher alcohol consumption was associated with higher life expectancy. However, in 2016 and 2019 (blue and green), this relationship flattens, indicating that in low-GDP countries, alcohol consumption is no longer a significant differentiator for life expectancy,
+
+- **Medium GDP:** Similar to the low GDP group, the patterns are identical. The key difference is that medium-GDP countries have higher life expectancy and higher annual pure alcohol consumption per person age 15+ in general, i.e. the y-intercepts of each year trend are higher than the low GDP ones.
+
+- **High GDP:** The relationship is largely flat across all years. High-income countries consistently have high life expectancy regardless of alcohol consumption levels (which are generally higher than in low-GDP and medium-GDP countries). This suggests that once a certain economic threshold is reached, alcohol consumption is no longer a significant differentiator for life expectancy.
+
+Overall, this plot reinforces the idea that GDP is a key confounder in the relationship between annual pure alcohol consumption per person age 15+ and life expectancy. The apparent positive link between pure alcohol consumption and life expectancy is largely driven by the fact that wealthier countries (which live longer) tend to consume more pure alcohol, rather than pure alcohol solely itself providing a health benefit. The relationship between alcohol consumption and life expectancy is more complex than we might initially think at the first glance.
+
 
 # Advanced Regression
 
@@ -1023,6 +1062,7 @@ q5_df["year_factor"] = q5_df["year"].cat.codes
 X_gam = q5_df[
     ["alcohol_litres_per_capita_15plus", "gdp_per_capita", "year_factor"]
 ].values
+
 gam_mod_5 = LinearGAM(
     s(0, n_splines=20) +  # smooth alcohol
     s(1, n_splines=20) +  # smooth GDP per capita
@@ -1037,17 +1077,17 @@ print(gam_mod_5.summary())
 
 Linear Model (OLS) Estimates:
 
-- **Alcohol (`x1`):** $\hat{\beta} = 0.592$ ($p < 0.05$, therefore statistically significant). While holding other variables constant, a one litre increase in annual alcohol consumption per capita leads to an increase of approximately 0.592 years on average in expected life expectancy.
-- **GDP per capita (`x2`):** $\hat{\beta} = 0.0002$ ($p  < 0.05$, therefore statistically significant). While holding other variables constant, a 1 current US dollar increase in GDP per capita leads to an approximately 0.0002 years increase on average in expected life expectancy.
-- **Year (categorical, reference level = 1996):** Comparing to 1996, life expectancy is higher by about 3.44 years in 2016 ($p<0.05$, therefore statistically significant) and by about 4.09 years in 2019 ($p < 0.05$, therefore statistically significant), **holding alcohol consumption and GDP per capita constant**.
-- **Overall Fit:** The adjusted $R^2$ is 0.483, indicating the linear model explains about 48.3% of the variance.
+- **Alcohol (`x1`):** $\hat{\beta} \approx 0.49$ ($p < 0.05$, therefore statistically significant). While holding other variables constant, a one litre increase in annual alcohol consumption per capita leads to an increase of approximately 0.49 years on average in expected life expectancy.
+- **GDP per capita (`x2`):** $\hat{\beta} = 0.0003$ ($p  < 0.05$, therefore statistically significant). While holding other variables constant, a 1000 current US dollar increase in GDP per capita leads to an approximately 0.30 years increase on average in expected life expectancy.
+- **Year (categorical, reference level = 1996):** Comparing to 1996, life expectancy is higher by about 3.63 years in 2016 ($p<0.05$, therefore statistically significant) and by about 4.20 years in 2019 ($p < 0.05$, therefore statistically significant), while **holding alcohol consumption and GDP per capita constant**.
+- **Overall Fit:** The adjusted $R^2$ is 0.48, indicating the linear model explains about 48% of the variance.
 
-GAM (Non-linear) Estimates:
+GAM (Non-linear) Estimates: (note take spline parameter 20 for both alcohol and GDP per capita to avoid overfitting)
 
-- **Alcohol (`s(0)`):** The smooth term for alcohol has an EDoF of 12.2 but a p-value of 0.85 which is greater than 0.05 (the threshold for statistical significance), suggesting that after adjusting for the non-linear effect of GDP and the categorical year effect, the relationship between alcohol and life expectancy is not statistically significant in this flexible model.
-- **GDP per capita (`s(1)`):** The smooth term for GDP has an EDoF of 8.8 and is highly statistically significant ($p < 0.05$). The EDoF > 1 indicates a strong non-linear relationship (likely diminishing returns where life expectancy rises with GDP but plateaus at higher levels).
-- **Year (`f(2)`):** The year factor has EDoF 1.9 with ($p = 0.0669 > 0.05$), which is marginal evidence at the 0.05 level (suggestive differences by year, but weaker once non-linear GDP is modeled).
-- **Overall Fit:** The Pseudo $R^2$ is 0.712, which is substantially higher than the linear model, suggesting that incorporating non-linearity provides a much better fit to the data.
+- **Alcohol (`s(0)`):** The smooth term for alcohol has an EDoF of 12.4 but a p-value of 0.99 which is greater than 0.05 (the threshold for statistical significance), suggesting that the relationship between alcohol and life expectancy is not statistically significant here.
+- **GDP per capita (`s(1)`):** The smooth term for GDP has an EDoF of 9.0 and is highly statistically significant ($p < 0.05$). The large EDoF indicates a more wiggle/complex (less penalized) relationship.
+- **Year (`f(2)`):** The year factor has EDoF 1.9 with ($p = 0.025  0.05$), which is statistically significant. Since the EDOF less than 2, this indicates that a mild curvature in the relationship between life expectancy and year.
+- **Overall Fit:** The Pseudo $R^2$ is approximately 0.69, which is way higher than the linear model one, suggesting that incorporating non-linearity provides a much better fit to the data as it explains more of the variance.
 
 ### 5b.
 Plot of the smoothed variables from the gam model and interpret.
@@ -1062,7 +1102,7 @@ Plot of the smoothed variables from the gam model and interpret.
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
 spec = [
-    (0, 0, "Annual Pure Alcohol Consumption (litres per capita)", "blue", "Effect of Alcohol"),
+    (0, 0, "Annual Pure Alcohol Consumption (litres per capita)", "blue", "Effect of Annual Pure Alcohol Consumption"),
     (1, 1, "GDP per Capita (current US$)", "red", "Effect of GDP per Capita"),
 ]
 
@@ -1086,6 +1126,7 @@ plt.show()
 
 **Interpretation:**
 
-- **Alcohol:** The plot for alcohol consumption shows a line that wiggles around zero with wide confidence intervals. This plot confirms the not statistically significant p-value ($p \approx 0.85 > 0.05$) from the model summary, indicating that once we account for GDP and year, alcohol consumption does not have a statistically significant non-linear association with life expectancy in this dataset.
+- **Annual Pure Alcohol Consumption:** The partial dependence plot for alcohol consumption shows a fluctuating, non-linear pattern with relatively wide confidence intervals (dashed lines). The curve oscillates without a clear monotonic trend, and the overall magnitude of the effect is small compared to GDP. This visual confirmation aligns with the high p-value ($p \approx 0.99$) from the model summary, annual pure alcohol consumption does not have a statistically significant non-linear relationship with life expectancy here.
 
-- **GDP per Capita:** The plot for GDP shows a distinct non-linear pattern: a steep positive slope at lower income levels (below approximately $20,000). Then it flattens out significantly as GDP increases. This reflects GDP per capita has a significant impact on health for poorer/developing countries, but adding more GDP per capita to already rich/developed countries yields smaller and smaller gains in life expectancy.
+- **GDP per Capita:** The plot for GDP per capita reveals a strong, non-linear relationship.There is a steep, positive slope at lower income levels (from $0 to $20,000 USD approximately), indicating that small increases in GDP per capita significantly boost life expectancy in developing nations since developing countries generally have lower GDP per capita. However, the curve flattens out as GDP per capita increases from a GDP per capita of $40,000 USD approximately. In conclusion, this plot suggests that while economic growth is crucial for health improvements in poorer countries, additional wealth in already developed with higher GDP per capita nations yields little to no extra benefit for life expectancy.
+

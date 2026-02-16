@@ -2652,9 +2652,9 @@ min                            0.000000
 max                           17.000000  </code></pre>
 </div>
 </div>
-<div id="missing-handling-country-level" class="cell" data-message="false" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Handling missing values at the country-level:</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># if a country has any missing value in any of the 3 rows, drop that country entirely.</span></span>
+<div id="missing-handling-row-level" class="cell" data-message="false" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Handle missing values at the row level:</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="co"># drop only rows where any core analysis variable is missing.</span></span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>core_vars <span class="op">=</span> [</span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"life_expectancy"</span>,</span>
 <span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population"</span>,</span>
@@ -2662,32 +2662,37 @@ max                           17.000000  </code></pre>
 <span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"alcohol_litres_per_capita_15plus"</span>,</span>
 <span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>]</span>
 <span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>country_has_missing <span class="op">=</span> (</span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    merged_df.groupby(<span class="st">"country"</span>)[core_vars]</span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> d: d.isna().<span class="bu">any</span>().<span class="bu">any</span>())</span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>countries_to_drop <span class="op">=</span> <span class="bu">sorted</span>(country_has_missing[country_has_missing].index.tolist())</span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>merged_df_q1_clean <span class="op">=</span> merged_df[<span class="op">~</span>merged_df[<span class="st">"country"</span>].isin(countries_to_drop)].copy()</span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Countries before filtering:"</span>, merged_df[<span class="st">"country"</span>].nunique())</span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Countries dropped (had at least one missing value):"</span>, <span class="bu">len</span>(countries_to_drop))</span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Countries after filtering:"</span>, merged_df_q1_clean[<span class="st">"country"</span>].nunique())</span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after country-level missing handling:"</span>, merged_df_q1_clean.shape[<span class="dv">0</span>])</span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Any missing left in core variables:"</span>, merged_df_q1_clean[core_vars].isna().<span class="bu">any</span>().<span class="bu">any</span>())</span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Unique year counts per country after filtering:"</span>)</span>
-<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_q1_clean.groupby(<span class="st">"country"</span>)[<span class="st">"year"</span>].nunique().value_counts().sort_index())</span>
-<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Summary statistics:</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_q1_clean.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>rows_before <span class="op">=</span> merged_df.shape[<span class="dv">0</span>]</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>countries_before <span class="op">=</span> merged_df[<span class="st">"country"</span>].nunique()</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>merged_df_q1_clean <span class="op">=</span> merged_df.dropna(subset<span class="op">=</span>core_vars).copy()</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>rows_after <span class="op">=</span> merged_df_q1_clean.shape[<span class="dv">0</span>]</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>countries_after <span class="op">=</span> merged_df_q1_clean[<span class="st">"country"</span>].nunique()</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Countries before filtering:"</span>, merged_df[<span class="st">"country"</span>].nunique())</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Countries after filtering:"</span>, countries_after)</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows before row-level missing handling:"</span>, rows_before)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows dropped (had missing in core variables):"</span>, rows_before <span class="op">-</span> rows_after)</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after row-level missing handling:"</span>, rows_after)</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Any missing left in core variables:"</span>, merged_df_q1_clean[core_vars].isna().<span class="bu">any</span>().<span class="bu">any</span>())</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Unique year counts per country after row-level filtering:"</span>)</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_q1_clean.groupby(<span class="st">"country"</span>)[<span class="st">"year"</span>].nunique().value_counts().sort_index())</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Summary statistics:</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(merged_df_q1_clean.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Countries before filtering: 188
-Countries dropped (had at least one missing value): 45
-Countries after filtering: 143
-Rows after country-level missing handling: 429
+Countries after filtering: 187
+Rows before row-level missing handling: 564
+Rows dropped (had missing in core variables): 49
+Rows after row-level missing handling: 515
 Any missing left in core variables: False
 
-Unique year counts per country after filtering:
+Unique year counts per country after row-level filtering:
 year
+1      2
+2     42
 3    143
 Name: count, dtype: int64
 
@@ -2695,28 +2700,28 @@ Name: count, dtype: int64
 Summary statistics:
 
               year  life_expectancy    population  gdp_per_capita  \
-count   429.000000       429.000000  4.290000e+02      429.000000   
-mean   2010.333333        70.178325  4.384044e+07    11811.801224   
-std      10.220848         9.247507  1.560493e+08    17688.257602   
-min    1996.000000        31.530000  1.709110e+05       71.406525   
-25%    1996.000000        64.618000  3.473003e+06     1258.986198   
-50%    2016.000000        71.651220  1.002428e+07     4081.947727   
-75%    2019.000000        76.870732  2.988438e+07    13838.526682   
-max    2019.000000        84.356341  1.407745e+09   112696.649060   
+count   515.000000       515.000000  5.150000e+02      515.000000   
+mean   2011.401942        70.198695  3.953295e+07    11678.334159   
+std       9.780450         8.945520  1.438121e+08    17090.436805   
+min    1996.000000        31.530000  1.058100e+04       71.406525   
+25%    1996.000000        64.764500  2.457033e+06     1343.857976   
+50%    2016.000000        71.540000  8.865631e+06     4170.114400   
+75%    2019.000000        76.778402  2.807424e+07    14180.327188   
+max    2019.000000        84.489000  1.407745e+09   112696.649060   
 
        alcohol_litres_per_capita_15plus  
-count                        429.000000  
-mean                           5.899021  
-std                            4.055332  
-min                            0.100000  
-25%                            2.080000  
-50%                            5.700000  
-75%                            9.200000  
+count                        515.000000  
+mean                           5.553670  
+std                            4.133556  
+min                            0.000000  
+25%                            1.600000  
+50%                            5.100000  
+75%                            8.875000  
 max                           17.000000  </code></pre>
 </div>
 </div>
 <div id="eda-outliers" class="cell" data-message="false" data-execution_count="15">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show which country/year achieves each extremum</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show which country-year achieves each extremum</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_extremum_context(df, value_col, label):</span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    min_idx <span class="op">=</span> df[value_col].idxmin()</span>
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    max_idx <span class="op">=</span> df[value_col].idxmax()</span>
@@ -2741,16 +2746,16 @@ year                                   2019
 life_expectancy                       31.53
 Name: 98, dtype: object
 Life expectancy maximum at:
-country                Japan
-year                    2019
-life_expectancy    84.356341
-Name: 254, dtype: object
+country            Andorra
+year                  2016
+life_expectancy     84.489
+Name: 10, dtype: object
 
 Alcohol consumption minimum at:
-country                             Egypt, Arab Rep.
-year                                            2019
-alcohol_litres_per_capita_15plus                 0.1
-Name: 155, dtype: object
+country                             Bangladesh
+year                                      2016
+alcohol_litres_per_capita_15plus           0.0
+Name: 40, dtype: object
 Alcohol consumption maximum at:
 country                             Romania
 year                                   2019
@@ -2769,10 +2774,10 @@ gdp_per_capita    112696.64906
 Name: 302, dtype: object
 
 Population minimum at:
-country        Vanuatu
-year              1996
-population    170911.0
-Name: 546, dtype: object
+country        Tuvalu
+year             2019
+population    10581.0
+Name: 524, dtype: object
 Population maximum at:
 country              China
 year                  2019
@@ -2783,8 +2788,8 @@ Name: 107, dtype: object</code></pre>
 <p><strong>Summary:</strong></p>
 <ul>
 <li><strong>Minimum Life expectancy:</strong> approximately 31.53 years in Central African Republic (2019).</li>
-<li><strong>Maximum Life expectancy:</strong> approximately 84.35 years in Japan (2019).</li>
-<li><strong>Minimum Annual Pure Alcohol consumption:</strong> approximately 0.10 liters per person (age 15+) in Egypt, Arab Rep.&nbsp;(2019).</li>
+<li><strong>Maximum Life expectancy:</strong> approximately 84.49 years in Andorra (2016).</li>
+<li><strong>Minimum Annual Pure Alcohol consumption:</strong> approximately 0.00 liters per person (age 15+) in Bangladesh (2016).</li>
 <li><strong>Maximum Annual Pure Alcohol consumption:</strong> approximately 17.00 liters per person (age 15+) in Romania (2019).</li>
 </ul>
 </section>
@@ -2804,12 +2809,12 @@ Name: 107, dtype: object</code></pre>
 <li><code>alcohol_litres_per_capita_15plus</code> (litres of annual pure alcohol consumption per person age 15+).</li>
 </ul>
 <p>Before merging, the World Bank dataset contained <strong>651</strong> observations and the alcohol dataset contained <strong>573</strong> observations (after cleaning). After merging through inner join by <code>country</code> and <code>year</code>, the merged dataset contained <strong>564</strong> observations, where <strong>188</strong> countries left. The reason of using inner join is to keep only the matched <code>country</code>-<code>year</code> pairs. The unmatched <code>country</code>-<code>year</code> pairs after the country names were standardized (such as Monaco, appears in World Bank dataset but not in Alchohol dataset) were dropped because they are the mismatch between the two datasets. <strong>A groupby validation (<code>merged_df.groupby("country")["year"].nunique()</code>) confirms that in this merged dataset each country appears in all three target years (1996, 2016, and 2019).</strong> Therefore, the accuracy of future analysis is maintained.</p>
-<p>There is no missing value in <code>life_expectancy</code> or <code>population</code>, but some missingness is in <code>gdp_per_capita</code> (8 rows; 1.42%) and <code>alcohol_litres_per_capita_15plus</code> (43 rows; 7.62%). In Q1, I handled missing values using a country-level rule: if one of the three rows for a country had a missing value in key analysis variables, I dropped that entire country (all three rows). The cleaned dataset is then used for the remaining analyses, which is perfectly balanced since each country appears in all three target years (1996, 2016, and 2019). After removing information incomplete countries, the number of observations reduced to <strong>429</strong>, where <strong>143</strong> countries left. The observed ranges for the cleaned and merged dataset are:</p>
+<p>There is no missing value in <code>life_expectancy</code> or <code>population</code>, but some missingness is in <code>gdp_per_capita</code> (8 rows; 1.42%) and <code>alcohol_litres_per_capita_15plus</code> (43 rows; 7.62%). In Q1, I handled missing values using a row-level rule by dropping only rows with missing values in <code>gdp_per_capita</code>, <code>alcohol_litres_per_capita_15plus</code>. The cleaned dataset is then used for the remaining analyses. After the removal of rows with missing values, the number of countries is reduced to <strong>187</strong>, and the number of observations is reduced to <strong>515</strong>. This row-level approach preserves more information overall, but some countries may no longer have all three target years after cleaning. The observed ranges for the cleaned and merged dataset are:</p>
 <ul>
-<li>Life expectancy from 31.53 years (Central African Republic, 2019) to 84.35 years (Japan, 2019)</li>
-<li>Annual pure alcohol consumption per person age 15+ from 0.10 liters (Egypt, Arab Rep., 2019) to 17.0 liters (Romania, 2019)</li>
+<li>Life expectancy from 31.53 years (Central African Republic, 2019) to 84.49 years (Andorra, 2016)</li>
+<li>Annual pure alcohol consumption per person age 15+ from 0.00 liters (Bangladesh, 2016) to 17.0 liters (Romania, 2019)</li>
 <li>GDP per capita from 71.41 USD (Liberia, 1996) to 112,696.65 USD (Luxembourg, 2019)</li>
-<li>Population from 170,911 (Vanuatu, 1996) to about 1.41 billion (China, 2019)</li>
+<li>Population from 10581 (Tuvalu, 2019) to about 1.41 billion (China, 2019)</li>
 </ul>
 <p>Accroding to the summary statistics, some countries have extreme values in the variables, especially for GDP per capita. After validate some of the extreme values, I found that they are reasonable and not due to data entry errors. For example, Luxembourg’s peak GDP per capita is an accurate reflection of real-world scenarios. Therefore, I decided to keep all the observations including the extreme values in the dataset as they are reflecting the real-life scenarios.</p>
 <p><strong>Mapping Reference during Standardization:</strong></p>
@@ -2911,38 +2916,38 @@ Name: 107, dtype: object</code></pre>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>1996</td>
-<td>65.83</td>
-<td>9.86</td>
-<td>4.87</td>
-<td>4.25</td>
-<td>36602498.37</td>
-<td>1.332426e+08</td>
-<td>6809.90</td>
-<td>10877.58</td>
+<td>65.77</td>
+<td>9.82</td>
+<td>4.86</td>
+<td>4.27</td>
+<td>35984958.51</td>
+<td>1.319311e+08</td>
+<td>6795.27</td>
+<td>10828.24</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>2016</td>
-<td>72.04</td>
-<td>7.99</td>
-<td>6.78</td>
-<td>3.87</td>
-<td>46708060.97</td>
-<td>1.646918e+08</td>
-<td>13503.01</td>
-<td>18892.67</td>
+<td>71.63</td>
+<td>7.87</td>
+<td>6.18</td>
+<td>4.11</td>
+<td>40248995.29</td>
+<td>1.466055e+08</td>
+<td>12810.49</td>
+<td>17795.48</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>2019</td>
-<td>72.66</td>
-<td>8.23</td>
-<td>6.05</td>
-<td>3.83</td>
-<td>48210775.40</td>
-<td>1.686411e+08</td>
-<td>15122.49</td>
-<td>20704.15</td>
+<td>72.27</td>
+<td>8.00</td>
+<td>5.47</td>
+<td>3.97</td>
+<td>41628261.91</td>
+<td>1.505760e+08</td>
+<td>14414.63</td>
+<td>19525.00</td>
 </tr>
 </tbody>
 </table>
@@ -2985,8 +2990,8 @@ Name: 107, dtype: object</code></pre>
 <span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>display(gdp_level_summary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>GDP per capita Q1 (25th percentile): 1258.986
-GDP per capita Q3 (75th percentile): 13838.527</code></pre>
+<pre><code>GDP per capita Q1 (25th percentile): 1343.858
+GDP per capita Q3 (75th percentile): 14180.327</code></pre>
 </div>
 <div id="gdp-level-categorization" class="cell-output cell-output-display">
 <div>
@@ -3007,22 +3012,22 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <th data-quarto-table-cell-role="th">0</th>
 <td>low</td>
 <td>71.41</td>
-<td>1258.99</td>
-<td>108</td>
+<td>1335.54</td>
+<td>129</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>medium</td>
-<td>1266.44</td>
-<td>13838.53</td>
-<td>214</td>
+<td>1352.17</td>
+<td>13864.94</td>
+<td>257</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>high</td>
-<td>13864.94</td>
+<td>14495.72</td>
 <td>112696.65</td>
-<td>107</td>
+<td>129</td>
 </tr>
 </tbody>
 </table>
@@ -3043,13 +3048,13 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use one consistent dataset for all Q4 plots</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>q4_df <span class="op">=</span> q3_df.copy()</span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Use globally significant countries for comparison</span></span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>selected_countries <span class="op">=</span> [<span class="st">"Canada"</span>, <span class="st">"Australia"</span>, <span class="st">"China"</span>, <span class="st">"United States"</span>]</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Use Canada(developed), India(developing), China(developing), United States(developed) for comparison</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>selected_countries <span class="op">=</span> [<span class="st">"Canada"</span>, <span class="st">"India"</span>, <span class="st">"China"</span>, <span class="st">"United States"</span>]</span>
 <span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Contrasting countries:"</span>, selected_countries)</span>
 <span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>selected_country_title <span class="op">=</span> <span class="st">", "</span>.join(selected_countries)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Contrasting countries: ['Canada', 'Australia', 'China', 'United States']</code></pre>
+<pre><code>Contrasting countries: ['Canada', 'India', 'China', 'United States']</code></pre>
 </div>
 </div>
 <div id="cell-4a-Life-Expectancy-Plot" class="cell" data-message="false" data-execution_count="19">
@@ -3070,7 +3075,7 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>life_expectancy_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="71">
 <div>
 <figure class="figure">
 <p><img src="hw2_files/figure-html/a-life-expectancy-plot-output-1.png" id="a-life-expectancy-plot" width="960" height="480" class="figure-img"></p>
@@ -3078,6 +3083,8 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 </div>
 </div>
 </div>
+<p><strong>Interpretation:</strong></p>
+<p>Canada maintains the highest life expectancy among the selected countries from 1996 to 2019, followed by the United States, which shows that developed countries generally have higher life expectancy. However, both China and India demonstrate steeper upward trends, reflecting rapid improvements in health outcomes from 1996 to 2019. Even though China and India are developing countries, their life expectancy is catching up with the developed countries. The gap between the developed nations (Canada, United States) and the developing nations (China, India) is visibly narrowing, particularly for China which was approaching United States level in 2019.</p>
 <div id="cell-4a-Alcohol-Consumption-Plot" class="cell" data-message="false" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>alcohol_consumption_plot <span class="op">=</span> (</span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>    ggplot(plot_df, aes(x<span class="op">=</span><span class="st">"year"</span>, y<span class="op">=</span><span class="st">"alcohol_litres_per_capita_15plus"</span>, color<span class="op">=</span><span class="st">"country"</span>, group<span class="op">=</span><span class="st">"country"</span>))</span>
@@ -3094,7 +3101,7 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>alcohol_consumption_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
+<div class="cell-output cell-output-display" data-execution_count="72">
 <div>
 <figure class="figure">
 <p><img src="hw2_files/figure-html/a-alcohol-consumption-plot-output-1.png" id="a-alcohol-consumption-plot" width="960" height="480" class="figure-img"></p>
@@ -3102,6 +3109,8 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 </div>
 </div>
 </div>
+<p><strong>Interpretation:</strong></p>
+<p>Annual Pure Alchohol Consumption patterns become complex between each of the selected countries. As a developed country, Canada and the United States show consistently higher levels of alcohol consumption with relatively stable trends. Only from 2016 to 2019, the trend of alcohol consumption in the United States was slightly decreasing unlike Canada. In contrast, India started with very low consumption in 1996 but experienced a sharp increase by 2016, followed by a slight decline in 2019. China exhibits a similar pattern of increase followed by a decrease. This suggests that economic growth in developing nations may initially drive higher alcohol consumption at the beginning, which might later stabilize or decline due to changing in lifestyle and health awareness.</p>
 </section>
 <section id="b.-1" class="level3">
 <h3 class="anchored" data-anchor-id="b.-1">4b.</h3>
@@ -3120,8 +3129,8 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_point(alpha<span class="op">=</span><span class="fl">0.55</span>, size<span class="op">=</span><span class="fl">1.8</span>, color<span class="op">=</span><span class="st">"#4D4D4D"</span>)</span>
 <span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_smooth(aes(color<span class="op">=</span><span class="st">'"Linear fit"'</span>), method<span class="op">=</span><span class="st">"lm"</span>, se<span class="op">=</span><span class="va">False</span>, size<span class="op">=</span><span class="fl">1.1</span>)</span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_smooth(aes(color<span class="op">=</span><span class="st">'"LOWESS fit"'</span>), method<span class="op">=</span><span class="st">"lowess"</span>, se<span class="op">=</span><span class="va">False</span>, size<span class="op">=</span><span class="fl">1.1</span>)</span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_color_manual(values<span class="op">=</span>{<span class="st">"Linear fit"</span>: <span class="st">"#D55E00"</span>, <span class="st">"LOWESS fit"</span>: <span class="st">"#0072B2"</span>})</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_smooth(aes(color<span class="op">=</span><span class="st">'"Lowess fit"'</span>), method<span class="op">=</span><span class="st">"lowess"</span>, se<span class="op">=</span><span class="va">False</span>, size<span class="op">=</span><span class="fl">1.1</span>)</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_color_manual(values<span class="op">=</span>{<span class="st">"Linear fit"</span>: <span class="st">"#D55E00"</span>, <span class="st">"Lowess fit"</span>: <span class="st">"#0072B2"</span>})</span>
 <span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> facet_wrap(<span class="st">"~year"</span>, nrow<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
 <span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Life Expectancy vs Annual Pure Alcohol Consumption by Year"</span>,</span>
@@ -3133,7 +3142,7 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a>life_expectancy_vs_alcohol_consumption_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
+<div class="cell-output cell-output-display" data-execution_count="73">
 <div>
 <figure class="figure">
 <p><img src="hw2_files/figure-html/b-facet-scatter-linear-lowess-output-1.png" id="b-facet-scatter-linear-lowess" width="1248" height="432" class="figure-img"></p>
@@ -3141,6 +3150,8 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 </div>
 </div>
 </div>
+<p><strong>Interpretation:</strong></p>
+<p>The scatterplots for 1996, 2016, and 2019 reveal a generally positive relationship between annual pure alcohol consumption per person age 15+ and life expectancy. The linear regression lines (orange) suggest a steady upward trend across all three years, which indicates that life expectancy increases as pure alcohol consumption increases. However, the Lowess curves (blue) provide more nuance, showing that life expectancy rises rapidly at lower levels of pure alcohol consumption and then tends to increase more slowly at higher levels of alcohol consumption. This pattern likely reflects a confounding variable, such as economic development (GDP), where wealthier nations tend to have both better healthcare (leading to higher life expectancy) and higher alcohol consumption.</p>
 </section>
 <section id="c.-1" class="level3">
 <h3 class="anchored" data-anchor-id="c.-1">4c.</h3>
@@ -3163,7 +3174,7 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>alcohol_consumption_by_gdp_level_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="74">
 <div>
 <figure class="figure">
 <p><img src="hw2_files/figure-html/c-facet-boxplot-alcohol-by-gdp-level-output-1.png" id="c-facet-boxplot-alcohol-by-gdp-level" width="1152" height="461" class="figure-img"></p>
@@ -3171,6 +3182,8 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 </div>
 </div>
 </div>
+<p><strong>Interpretation:</strong></p>
+<p>The boxplots reveal a clear positive relationship between GDP level and alcohol consumption that persists across all three observed years (1996, 2016, and 2019). Countries classified as “high” GDP consistently display the highest median alcohol consumption, followed by the “medium” group, while “low” GDP countries report the lowest median consumption. This suggests that as countries become wealthier, annual pure alcohol consumption per person age 15+ tends to increase. The IQRs for the low GDP group are generally smaller, but includes several high outliers, whereas the medium and high GDP groups show greater variability since the IQRs are larger.</p>
 </section>
 <section id="d.-1" class="level3">
 <h3 class="anchored" data-anchor-id="d.-1">4d.</h3>
@@ -3219,7 +3232,7 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <span id="cb49-41"><a href="#cb49-41" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb49-42"><a href="#cb49-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb49-43"><a href="#cb49-43" aria-hidden="true" tabindex="-1"></a>plot_4d</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="23">
+<div class="cell-output cell-output-display" data-execution_count="75">
 <div>
 <figure class="figure">
 <p><img src="hw2_files/figure-html/d-top10-life-expectancy-change-barplot-output-1.png" id="d-top10-life-expectancy-change-barplot" width="1056" height="576" class="figure-img"></p>
@@ -3227,6 +3240,8 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 </div>
 </div>
 </div>
+<p><strong>Interpretation:</strong></p>
+<p>This plot highlights the 10 countries with the highest absolute change in life expectancy between 1996 and 2019. The majority of these nations (9 out of 10), including Rwanda, Malawi, and Uganda, experienced remarkable improvements, with life expectancy increasing by approximately 10-20 years. This trend likely reflects successful public health interventions, greater stability, and economic development in these African nations. However, the Central African Republic stands out as the only country in this group where life expectancy significantly descreased. This deviation is notable and may point to severe internal instability or health crises.</p>
 </section>
 <section id="e." class="level3">
 <h3 class="anchored" data-anchor-id="e.">4e.</h3>
@@ -3257,7 +3272,7 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>alcohol_vs_life_expectancy_by_gdp_level_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
+<div class="cell-output cell-output-display" data-execution_count="76">
 <div>
 <figure class="figure">
 <p><img src="hw2_files/figure-html/e-gdp-role-scatter-by-gdp-level-output-1.png" id="e-gdp-role-scatter-by-gdp-level" width="1152" height="461" class="figure-img"></p>
@@ -3265,6 +3280,13 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 </div>
 </div>
 </div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><p><strong>Low GDP:</strong> In 1996 (red), there is a visible positive slope, suggesting that higher alcohol consumption was associated with higher life expectancy. However, in 2016 and 2019 (blue and green), this relationship flattens, indicating that in low-GDP countries, alcohol consumption is no longer a significant differentiator for life expectancy,</p></li>
+<li><p><strong>Medium GDP:</strong> Similar to the low GDP group, the patterns are identical. The key difference is that medium-GDP countries have higher life expectancy and higher annual pure alcohol consumption per person age 15+ in general, i.e.&nbsp;the y-intercepts of each year trend are higher than the low GDP ones.</p></li>
+<li><p><strong>High GDP:</strong> The relationship is largely flat across all years. High-income countries consistently have high life expectancy regardless of alcohol consumption levels (which are generally higher than in low-GDP and medium-GDP countries). This suggests that once a certain economic threshold is reached, alcohol consumption is no longer a significant differentiator for life expectancy.</p></li>
+</ul>
+<p>Overall, this plot reinforces the idea that GDP is a key confounder in the relationship between annual pure alcohol consumption per person age 15+ and life expectancy. The apparent positive link between pure alcohol consumption and life expectancy is largely driven by the fact that wealthier countries (which live longer) tend to consume more pure alcohol, rather than pure alcohol solely itself providing a health benefit. The relationship between alcohol consumption and life expectancy is more complex than we might initially think at the first glance.</p>
 </section>
 </section>
 </section>
@@ -3310,63 +3332,64 @@ GDP per capita Q3 (75th percentile): 13838.527</code></pre>
 <span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a>X_gam <span class="op">=</span> q5_df[</span>
 <span id="cb51-33"><a href="#cb51-33" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"alcohol_litres_per_capita_15plus"</span>, <span class="st">"gdp_per_capita"</span>, <span class="st">"year_factor"</span>]</span>
 <span id="cb51-34"><a href="#cb51-34" aria-hidden="true" tabindex="-1"></a>].values</span>
-<span id="cb51-35"><a href="#cb51-35" aria-hidden="true" tabindex="-1"></a>gam_mod_5 <span class="op">=</span> LinearGAM(</span>
-<span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">0</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>  <span class="co"># smooth alcohol</span></span>
-<span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">1</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>  <span class="co"># smooth GDP per capita</span></span>
-<span id="cb51-38"><a href="#cb51-38" aria-hidden="true" tabindex="-1"></a>    f(<span class="dv">2</span>)                  <span class="co"># categorical year adjustment (1996 baseline, 2016 and 2019 indicators)</span></span>
-<span id="cb51-39"><a href="#cb51-39" aria-hidden="true" tabindex="-1"></a>).fit(X_gam, y)</span>
-<span id="cb51-40"><a href="#cb51-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-41"><a href="#cb51-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">GAM Summary"</span>)</span>
-<span id="cb51-42"><a href="#cb51-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gam_mod_5.summary())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb51-35"><a href="#cb51-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a>gam_mod_5 <span class="op">=</span> LinearGAM(</span>
+<span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">0</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>  <span class="co"># smooth alcohol</span></span>
+<span id="cb51-38"><a href="#cb51-38" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">1</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>  <span class="co"># smooth GDP per capita</span></span>
+<span id="cb51-39"><a href="#cb51-39" aria-hidden="true" tabindex="-1"></a>    f(<span class="dv">2</span>)                  <span class="co"># categorical year adjustment (1996 baseline, 2016 and 2019 indicators)</span></span>
+<span id="cb51-40"><a href="#cb51-40" aria-hidden="true" tabindex="-1"></a>).fit(X_gam, y)</span>
+<span id="cb51-41"><a href="#cb51-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-42"><a href="#cb51-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">GAM Summary"</span>)</span>
+<span id="cb51-43"><a href="#cb51-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gam_mod_5.summary())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Multiple Linear Regression (OLS) Summary
                             OLS Regression Results                            
 ==============================================================================
-Dep. Variable:                      y   R-squared:                       0.488
-Model:                            OLS   Adj. R-squared:                  0.483
-Method:                 Least Squares   F-statistic:                     101.1
-Date:                Sun, 15 Feb 2026   Prob (F-statistic):           2.17e-60
-Time:                        18:06:28   Log-Likelihood:                -1418.8
-No. Observations:                 429   AIC:                             2848.
-Df Residuals:                     424   BIC:                             2868.
+Dep. Variable:                      y   R-squared:                       0.484
+Model:                            OLS   Adj. R-squared:                  0.480
+Method:                 Least Squares   F-statistic:                     119.7
+Date:                Sun, 15 Feb 2026   Prob (F-statistic):           6.22e-72
+Time:                        22:58:19   Log-Likelihood:                -1688.3
+No. Observations:                 515   AIC:                             3387.
+Df Residuals:                     510   BIC:                             3408.
 Df Model:                           4                                         
 Covariance Type:            nonrobust                                         
 ====================================================================================================
                                        coef    std err          t      P&gt;|t|      [0.025      0.975]
 ----------------------------------------------------------------------------------------------------
-const                               61.2749      0.682     89.785      0.000      59.933      62.616
-alcohol_litres_per_capita_15plus     0.5917      0.089      6.623      0.000       0.416       0.767
-gdp_per_capita                       0.0002   2.05e-05     11.972      0.000       0.000       0.000
-year_2016                            3.4379      0.804      4.278      0.000       1.858       5.017
-year_2019                            4.0946      0.802      5.108      0.000       2.519       5.670
+const                               61.5939      0.632     97.485      0.000      60.353      62.835
+alcohol_litres_per_capita_15plus     0.4915      0.076      6.452      0.000       0.342       0.641
+gdp_per_capita                       0.0003   1.86e-05     14.136      0.000       0.000       0.000
+year_2016                            3.6327      0.723      5.022      0.000       2.211       5.054
+year_2019                            4.2022      0.727      5.784      0.000       2.775       5.630
 ==============================================================================
-Omnibus:                       77.837   Durbin-Watson:                   0.835
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):              133.082
-Skew:                          -1.064   Prob(JB):                     1.26e-29
-Kurtosis:                       4.707   Cond. No.                     7.17e+04
+Omnibus:                       89.169   Durbin-Watson:                   0.855
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              153.363
+Skew:                          -1.034   Prob(JB):                     4.98e-34
+Kurtosis:                       4.695   Cond. No.                     7.43e+04
 ==============================================================================
 
 Notes:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-[2] The condition number is large, 7.17e+04. This might indicate that there are
+[2] The condition number is large, 7.43e+04. This might indicate that there are
 strong multicollinearity or other numerical problems.
 
 GAM Summary
 LinearGAM                                                                                                 
 =============================================== ==========================================================
-Distribution:                        NormalDist Effective DoF:                                     22.9187
-Link Function:                     IdentityLink Log Likelihood:                                 -1295.6402
-Number of Samples:                          429 AIC:                                             2639.1178
-                                                AICc:                                            2642.0679
-                                                GCV:                                               28.6857
-                                                Scale:                                              5.0932
-                                                Pseudo R-Squared:                                   0.7122
+Distribution:                        NormalDist Effective DoF:                                     23.4065
+Link Function:                     IdentityLink Log Likelihood:                                 -1553.7952
+Number of Samples:                          515 AIC:                                             3156.4034
+                                                AICc:                                            3158.9365
+                                                GCV:                                               27.8463
+                                                Scale:                                              5.0575
+                                                Pseudo R-Squared:                                   0.6943
 ==========================================================================================================
 Feature Function                  Lambda               Rank         EDoF         P &gt; x        Sig. Code   
 ================================= ==================== ============ ============ ============ ============
-s(0)                              [0.6]                20           12.2         8.50e-01                 
-s(1)                              [0.6]                20           8.8          1.11e-16     ***         
-f(2)                              [0.6]                3            1.9          6.69e-02     .           
+s(0)                              [0.6]                20           12.4         9.90e-01                 
+s(1)                              [0.6]                20           9.0          1.11e-16     ***         
+f(2)                              [0.6]                3            1.9          2.50e-02     *           
 intercept                                              1            0.0          1.11e-16     ***         
 ==========================================================================================================
 Significance codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -3383,17 +3406,17 @@ None</code></pre>
 <p><strong>Interpretation:</strong></p>
 <p>Linear Model (OLS) Estimates:</p>
 <ul>
-<li><strong>Alcohol (<code>x1</code>):</strong> <span class="math inline">\(\hat{\beta} = 0.592\)</span> (<span class="math inline">\(p &lt; 0.05\)</span>, therefore statistically significant). While holding other variables constant, a one litre increase in annual alcohol consumption per capita leads to an increase of approximately 0.592 years on average in expected life expectancy.</li>
-<li><strong>GDP per capita (<code>x2</code>):</strong> <span class="math inline">\(\hat{\beta} = 0.0002\)</span> (<span class="math inline">\(p  &lt; 0.05\)</span>, therefore statistically significant). While holding other variables constant, a 1 current US dollar increase in GDP per capita leads to an approximately 0.0002 years increase on average in expected life expectancy.</li>
-<li><strong>Year (categorical, reference level = 1996):</strong> Comparing to 1996, life expectancy is higher by about 3.44 years in 2016 (<span class="math inline">\(p&lt;0.05\)</span>, therefore statistically significant) and by about 4.09 years in 2019 (<span class="math inline">\(p &lt; 0.05\)</span>, therefore statistically significant), <strong>holding alcohol consumption and GDP per capita constant</strong>.</li>
-<li><strong>Overall Fit:</strong> The adjusted <span class="math inline">\(R^2\)</span> is 0.483, indicating the linear model explains about 48.3% of the variance.</li>
+<li><strong>Alcohol (<code>x1</code>):</strong> <span class="math inline">\(\hat{\beta} \approx 0.49\)</span> (<span class="math inline">\(p &lt; 0.05\)</span>, therefore statistically significant). While holding other variables constant, a one litre increase in annual alcohol consumption per capita leads to an increase of approximately 0.49 years on average in expected life expectancy.</li>
+<li><strong>GDP per capita (<code>x2</code>):</strong> <span class="math inline">\(\hat{\beta} = 0.0003\)</span> (<span class="math inline">\(p  &lt; 0.05\)</span>, therefore statistically significant). While holding other variables constant, a 1000 current US dollar increase in GDP per capita leads to an approximately 0.30 years increase on average in expected life expectancy.</li>
+<li><strong>Year (categorical, reference level = 1996):</strong> Comparing to 1996, life expectancy is higher by about 3.63 years in 2016 (<span class="math inline">\(p&lt;0.05\)</span>, therefore statistically significant) and by about 4.20 years in 2019 (<span class="math inline">\(p &lt; 0.05\)</span>, therefore statistically significant), while <strong>holding alcohol consumption and GDP per capita constant</strong>.</li>
+<li><strong>Overall Fit:</strong> The adjusted <span class="math inline">\(R^2\)</span> is 0.48, indicating the linear model explains about 48% of the variance.</li>
 </ul>
-<p>GAM (Non-linear) Estimates:</p>
+<p>GAM (Non-linear) Estimates: (note take spline parameter 20 for both alcohol and GDP per capita to avoid overfitting)</p>
 <ul>
-<li><strong>Alcohol (<code>s(0)</code>):</strong> The smooth term for alcohol has an EDoF of 12.2 but a p-value of 0.85 which is greater than 0.05 (the threshold for statistical significance), suggesting that after adjusting for the non-linear effect of GDP and the categorical year effect, the relationship between alcohol and life expectancy is not statistically significant in this flexible model.</li>
-<li><strong>GDP per capita (<code>s(1)</code>):</strong> The smooth term for GDP has an EDoF of 8.8 and is highly statistically significant (<span class="math inline">\(p &lt; 0.05\)</span>). The EDoF &gt; 1 indicates a strong non-linear relationship (likely diminishing returns where life expectancy rises with GDP but plateaus at higher levels).</li>
-<li><strong>Year (<code>f(2)</code>):</strong> The year factor has EDoF 1.9 with (<span class="math inline">\(p = 0.0669 &gt; 0.05\)</span>), which is marginal evidence at the 0.05 level (suggestive differences by year, but weaker once non-linear GDP is modeled).</li>
-<li><strong>Overall Fit:</strong> The Pseudo <span class="math inline">\(R^2\)</span> is 0.712, which is substantially higher than the linear model, suggesting that incorporating non-linearity provides a much better fit to the data.</li>
+<li><strong>Alcohol (<code>s(0)</code>):</strong> The smooth term for alcohol has an EDoF of 12.4 but a p-value of 0.99 which is greater than 0.05 (the threshold for statistical significance), suggesting that the relationship between alcohol and life expectancy is not statistically significant here.</li>
+<li><strong>GDP per capita (<code>s(1)</code>):</strong> The smooth term for GDP has an EDoF of 9.0 and is highly statistically significant (<span class="math inline">\(p &lt; 0.05\)</span>). The large EDoF indicates a more wiggle/complex (less penalized) relationship.</li>
+<li><strong>Year (<code>f(2)</code>):</strong> The year factor has EDoF 1.9 with (<span class="math inline">\(p = 0.025  0.05\)</span>), which is statistically significant. Since the EDOF less than 2, this indicates that a mild curvature in the relationship between life expectancy and year.</li>
+<li><strong>Overall Fit:</strong> The Pseudo <span class="math inline">\(R^2\)</span> is approximately 0.69, which is way higher than the linear model one, suggesting that incorporating non-linearity provides a much better fit to the data as it explains more of the variance.</li>
 </ul>
 </section>
 <section id="b.-2" class="level3">
@@ -3404,7 +3427,7 @@ None</code></pre>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">4</span>))</span>
 <span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>spec <span class="op">=</span> [</span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">0</span>, <span class="st">"Annual Pure Alcohol Consumption (litres per capita)"</span>, <span class="st">"blue"</span>, <span class="st">"Effect of Alcohol"</span>),</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">0</span>, <span class="st">"Annual Pure Alcohol Consumption (litres per capita)"</span>, <span class="st">"blue"</span>, <span class="st">"Effect of Annual Pure Alcohol Consumption"</span>),</span>
 <span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span>, <span class="dv">1</span>, <span class="st">"GDP per Capita (current US$)"</span>, <span class="st">"red"</span>, <span class="st">"Effect of GDP per Capita"</span>),</span>
 <span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>]</span>
 <span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -3434,8 +3457,8 @@ None</code></pre>
 </div>
 <p><strong>Interpretation:</strong></p>
 <ul>
-<li><p><strong>Alcohol:</strong> The plot for alcohol consumption shows a line that wiggles around zero with wide confidence intervals. This plot confirms the not statistically significant p-value (<span class="math inline">\(p \approx 0.85 &gt; 0.05\)</span>) from the model summary, indicating that once we account for GDP and year, alcohol consumption does not have a statistically significant non-linear association with life expectancy in this dataset.</p></li>
-<li><p><strong>GDP per Capita:</strong> The plot for GDP shows a distinct non-linear pattern: a steep positive slope at lower income levels (below approximately $20,000). Then it flattens out significantly as GDP increases. This reflects GDP per capita has a significant impact on health for poorer/developing countries, but adding more GDP per capita to already rich/developed countries yields smaller and smaller gains in life expectancy.</p></li>
+<li><p><strong>Annual Pure Alcohol Consumption:</strong> The partial dependence plot for alcohol consumption shows a fluctuating, non-linear pattern with relatively wide confidence intervals (dashed lines). The curve oscillates without a clear monotonic trend, and the overall magnitude of the effect is small compared to GDP. This visual confirmation aligns with the high p-value (<span class="math inline">\(p \approx 0.99\)</span>) from the model summary, annual pure alcohol consumption does not have a statistically significant non-linear relationship with life expectancy here.</p></li>
+<li><p><strong>GDP per Capita:</strong> The plot for GDP per capita reveals a strong, non-linear relationship.There is a steep, positive slope at lower income levels (from $0 to $20,000 USD approximately), indicating that small increases in GDP per capita significantly boost life expectancy in developing nations since developing countries generally have lower GDP per capita. However, the curve flattens out as GDP per capita increases from a GDP per capita of $40,000 USD approximately. In conclusion, this plot suggests that while economic growth is crucial for health improvements in poorer countries, additional wealth in already developed with higher GDP per capita nations yields little to no extra benefit for life expectancy.</p></li>
 </ul>
 <script type="ojs-module-contents">
 eyJjb250ZW50cyI6W119
