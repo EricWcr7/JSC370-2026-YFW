@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Yi Fan (Eric) Wang">
+<meta name="dcterms.date" content="2026-02-24">
+
+<title>Homework 3 — More APIs, Classification, NLP</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="hw3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="hw3_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="hw3_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="hw3_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="hw3_files/libs/quarto-html/popper.min.js"></script>
+<script src="hw3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="hw3_files/libs/quarto-html/anchor.min.js"></script>
+<link href="hw3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="hw3_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="hw3_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="hw3_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="hw3_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="hw3_files/libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="hw3_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
+<script type="module" src="hw3_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="hw3_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link active" data-scroll-target="#learning-goals">Learning Goals</a></li>
+  <li><a href="#nasa-api-part-1" id="toc-nasa-api-part-1" class="nav-link" data-scroll-target="#nasa-api-part-1">NASA API (Part 1)</a>
+  <ul class="collapse">
+  <li><a href="#points" id="toc-points" class="nav-link" data-scroll-target="#points">1. (3 points)</a></li>
+  <li><a href="#points-1" id="toc-points-1" class="nav-link" data-scroll-target="#points-1">2. (5 points)</a></li>
+  <li><a href="#points-2" id="toc-points-2" class="nav-link" data-scroll-target="#points-2">3. (6 points)</a></li>
+  <li><a href="#points-3" id="toc-points-3" class="nav-link" data-scroll-target="#points-3">4. (5 points)</a></li>
+  <li><a href="#points-4" id="toc-points-4" class="nav-link" data-scroll-target="#points-4">5. (5 points)</a></li>
+  </ul></li>
+  <li><a href="#cfpb-api-part-2" id="toc-cfpb-api-part-2" class="nav-link" data-scroll-target="#cfpb-api-part-2">CFPB API (Part 2)</a>
+  <ul class="collapse">
+  <li><a href="#points-5" id="toc-points-5" class="nav-link" data-scroll-target="#points-5">6. (3 points)</a></li>
+  <li><a href="#points-6" id="toc-points-6" class="nav-link" data-scroll-target="#points-6">7. (2 points)</a></li>
+  <li><a href="#points-7" id="toc-points-7" class="nav-link" data-scroll-target="#points-7">8. (3 points)</a></li>
+  <li><a href="#points-8" id="toc-points-8" class="nav-link" data-scroll-target="#points-8">9. (10 points)</a></li>
+  <li><a href="#points-9" id="toc-points-9" class="nav-link" data-scroll-target="#points-9">10. (5 points)</a></li>
+  <li><a href="#points-10" id="toc-points-10" class="nav-link" data-scroll-target="#points-10">11. (2 points)</a></li>
+  <li><a href="#points-11" id="toc-points-11" class="nav-link" data-scroll-target="#points-11">12. (4 points)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content column-page-left" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Homework 3 — More APIs, Classification, NLP</h1>
+<p class="subtitle lead">JSC370 (Winter 2026)</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page-left">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yi Fan (Eric) Wang </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 24, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-goals" class="level1">
+<h1>Learning Goals</h1>
+<ul>
+<li>Use two more APIs, get familiar different datasets.</li>
+<li>Train and test logistic regression and random forest for classification.</li>
+<li>Conduct text analysis (natural language processing), topic modeling, and sentiment analysis.</li>
+</ul>
+</section>
+<section id="nasa-api-part-1" class="level1">
+<h1>NASA API (Part 1)</h1>
+<p>The aim is to get more practice working with APIs and to conduct logistic and random forest classification. We will use and API maintained by NASA for retrieving information about near earth objects (NEOs), asteroids and comets that pass close to Earth. The documentation is available here (click on Asteroids - NeoWs). General information about NEOs can be found here. First you will need an API key for accessing the service. You can get one here - you will need to supply an email address, which can be either your UofT email or a personal email address.</p>
+<section id="points" class="level2">
+<h2 class="anchored" data-anchor-id="points">1. (3 points)</h2>
+<p>The NASA NeoWs Feed API only allows pulls of 7 days of data at a time, so create a loop to pull all NEOs observed so far this year (i.e.&nbsp;start_date and end_date will be for a week but we want to get all asteroids since January 1, 2026).Your query will pull a list of asteroids based on their closest approach date and will have various attributes. Summarize the number of NEOs you pulled, the how many days had NEOs since January 1 of this year.</p>
+</section>
+<section id="points-1" class="level2">
+<h2 class="anchored" data-anchor-id="points-1">2. (5 points)</h2>
+<p>Extract information on estimated_diameter, is_potentially_hazardous_asteroid, miss_distance, and relative_velocity. Create a variable for avg_estimated_diameter (take the mean of min and max). Make a summary table of these variables, a correlation heatmap of the numeric variables, and create a stacked barplot of the number of asteroids by day, distinguishing those that are hazardous is_potentially_hazardous_asteroid.</p>
+</section>
+<section id="points-2" class="level2">
+<h2 class="anchored" data-anchor-id="points-2">3. (6 points)</h2>
+<p>Are larger NEOs more hazardous? Are faster NEOs more hazardous? Create two histograms to explore these questions, and conduct two-sample t-tests. Is the relationship between diameter and velocity different between hazardous and non-hazardous NEOs? Create a scatterplot to explore this. Summarize your results.</p>
+</section>
+<section id="points-3" class="level2">
+<h2 class="anchored" data-anchor-id="points-3">4. (5 points)</h2>
+<p>Split the data into 70% train and 30% test, and fit a logistic regression model on train to see if we can predict on test whether an asteroid is hazardous based on its attributes (include diameter, velocity, miss distance). Summarize and interpret the results (include a confusion matrix, accuracy, precision, recall, and F1; plot the ROC curve).</p>
+</section>
+<section id="points-4" class="level2">
+<h2 class="anchored" data-anchor-id="points-4">5. (5 points)</h2>
+<p>Repeat 4a but using random forest. Summarize and include a comparison of your results in 4a.</p>
+</section>
+</section>
+<section id="cfpb-api-part-2" class="level1">
+<h1>CFPB API (Part 2)</h1>
+<p>The Consumer Financial Protection Bureau maintains a database of customer complaints. We will use natural language processing to see if there are any trends in the reported consumer’s narrative description of the complaints. The data can be acquired here. We will use the API to get data.</p>
+<section id="points-5" class="level2">
+<h2 class="anchored" data-anchor-id="points-5">6. (3 points)</h2>
+<p>Use the API to get consumer complaint narratives (i.e.&nbsp;has_narrative) from the last 3 months (i.e.&nbsp;date_received_min is November 1, 2025) across all product categories. I suggest using the csv format. Please note this is a very large dataset so may take some time to query (you can use a longer timeout). Once you have pulled the data, summarize the dimensions and variables. Create a bar chart of complaint counts by product category.</p>
+</section>
+<section id="points-6" class="level2">
+<h2 class="anchored" data-anchor-id="points-6">7. (2 points)</h2>
+<p>Tokenize the complaints (consumer complaint narrative) and count the number of tokens. Make a plot of the top 20 tokens. Summarize.</p>
+</section>
+<section id="points-7" class="level2">
+<h2 class="anchored" data-anchor-id="points-7">8. (3 points)</h2>
+<p>Remove stopwords, including numeric tokens, special characters combinations, and customize to remove any other words that look strange. After cleaning, what words appear as the most frequent? Create a plot of the 20 most common complaint tokens in your cleaned data and summarize.</p>
+</section>
+<section id="points-8" class="level2">
+<h2 class="anchored" data-anchor-id="points-8">9. (10 points)</h2>
+<p>Use Latent Dirichlet Allocation (LDA) topic modeling to discover topics in the complaint narratives. First, use perplexity and log-likelihood on a held-out sample of 50,000 to evaluate different numbers of topics (e.g., 2 to 10) and select an appropriate number. Plot perplexity and log-likelihood as a function of the number of topics. Then fit an LDA model with your chosen number of topics. Display the top 10 words for each topic. Do the discovered topics align with the actual product categories? Create a visualization to compare. Summarize and interpret your findings.</p>
+</section>
+<section id="points-9" class="level2">
+<h2 class="anchored" data-anchor-id="points-9">10. (5 points)</h2>
+<p>Use the vader lexicon to conduct sentiment analysis on the word tokens to determine if consumer complaints express positive, neutral, or negative sentiments. Create a histogram of the sentiment scores, and make a barplot to show the counts of tokens by sentiment category. Make another barplot to compare sentiment category counts by product categories. Make another barplot to show which words have top positive sentiment scores and which words have most negative sentiment scores. Summarize and interpret your results.</p>
+</section>
+<section id="points-10" class="level2">
+<h2 class="anchored" data-anchor-id="points-10">11. (2 points)</h2>
+<p>Conduct sentence-level tokenization, summarize the number of sentences, and the average number of sentences by complaint.</p>
+</section>
+<section id="points-11" class="level2">
+<h2 class="anchored" data-anchor-id="points-11">12. (4 points)</h2>
+<p>Conduct sentiment analysis of the sentence tokens. Like above, visualize the histogram of the sentiment scores, categorize sentiments into negative, neutral, positive and visualize counts with a barplot as well as a barplot by product categories. Interpret, summarize, and discuss differences from word token sentiment analysis in 8a.</p>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+W10=
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+W10=
+</script>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../../..";
+window._ojs.paths.runtimeToRoot = "../../../../..";
+window._ojs.paths.docToRoot = "../..";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
