@@ -8,6 +8,7 @@ This is my repository for the JSC370 course at the University of Toronto in Wint
 
 - [Homework 1](Homework/hw1/hw1.qmd)
 - [Homework 2](Homework/hw2/hw2.qmd)
+- [Homework 3](Homework/hw3/hw3.qmd)
 
 ## Labs
 
@@ -17,3 +18,4 @@ This is my repository for the JSC370 course at the University of Toronto in Wint
 - [Lab 4](labs/lab04/lab04.qmd)
 - [Lab 5](labs/lab05/lab05.qmd)
 - [Lab 6](labs/lab06/lab06.qmd)
+- [Lab 8](labs/lab08/lab08.qmd)
