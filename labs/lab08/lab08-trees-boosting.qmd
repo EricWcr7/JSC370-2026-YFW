@@ -113,16 +113,18 @@ We want to predict worker category (Unemployed, Part-time, Private for-profit, P
 X_class = cps_encoded[feature_cols]
 y_class = cps_encoded['worker_cat']
 
-_, _, _, _ = train_test_split(
-  ...
+X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(
+  X_class, y_class, test_size=0.30, random_state=65
 )
 
-print(f"Training set size: {}")
-print(f"Testing set size: {}")
+print(f"Training set size: {X_train_c.shape[0]}")
+print(f"Testing set size: {X_test_c.shape[0]}")
 print(f"\nCount of each worker_cat category in training set:")
-print()
+train_counts = y_train_c.value_counts().sort_index()
+print(train_counts)
 print(f"\nProportions:")
-print()
+train_props = y_train_c.value_counts(normalize=True).sort_index()
+print(train_props)
 ```
 
 **b)** Fit a full (unpruned) classification tree using [`DecisionTreeClassifier`](https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html) with `min_samples_split=20` and `min_samples_leaf=5`. Plot the tree using [`plot_tree`](https://scikit-learn.org/stable/modules/generated/sklearn.tree.plot_tree.html) (hint: use `max_depth=3` for readability). How many leaves does the full tree have?
@@ -132,16 +134,24 @@ print()
 class_labels = sorted(y_class.unique())
 
 full_tree_c = DecisionTreeClassifier(
-  ...
+  min_samples_split=20,
+  min_samples_leaf=5,
+  random_state=65
 )
-full_tree_c.?
+full_tree_c.fit(X_train_c, y_train_c)
 
-print(f"Number of leaves in full tree: {}")
-print(f"Depth of full tree: {}")
+print(f"Number of leaves in full tree: {full_tree_c.get_n_leaves()}")
+print(f"Depth of full tree: {full_tree_c.get_depth()}")
 
 plt.figure(figsize=(24, 10))
 plot_tree(
-  ...
+  full_tree_c,
+  feature_names=feature_cols,
+  class_names=class_labels,
+  filled=True,
+  rounded=True,
+  max_depth=3,
+  fontsize=8
 )
 plt.title("Full Classification Tree (showing top 3 levels)")
 plt.tight_layout()
@@ -157,16 +167,24 @@ ccp_alphas_pos = ccp_alphas[ccp_alphas > 0]
 
 # Subsample ~25 log-spaced alpha values (fitting a tree for every alpha is too slow)
 # Log-spacing captures the interesting range where tree size changes most
-log_alphas = np.logspace(...)
+log_alphas = np.logspace(
+    np.log10(ccp_alphas_pos.min()),
+    np.log10(ccp_alphas_pos.max()),
+    num=25
+)
+log_alphas = np.unique(np.concatenate(([0.0], log_alphas)))
 
 # Compute number of leaves for each sampled alpha
 n_leaves = []
 for alpha in log_alphas:
     tree = DecisionTreeClassifier(
-        ...
+        min_samples_split=20,
+        min_samples_leaf=5,
+        ccp_alpha=alpha,
+        random_state=65
     )
-    tree.?
-    n_leaves.append(...)
+    tree.fit(X_train_c, y_train_c)
+    n_leaves.append(tree.get_n_leaves())
 
 ccp_df = pd.DataFrame({'ccp_alpha': log_alphas, 'n_leaves': n_leaves})
 print(ccp_df)
@@ -175,32 +193,53 @@ print(ccp_df)
 ```{python}
 # Plot number of leaves vs ccp_alpha
 (
-  ggplot(...) +
+  ggplot(ccp_df, aes(x='ccp_alpha', y='n_leaves')) +
   geom_line() +
   geom_point() +
-  ...
+  scale_x_log10() +
+  labs(
+    title='Cost-Complexity Pruning Path (Classification Tree)',
+    x='ccp_alpha (log scale)',
+    y='Number of leaves'
+  ) +
+  theme_minimal()
 )
 ```
 
 ```{python}
 # Choose a ccp_alpha that gives a small, interpretable tree
 # Look at the table above and pick one with ~5-15 leaves
-optimal_ccp_alpha_c = ...
-print(f"Chosen ccp_alpha: {}")
-print(f"Expected number of leaves: {}")
+optimal_ccp_alpha_c = 1.843922e-03
+expected_leaves_c = int(
+    ccp_df.loc[np.isclose(ccp_df['ccp_alpha'], optimal_ccp_alpha_c), 'n_leaves'].iloc[0]
+)
+print(f"Chosen ccp_alpha: {optimal_ccp_alpha_c}")
+print(f"Expected number of leaves: {expected_leaves_c}")
 ```
 
 **d)** Fit a pruned tree using the chosen `ccp_alpha` and plot it. How does the pruned tree compare to the full tree in terms of complexity? Which variables appear most important for splitting?
 
 ```{python}
-pruned_tree_c = ...
-pruned_tree_c.?
+pruned_tree_c = DecisionTreeClassifier(
+    min_samples_split=20,
+    min_samples_leaf=5,
+    ccp_alpha=optimal_ccp_alpha_c,
+    random_state=65
+)
+pruned_tree_c.fit(X_train_c, y_train_c)
 
-print(f"Number of leaves in pruned tree: {}")
-print(f"Depth of pruned tree: {}")
+print(f"Number of leaves in pruned tree: {pruned_tree_c.get_n_leaves()}")
+print(f"Depth of pruned tree: {pruned_tree_c.get_depth()}")
 
 plt.figure(figsize=(20, 10))
-plot_tree(...)
+plot_tree(
+    pruned_tree_c,
+    feature_names=feature_cols,
+    class_names=class_labels,
+    filled=True,
+    rounded=True,
+    fontsize=8
+)
 plt.title("Pruned Classification Tree")
 plt.tight_layout()
 plt.show()
@@ -209,14 +248,14 @@ plt.show()
 **e)** Compute the test accuracy and test misclassification error of the pruned tree. Also display the [`confusion_matrix`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html). Which categories are easiest/hardest to predict?
 
 ```{python}
-y_pred_c = pruned_tree_c.?
-test_acc_c = accuracy_score(...)
-test_error_c = ...
-print(f"Test accuracy (pruned tree): {}")
-print(f"Test misclassification error (pruned tree): {}")
+y_pred_c = pruned_tree_c.predict(X_test_c)
+test_acc_c = accuracy_score(y_test_c, y_pred_c)
+test_error_c = 1 - test_acc_c
+print(f"Test accuracy (pruned tree): {test_acc_c}")
+print(f"Test misclassification error (pruned tree): {test_error_c}")
 
 # Confusion matrix
-cm = confusion_matrix(...)
+cm = confusion_matrix(y_test_c, y_pred_c, labels=class_labels)
 fig, ax = plt.subplots(figsize=(10, 8))
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_labels)
 disp.plot(ax=ax, cmap='Blues', xticks_rotation=45)
@@ -225,7 +264,9 @@ plt.tight_layout()
 plt.show()
 ```
 
-**Summary:** *Your answer here.*
+**Summary:**
+
+According to the confusion matrix, **Private for-profit** is the easiest category to predict by the pruned tree because the model correctly identified `{python} cm[class_labels.index("Private for-profit"), class_labels.index("Private for-profit")]` out of `{python} cm[class_labels.index("Private for-profit"), :].sum()` workers, which is `{python} round(cm[class_labels.index("Private for-profit"), class_labels.index("Private for-profit")] / cm[class_labels.index("Private for-profit"), :].sum() * 100, 2)`%. However, **Unemployed**, **Self-employed**, and **Government** are the hardest categories to predict because the pruned tree cannot correctly identify any of the workers in these categories.
 
 ### Question 2: Classification Random Forest
 
