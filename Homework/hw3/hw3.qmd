@@ -55,6 +55,25 @@ from sklearn.metrics import (
 import warnings
 warnings.filterwarnings('ignore')
 
+from collections import Counter
+
+# Text processing
+import nltk
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
+from nltk.util import ngrams
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('punkt_tab')
+
+# Word cloud
+from wordcloud import WordCloud
+
+# Topic modeling
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+
+
 ```
 
 # NASA API (Part 1)
@@ -621,13 +640,183 @@ may take some time to query (you can use a longer timeout). Once you have pulled
 data, summarize the dimensions and variables. Create a bar chart of complaint counts
 by product category.
 
+```{python}
+#| label: Part-2-Q6-CFPB-API-Config
+#| warning: false
+#| message: false
+
+# CFPB Consumer Complaint Database API endpoint
+CFPB_BASE_URL = "https://www.consumerfinance.gov/data-research/consumer-complaints/search/api/v1/"
+
+# Pull complaints with narratives from the last 3 months (from 2025-11-01)
+cfpb_params = {
+    "format": "csv",
+    "date_received_min": "2025-11-01",
+    "has_narrative": "true",
+    "no_aggs": "true",
+    "field": "all",
+    "sort": "created_date_desc",
+    "size": 250000,
+}
+
+# Make the GET request
+cfpb_response = requests.get(CFPB_BASE_URL, params=cfpb_params, timeout=120)
+print(f"Status Code: {cfpb_response.status_code}")
+print(f"Request URL: {cfpb_response.url}")
+cfpb_response.raise_for_status()
+
+# 3. Read CSV payload into DataFrame
+cfpb_df = pd.read_csv(StringIO(cfpb_response.text))
+
+cfpb_df.head()
+```
+
+```{python}
+#| label: Part-2-Q6-Data-Summary
+#| warning: false
+#| message: false
+
+print(f"CFPB dataset dimensions: {cfpb_df.shape}")
+print(f"Number of variables: {len(cfpb_df.columns)}")
+print(cfpb_df.info())
+```
+
+```{python}
+#| label: Part-2-Q6-Bar-Chart
+#| warning: false
+#| message: false
+
+product_counts = (
+    cfpb_df["Product"]
+    .value_counts()
+    .reset_index()
+)
+product_counts.columns = ["Product", "Count"]
+
+(
+    ggplot(product_counts, aes(x="reorder(Product, Count)", y="Count"))
+    + geom_col(fill="#4C78A8")
+    + coord_flip()
+    + labs(
+        title="CFPB Complaint Counts by Product Category",
+        x="Product category",
+        y="Number of complaints"
+    )
+    + theme_minimal()
+)
+
+```
+
+**Summary:**
+
+- The dataset contains 132,939 customer complaint narratives since November 1, 2025 with 18 features each.
+- According to CFPB Complaint Counts by Product Category Since November 1, 2025 bar chart, the most frequent product category with complaints is "Credit reporting or other personal consumer reports". Note, this product category have way more complaints than all the other product categories.
+
 ## 7. (2 points)
 
 Tokenize the complaints (consumer complaint narrative) and count the number of tokens. Make a plot of the top 20 tokens. Summarize.
 
+```{python}
+#| label: Part-2-Q7-Tokenization
+#| warning: false
+#| message: false
+
+# Tokenize all complaint narratives
+def tokenize_text(text):
+    if pd.isna(text):
+        return []
+    return word_tokenize(text.lower())
+
+all_tokens = []
+for text in cfpb_df["Consumer complaint narrative"]:
+    all_tokens.extend(tokenize_text(text))
+
+# Count total tokens
+total_tokens = len(all_tokens)
+print(f"Total number of tokens: {total_tokens}")
+
+# Count token frequencies and get top 20
+token_counts = Counter(all_tokens)
+top_20_tokens = token_counts.most_common(20)
+top_20_tokens_df = pd.DataFrame(top_20_tokens, columns=["word", "count"])
+display(top_20_tokens_df)
+
+# Plot top 20 tokens
+(
+    ggplot(top_20_tokens_df, aes(x="reorder(word, count)", y="count"))
+    + geom_bar(stat="identity", fill="steelblue")
+    + coord_flip()
+    + labs(
+        title="Top 20 Most Frequent Tokens in Complaint Narratives",
+        x="Word",
+        y="Frequency"
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 6))
+)
+```
+
+**Summary:**
+
+- There are 27,103,135 tokens in total in the customer complaint narratives since November 1, 2025.
+- It is very obvious that punctuations, stopwords, and privacy mask words like "XXXX" are the most frequent words in the data. Without removing them, we cannot discover any meaningful themes and trends in the customer complaint narratives.
+
 ## 8. (3 points)
 
 Remove stopwords, including numeric tokens, special characters combinations, and customize to remove any other words that look strange. After cleaning, what words appear as the most frequent? Create a plot of the 20 most common complaint tokens in your cleaned data and summarize.
+
+```{python}
+#| label: Part-2-Q8-Stopwords-Removal
+#| warning: false
+#| message: false
+
+# Get English stopwords
+stop_words = set(stopwords.words("english"))
+
+# Add custom stopwords
+custom_stopwords = {"xxxx", "xxx", "xx", "x"}
+
+# Combine stopwords
+stop_words = stop_words.union(custom_stopwords)
+
+# Filter tokens
+cleaned_tokens = [
+    token for token in all_tokens
+    if token not in stop_words
+    and not token.isdigit() 
+    and len(token) > 2
+    and token.isalpha()
+]
+
+# Count cleaned tokens
+print(f"Number of cleaned tokens: {len(cleaned_tokens)}")
+
+# Count cleaned tokens frequencies and get top 20
+cleaned_counts = Counter(cleaned_tokens)
+top_20_cleaned = cleaned_counts.most_common(20)
+top_20_cleaned_df = pd.DataFrame(top_20_cleaned, columns=["word", "count"])
+
+# Plot top 20 cleaned tokens
+(
+    ggplot(top_20_cleaned_df, aes(x="reorder(word, count)", y="count"))
+    + geom_bar(stat="identity", fill="tomato")
+    + coord_flip()
+    + labs(
+        title="Top 20 Most Frequent Tokens (After Cleaning)",
+        x="Word",
+        y="Frequency"
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 6))
+)
+
+```
+
+**Summary:**
+
+- After removing english stopwords, punctuations, and custom noise tokens (e.g., "xxxx"), the most frequent words are "credit", "account", and "reporting".
+- This aligns with the earlier finding that "Credit reporting or other personal consumer reports" is the dominant product category in the customer complaint narratives dataset. The top words clearly reflect themes of credit reporting disputes, account information inaccuracy, and consumer identity issues, and more.
+- The cleaned token list is much more informative than the raw list and more meaningful in terms of complaints. 
 
 ## 9. (10 points)
 

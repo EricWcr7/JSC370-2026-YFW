@@ -182,7 +182,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    roc_curve, roc_auc_score, mean_squared_error, r2_score</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Text processing</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.tokenize <span class="im">import</span> word_tokenize, sent_tokenize</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.util <span class="im">import</span> ngrams</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'punkt'</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'stopwords'</span>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'punkt_tab'</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Word cloud</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> wordcloud <span class="im">import</span> WordCloud</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Topic modeling</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer, TfidfVectorizer</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> LatentDirichletAllocation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="nasa-api-part-1" class="level1">
@@ -338,7 +356,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>neo_df_derived <span class="op">=</span> neo_df_derived.drop(columns<span class="op">=</span>[<span class="st">"is_potentially_hazardous_asteroid"</span>])</span>
 <span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>neo_df_derived.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="part-1-q2-data-extraction" class="cell-output cell-output-display" data-execution_count="3">
+<div id="part-1-q2-data-extraction" class="cell-output cell-output-display" data-execution_count="23">
 <div>
 
 
@@ -431,7 +449,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> summary_table.reset_index().rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"variable"</span>})</span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>summary_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="part-1-q2-data-summary" class="cell-output cell-output-display" data-execution_count="4">
+<div id="part-1-q2-data-summary" class="cell-output cell-output-display" data-execution_count="24">
 <div>
 
 
@@ -541,7 +559,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, ha<span class="op">=</span><span class="st">"right"</span>))</span>
 <span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q2-data-correlation-heatmap-output-1.png" id="part-1-q2-data-correlation-heatmap" width="672" height="480" class="figure-img"></p>
@@ -571,7 +589,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, ha<span class="op">=</span><span class="st">"right"</span>))</span>
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q2-data-stacked-barplot-output-1.png" id="part-1-q2-data-stacked-barplot" width="672" height="480" class="figure-img"></p>
@@ -606,7 +624,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_manual(values<span class="op">=</span>[<span class="st">"#1f77b4"</span>, <span class="st">"#d62728"</span>])</span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="27">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q3-diameter-histogram-output-1.png" id="part-1-q3-diameter-histogram" width="672" height="480" class="figure-img"></p>
@@ -630,7 +648,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_manual(values<span class="op">=</span>[<span class="st">"#1f77b4"</span>, <span class="st">"#d62728"</span>])</span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="28">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q3-velocity-histogram-output-1.png" id="part-1-q3-velocity-histogram" width="672" height="480" class="figure-img"></p>
@@ -742,7 +760,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_color_manual(values<span class="op">=</span>[<span class="st">"#1f77b4"</span>, <span class="st">"#d62728"</span>])</span>
 <span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="30">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q3-scatterplot-output-1.png" id="part-1-q3-scatterplot" width="672" height="480" class="figure-img"></p>
@@ -839,7 +857,7 @@ Test ROC AUC: 0.7161</code></pre>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="32">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q4-roc-curve-output-1.png" id="part-1-q4-roc-curve" width="672" height="480" class="figure-img"></p>
@@ -919,7 +937,7 @@ RF Test ROC AUC: 0.9845</code></pre>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="34">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q5-roc-curve-output-1.png" id="part-1-q5-roc-curve" width="672" height="480" class="figure-img"></p>
@@ -994,14 +1012,475 @@ RF Test ROC AUC: 0.9845</code></pre>
 <section id="points-5" class="level2">
 <h2 class="anchored" data-anchor-id="points-5">6. (3 points)</h2>
 <p>Use the API to get consumer complaint narratives (i.e.&nbsp;has_narrative) from the last 3 months (i.e.&nbsp;date_received_min is November 1, 2025) across all product categories. I suggest using the csv format. Please note this is a very large dataset so may take some time to query (you can use a longer timeout). Once you have pulled the data, summarize the dimensions and variables. Create a bar chart of complaint counts by product category.</p>
+<div id="cell-Part-2-Q6-CFPB-API-Config" class="cell" data-message="false" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CFPB Consumer Complaint Database API endpoint</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>CFPB_BASE_URL <span class="op">=</span> <span class="st">"https://www.consumerfinance.gov/data-research/consumer-complaints/search/api/v1/"</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull complaints with narratives from the last 3 months (from 2025-11-01)</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>cfpb_params <span class="op">=</span> {</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"format"</span>: <span class="st">"csv"</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"date_received_min"</span>: <span class="st">"2025-11-01"</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"has_narrative"</span>: <span class="st">"true"</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"no_aggs"</span>: <span class="st">"true"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"field"</span>: <span class="st">"all"</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sort"</span>: <span class="st">"created_date_desc"</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"size"</span>: <span class="dv">250000</span>,</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Make the GET request</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>cfpb_response <span class="op">=</span> requests.get(CFPB_BASE_URL, params<span class="op">=</span>cfpb_params, timeout<span class="op">=</span><span class="dv">120</span>)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Status Code: </span><span class="sc">{</span>cfpb_response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Request URL: </span><span class="sc">{</span>cfpb_response<span class="sc">.</span>url<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>cfpb_response.raise_for_status()</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Read CSV payload into DataFrame</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>cfpb_df <span class="op">=</span> pd.read_csv(StringIO(cfpb_response.text))</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>cfpb_df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Status Code: 200
+Request URL: https://www.consumerfinance.gov/data-research/consumer-complaints/search/api/v1/?format=csv&amp;date_received_min=2025-11-01&amp;has_narrative=true&amp;no_aggs=true&amp;field=all&amp;sort=created_date_desc&amp;size=250000</code></pre>
+</div>
+<div id="part-2-q6-cfpb-api-config" class="cell-output cell-output-display" data-execution_count="36">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Date received</th>
+<th data-quarto-table-cell-role="th">Product</th>
+<th data-quarto-table-cell-role="th">Sub-product</th>
+<th data-quarto-table-cell-role="th">Issue</th>
+<th data-quarto-table-cell-role="th">Sub-issue</th>
+<th data-quarto-table-cell-role="th">Consumer complaint narrative</th>
+<th data-quarto-table-cell-role="th">Company public response</th>
+<th data-quarto-table-cell-role="th">Company</th>
+<th data-quarto-table-cell-role="th">State</th>
+<th data-quarto-table-cell-role="th">ZIP code</th>
+<th data-quarto-table-cell-role="th">Tags</th>
+<th data-quarto-table-cell-role="th">Consumer consent provided?</th>
+<th data-quarto-table-cell-role="th">Submitted via</th>
+<th data-quarto-table-cell-role="th">Date sent to company</th>
+<th data-quarto-table-cell-role="th">Company response to consumer</th>
+<th data-quarto-table-cell-role="th">Timely response?</th>
+<th data-quarto-table-cell-role="th">Consumer disputed?</th>
+<th data-quarto-table-cell-role="th">Complaint ID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>12/22/25</td>
+<td>Student loan</td>
+<td>Private student loan</td>
+<td>Issue where my lender is my school</td>
+<td>Issues with fees connected to the loan</td>
+<td>My spouse and I attended XXXX XXXX XXXX from X...</td>
+<td>NaN</td>
+<td>Maximus Federal Services, Inc.</td>
+<td>TX</td>
+<td>75243</td>
+<td>NaN</td>
+<td>Consent provided</td>
+<td>Web</td>
+<td>12/22/25</td>
+<td>Closed with explanation</td>
+<td>Yes</td>
+<td>NaN</td>
+<td>18232083</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>11/21/25</td>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Credit reporting</td>
+<td>Improper use of your report</td>
+<td>Credit inquiries on your report that you don't...</td>
+<td>I am reaching out to formally request an urgen...</td>
+<td>NaN</td>
+<td>EQUIFAX, INC.</td>
+<td>OH</td>
+<td>43202</td>
+<td>NaN</td>
+<td>Consent provided</td>
+<td>Web</td>
+<td>11/21/25</td>
+<td>Closed with non-monetary relief</td>
+<td>Yes</td>
+<td>NaN</td>
+<td>17397785</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>12/22/25</td>
+<td>Credit card</td>
+<td>Store credit card</td>
+<td>Getting a credit card</td>
+<td>Card opened without my consent or knowledge</td>
+<td>A Macy 's credit card was opened under my name...</td>
+<td>Company has responded to the consumer and the ...</td>
+<td>CITIBANK, N.A.</td>
+<td>TX</td>
+<td>752XX</td>
+<td>NaN</td>
+<td>Consent provided</td>
+<td>Web</td>
+<td>12/22/25</td>
+<td>Closed with explanation</td>
+<td>Yes</td>
+<td>NaN</td>
+<td>18219388</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>11/10/25</td>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Credit reporting</td>
+<td>Incorrect information on your report</td>
+<td>Information belongs to someone else</td>
+<td>I am formally disputing inaccurate information...</td>
+<td>Company has responded to the consumer and the ...</td>
+<td>TRANSUNION INTERMEDIATE HOLDINGS, INC.</td>
+<td>NY</td>
+<td>10466</td>
+<td>NaN</td>
+<td>Consent provided</td>
+<td>Web</td>
+<td>11/10/25</td>
+<td>Closed with non-monetary relief</td>
+<td>Yes</td>
+<td>NaN</td>
+<td>17120972</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>12/04/25</td>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Credit reporting</td>
+<td>Improper use of your report</td>
+<td>Reporting company used your report improperly</td>
+<td>You have reported inaccurate and unauthorized ...</td>
+<td>NaN</td>
+<td>EQUIFAX, INC.</td>
+<td>SC</td>
+<td>292XX</td>
+<td>NaN</td>
+<td>Consent provided</td>
+<td>Web</td>
+<td>12/04/25</td>
+<td>Closed with explanation</td>
+<td>Yes</td>
+<td>NaN</td>
+<td>17704511</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="part-2-q6-data-summary" class="cell" data-message="false" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"CFPB dataset dimensions: </span><span class="sc">{</span>cfpb_df<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of variables: </span><span class="sc">{</span><span class="bu">len</span>(cfpb_df.columns)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cfpb_df.info())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CFPB dataset dimensions: (132939, 18)
+Number of variables: 18
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 132939 entries, 0 to 132938
+Data columns (total 18 columns):
+ #   Column                        Non-Null Count   Dtype  
+---  ------                        --------------   -----  
+ 0   Date received                 132939 non-null  object 
+ 1   Product                       132939 non-null  object 
+ 2   Sub-product                   132939 non-null  object 
+ 3   Issue                         132939 non-null  object 
+ 4   Sub-issue                     128033 non-null  object 
+ 5   Consumer complaint narrative  132939 non-null  object 
+ 6   Company public response       75090 non-null   object 
+ 7   Company                       132939 non-null  object 
+ 8   State                         132568 non-null  object 
+ 9   ZIP code                      132939 non-null  object 
+ 10  Tags                          8403 non-null    object 
+ 11  Consumer consent provided?    132939 non-null  object 
+ 12  Submitted via                 132939 non-null  object 
+ 13  Date sent to company          132939 non-null  object 
+ 14  Company response to consumer  132939 non-null  object 
+ 15  Timely response?              132939 non-null  object 
+ 16  Consumer disputed?            0 non-null       float64
+ 17  Complaint ID                  132939 non-null  int64  
+dtypes: float64(1), int64(1), object(16)
+memory usage: 18.3+ MB
+None</code></pre>
+</div>
+</div>
+<div id="cell-Part-2-Q6-Bar-Chart" class="cell" data-message="false" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>product_counts <span class="op">=</span> (</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    cfpb_df[<span class="st">"Product"</span>]</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    .value_counts()</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>product_counts.columns <span class="op">=</span> [<span class="st">"Product"</span>, <span class="st">"Count"</span>]</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    ggplot(product_counts, aes(x<span class="op">=</span><span class="st">"reorder(Product, Count)"</span>, y<span class="op">=</span><span class="st">"Count"</span>))</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_col(fill<span class="op">=</span><span class="st">"#4C78A8"</span>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> coord_flip()</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"CFPB Complaint Counts by Product Category"</span>,</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Product category"</span>,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Number of complaints"</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="38">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q6-bar-chart-output-1.png" id="part-2-q6-bar-chart" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li>The dataset contains 132,939 customer complaint narratives since November 1, 2025 with 18 features each.</li>
+<li>According to CFPB Complaint Counts by Product Category Since November 1, 2025 bar chart, the most frequent product category with complaints is “Credit reporting or other personal consumer reports”. Note, this product category have way more complaints than all the other product categories.</li>
+</ul>
 </section>
 <section id="points-6" class="level2">
 <h2 class="anchored" data-anchor-id="points-6">7. (2 points)</h2>
 <p>Tokenize the complaints (consumer complaint narrative) and count the number of tokens. Make a plot of the top 20 tokens. Summarize.</p>
+<div id="part-2-q7-tokenization" class="cell" data-message="false" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenize all complaint narratives</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tokenize_text(text):</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pd.isna(text):</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> []</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> word_tokenize(text.lower())</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>all_tokens <span class="op">=</span> []</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> text <span class="kw">in</span> cfpb_df[<span class="st">"Consumer complaint narrative"</span>]:</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    all_tokens.extend(tokenize_text(text))</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Count total tokens</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>total_tokens <span class="op">=</span> <span class="bu">len</span>(all_tokens)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total number of tokens: </span><span class="sc">{</span>total_tokens<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Count token frequencies and get top 20</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>token_counts <span class="op">=</span> Counter(all_tokens)</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>top_20_tokens <span class="op">=</span> token_counts.most_common(<span class="dv">20</span>)</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>top_20_tokens_df <span class="op">=</span> pd.DataFrame(top_20_tokens, columns<span class="op">=</span>[<span class="st">"word"</span>, <span class="st">"count"</span>])</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>display(top_20_tokens_df)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot top 20 tokens</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    ggplot(top_20_tokens_df, aes(x<span class="op">=</span><span class="st">"reorder(word, count)"</span>, y<span class="op">=</span><span class="st">"count"</span>))</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_bar(stat<span class="op">=</span><span class="st">"identity"</span>, fill<span class="op">=</span><span class="st">"steelblue"</span>)</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> coord_flip()</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Top 20 Most Frequent Tokens in Complaint Narratives"</span>,</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Word"</span>,</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Frequency"</span></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total number of tokens: 27103135</code></pre>
+</div>
+<div id="part-2-q7-tokenization-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>xxxx</td>
+<td>1755379</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>.</td>
+<td>1054240</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>,</td>
+<td>975295</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>the</td>
+<td>894764</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>and</td>
+<td>696319</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>to</td>
+<td>621207</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>i</td>
+<td>551248</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>of</td>
+<td>477811</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>a</td>
+<td>447061</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>my</td>
+<td>427528</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>)</td>
+<td>344480</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>(</td>
+<td>341395</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>credit</td>
+<td>301561</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>:</td>
+<td>298109</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>this</td>
+<td>272293</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>that</td>
+<td>255876</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>account</td>
+<td>227896</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>is</td>
+<td>224020</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>not</td>
+<td>211962</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>on</td>
+<td>182533</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="39">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q7-tokenization-output-3.png" id="part-2-q7-tokenization-2" width="960" height="576" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li>There are 27,103,135 tokens in total in the customer complaint narratives since November 1, 2025.</li>
+<li>It is very obvious that punctuations, stopwords, and privacy mask words like “XXXX” are the most frequent words in the data. Without removing them, we cannot discover any meaningful themes and trends in the customer complaint narratives.</li>
+</ul>
 </section>
 <section id="points-7" class="level2">
 <h2 class="anchored" data-anchor-id="points-7">8. (3 points)</h2>
 <p>Remove stopwords, including numeric tokens, special characters combinations, and customize to remove any other words that look strange. After cleaning, what words appear as the most frequent? Create a plot of the 20 most common complaint tokens in your cleaned data and summarize.</p>
+<div id="cell-Part-2-Q8-Stopwords-Removal" class="cell" data-message="false" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get English stopwords</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>stop_words <span class="op">=</span> <span class="bu">set</span>(stopwords.words(<span class="st">"english"</span>))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Add custom stopwords</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>custom_stopwords <span class="op">=</span> {<span class="st">"xxxx"</span>, <span class="st">"xxx"</span>, <span class="st">"xx"</span>, <span class="st">"x"</span>}</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine stopwords</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>stop_words <span class="op">=</span> stop_words.union(custom_stopwords)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter tokens</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>cleaned_tokens <span class="op">=</span> [</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    token <span class="cf">for</span> token <span class="kw">in</span> all_tokens</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> token <span class="kw">not</span> <span class="kw">in</span> stop_words</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">and</span> <span class="kw">not</span> token.isdigit() </span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">and</span> <span class="bu">len</span>(token) <span class="op">&gt;</span> <span class="dv">2</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">and</span> token.isalpha()</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Count cleaned tokens</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of cleaned tokens: </span><span class="sc">{</span><span class="bu">len</span>(cleaned_tokens)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Count cleaned tokens frequencies and get top 20</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>cleaned_counts <span class="op">=</span> Counter(cleaned_tokens)</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>top_20_cleaned <span class="op">=</span> cleaned_counts.most_common(<span class="dv">20</span>)</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>top_20_cleaned_df <span class="op">=</span> pd.DataFrame(top_20_cleaned, columns<span class="op">=</span>[<span class="st">"word"</span>, <span class="st">"count"</span>])</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot top 20 cleaned tokens</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>    ggplot(top_20_cleaned_df, aes(x<span class="op">=</span><span class="st">"reorder(word, count)"</span>, y<span class="op">=</span><span class="st">"count"</span>))</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_bar(stat<span class="op">=</span><span class="st">"identity"</span>, fill<span class="op">=</span><span class="st">"tomato"</span>)</span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> coord_flip()</span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Top 20 Most Frequent Tokens (After Cleaning)"</span>,</span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Word"</span>,</span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Frequency"</span></span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of cleaned tokens: 11491733</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="40">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q8-stopwords-removal-output-2.png" id="part-2-q8-stopwords-removal" width="960" height="576" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li>After removing english stopwords, punctuations, and custom noise tokens (e.g., “xxxx”), the most frequent words are “credit”, “account”, and “reporting”.</li>
+<li>This aligns with the earlier finding that “Credit reporting or other personal consumer reports” is the dominant product category in the customer complaint narratives dataset. The top words clearly reflect themes of credit reporting disputes, account information inaccuracy, and consumer identity issues, and more.</li>
+<li>The cleaned token list is much more informative than the raw list and more meaningful in terms of complaints.</li>
+</ul>
 </section>
 <section id="points-8" class="level2">
 <h2 class="anchored" data-anchor-id="points-8">9. (10 points)</h2>
