@@ -32,6 +32,7 @@ execute:
 
 import pandas as pd
 import datetime
+from datetime import date, timedelta
 import numpy as np
 import requests
 from bs4 import BeautifulSoup
@@ -39,6 +40,7 @@ from io import StringIO
 import re
 import json
 import time
+from scipy import stats
 from plotnine import *
 import warnings
 warnings.filterwarnings('ignore')
@@ -62,9 +64,6 @@ The NASA NeoWs Feed API only allows pulls of 7 days of data at a time, so create
 #| label: Part-1-Q1-NASA-API-config
 #| warning: false
 #| message: false
-
-from datetime import date, timedelta
-import time
 
 # NASA API configuration
 BASE_URL = "https://api.nasa.gov/neo/rest/v1"
@@ -298,6 +297,133 @@ plot_df["hazard_status"] = np.where(
 ## 3. (6 points)
 
 Are larger NEOs more hazardous? Are faster NEOs more hazardous? Create two histograms to explore these questions, and conduct two-sample t-tests. Is the relationship between diameter and velocity different between hazardous and non-hazardous NEOs? Create a scatterplot to explore this. Summarize your results.
+
+```{python}
+#| label: Part-1-Q3-Diameter-Histogram
+#| warning: false
+#| message: false
+
+q3_df = neo_df_derived.copy()
+q3_df["hazard_status"] = np.where(
+    q3_df["is_potentially_hazardous_asteroid"],
+    "Hazardous",
+    "Not hazardous"
+)
+
+(
+    ggplot(
+        q3_df,
+        aes(x="avg_estimated_diameter", fill="hazard_status")
+    )
+    + geom_histogram(position="identity", alpha=0.6, bins=35)
+    + labs(
+        title="Distribution of Average Estimated Diameter by Hazard Status",
+        x="Average estimated diameter (km)",
+        y="Count",
+        fill="Hazard status"
+    )
+    + scale_fill_manual(values=["#1f77b4", "#d62728"])
+    + theme_minimal()
+)
+
+```
+
+```{python}
+#| label: Part-1-Q3-Velocity-Histogram
+#| warning: false
+#| message: false
+
+(
+    ggplot(
+        q3_df,
+        aes(x="relative_velocity_km_s", fill="hazard_status")
+    )
+    + geom_histogram(position="identity", alpha=0.6, bins=35)
+    + labs(
+        title="Distribution of Relative Velocity by Hazard Status",
+        x="Relative velocity (km/s)",
+        y="Count",
+        fill="Hazard status"
+    )
+    + scale_fill_manual(values=["#1f77b4", "#d62728"])
+    + theme_minimal()
+)
+```
+
+```{python}
+#| label: Part-1-Q3-Two-Sample-T-Tests
+#| warning: false
+#| message: false
+
+# 1. Split data into hazardous and non-hazardous groups
+haz = neo_df_derived[neo_df_derived["is_potentially_hazardous_asteroid"]]
+non_haz = neo_df_derived[~neo_df_derived["is_potentially_hazardous_asteroid"]]
+
+# 2. Run two-sample t-test for average estimated diameter (Welch's t-test)
+diam_haz = haz["avg_estimated_diameter"]
+diam_non_haz = non_haz["avg_estimated_diameter"]
+ttest_diameter = stats.ttest_ind(diam_haz, diam_non_haz, equal_var=False)
+
+# 3. Run two-sample t-test for relative velocity (Welch's t-test)
+vel_haz = haz["relative_velocity_km_s"]
+vel_non_haz = non_haz["relative_velocity_km_s"]
+ttest_velocity = stats.ttest_ind(vel_haz, vel_non_haz, equal_var=False)
+
+# 4. Summarize test outputs in one table
+ttest_results = pd.DataFrame({
+    "variable": ["avg_estimated_diameter", "relative_velocity_km_s"],
+    "mean_hazardous": [diam_haz.mean(), vel_haz.mean()],
+    "mean_non_hazardous": [diam_non_haz.mean(), vel_non_haz.mean()],
+    "n_hazardous": [len(diam_haz), len(vel_haz)],
+    "n_non_hazardous": [len(diam_non_haz), len(vel_non_haz)],
+    "t_statistic": [ttest_diameter.statistic, ttest_velocity.statistic],
+    "p_value": [ttest_diameter.pvalue, ttest_velocity.pvalue],
+})
+ttest_results["significant_0.05"] = ttest_results["p_value"] < 0.05
+
+display(ttest_results.round(6))
+
+```
+
+**Summary:**
+
+- According to the Distribution of Average Estimated Diameter by Hazard Status histogram, visually larger NEOs look more hazardous. The two-sample t-test confirms this statistically because the mean of the average estimated diameter for hazardous NEOs is significantly larger than the mean of the average estimated diameter for non-hazardous NEOs with p-value < 0.05.
+- While the relative velocity distributions do not appear vastly different visually, the two-sample t-test confirms this statistically because the mean of the relative velocity for hazardous NEOs is significantly larger than the mean of the relative velocity for non-hazardous NEOs with p-value < 0.05.
+
+```{python}
+#| label: Part-1-Q3-Scatterplot
+#| warning: false
+#| message: false
+
+scatter_df = neo_df_derived.copy()
+scatter_df["hazard_status"] = np.where(
+    scatter_df["is_potentially_hazardous_asteroid"],
+    "Hazardous",
+    "Not hazardous"
+)
+
+(
+    ggplot(
+        scatter_df,
+        aes(x="avg_estimated_diameter", y="relative_velocity_km_s", color="hazard_status")
+    )
+    + geom_point(alpha=0.6, size=2)
+    + geom_smooth(method="lm", se=False)
+    + labs(
+        title="Diameter vs Relative Velocity by Hazard Status",
+        x="Average estimated diameter (km)",
+        y="Relative velocity (km/s)",
+        color="Hazard status"
+    )
+    + scale_color_manual(values=["#1f77b4", "#d62728"])
+    + theme_minimal()
+)
+
+```
+
+**Summary:**
+
+- According to the Diameter vs Relative Velocity by Hazard Status scatterplot, the relationship between diameter and velocity does not appear substantially different between hazardous and non-hazardous NEOs. The trend lines for both groups show a positive correlation, indicating that as diameter increases, relative velocity tends to increase for all NEOs.
 
 ## 4. (5 points)
 
