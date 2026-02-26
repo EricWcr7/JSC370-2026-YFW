@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Yi Fan (Eric) Wang">
-<meta name="dcterms.date" content="2026-02-24">
+<meta name="dcterms.date" content="2026-02-25">
 
 <title>Homework 3 — More APIs, Classification, NLP</title>
 <style>
@@ -21,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -54,6 +89,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link active" data-scroll-target="#learning-goals">Learning Goals</a></li>
+  <li><a href="#environment-setup" id="toc-environment-setup" class="nav-link" data-scroll-target="#environment-setup">Environment Setup</a></li>
   <li><a href="#nasa-api-part-1" id="toc-nasa-api-part-1" class="nav-link" data-scroll-target="#nasa-api-part-1">NASA API (Part 1)</a>
   <ul class="collapse">
   <li><a href="#points" id="toc-points" class="nav-link" data-scroll-target="#points">1. (3 points)</a></li>
@@ -97,7 +133,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 24, 2026</p>
+      <p class="date">February 25, 2026</p>
     </div>
   </div>
   
@@ -117,12 +153,115 @@ ul.task-list li input[type="checkbox"] {
 <li>Conduct text analysis (natural language processing), topic modeling, and sentiment analysis.</li>
 </ul>
 </section>
+<section id="environment-setup" class="level1">
+<h1>Environment Setup</h1>
+<div id="environment-setup" class="cell" data-message="false" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
 <section id="nasa-api-part-1" class="level1">
 <h1>NASA API (Part 1)</h1>
 <p>The aim is to get more practice working with APIs and to conduct logistic and random forest classification. We will use and API maintained by NASA for retrieving information about near earth objects (NEOs), asteroids and comets that pass close to Earth. The documentation is available here (click on Asteroids - NeoWs). General information about NEOs can be found here. First you will need an API key for accessing the service. You can get one here - you will need to supply an email address, which can be either your UofT email or a personal email address.</p>
 <section id="points" class="level2">
 <h2 class="anchored" data-anchor-id="points">1. (3 points)</h2>
 <p>The NASA NeoWs Feed API only allows pulls of 7 days of data at a time, so create a loop to pull all NEOs observed so far this year (i.e.&nbsp;start_date and end_date will be for a week but we want to get all asteroids since January 1, 2026).Your query will pull a list of asteroids based on their closest approach date and will have various attributes. Summarize the number of NEOs you pulled, the how many days had NEOs since January 1 of this year.</p>
+<div id="part-1-q1-nasa-api-config" class="cell" data-message="false" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> date, timedelta</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># NASA API configuration</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>BASE_URL <span class="op">=</span> <span class="st">"https://api.nasa.gov/neo/rest/v1"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>API_KEY <span class="op">=</span> <span class="st">"gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Use feed endpoint to get all NEOs since January 1, 2026</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>BASE_URL<span class="sc">}</span><span class="ss">/feed"</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> date(<span class="dv">2026</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> date(<span class="dv">2026</span>, <span class="dv">2</span>, <span class="dv">25</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>all_neos <span class="op">=</span> []</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>days_with_neos <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>window_start <span class="op">=</span> start_date</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> window_start <span class="op">&lt;=</span> end_date:</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The feed endpoint allows up to 7 days per request</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    window_end <span class="op">=</span> <span class="bu">min</span>(window_start <span class="op">+</span> timedelta(days<span class="op">=</span><span class="dv">6</span>), end_date)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Build query parameters</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> {</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"api_key"</span>: API_KEY,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"start_date"</span>: window_start.strftime(<span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st">"</span>),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"end_date"</span>: window_end.strftime(<span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st">"</span>),</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Make the GET request</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(url, params<span class="op">=</span>params, timeout<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Status Code: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Request URL: </span><span class="sc">{</span>response<span class="sc">.</span>url<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> response.status_code <span class="op">!=</span> <span class="dv">200</span>:</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        window_start <span class="op">=</span> window_end <span class="op">+</span> timedelta(days<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="fl">0.1</span>)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">continue</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Parse the JSON response</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        payload <span class="op">=</span> response.json()</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        window_start <span class="op">=</span> window_end <span class="op">+</span> timedelta(days<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="fl">0.1</span>)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">continue</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Extract NEOs by day and append to all_neos</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    neos_by_day <span class="op">=</span> payload.get(<span class="st">"near_earth_objects"</span>, {})</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> obs_date, neos <span class="kw">in</span> neos_by_day.items():</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> neos:</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>            days_with_neos <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> neo <span class="kw">in</span> neos:</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>            neo[<span class="st">"close_approach_date"</span>] <span class="op">=</span> obs_date</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>        all_neos.extend(neos)</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 5. Move to the next 7-day window</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    window_start <span class="op">=</span> window_end <span class="op">+</span> timedelta(days<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">0.1</span>)</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total NEOs pulled since 2026-01-01: </span><span class="sc">{</span><span class="bu">len</span>(all_neos)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of days from </span><span class="sc">{</span>start_date<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span>end_date<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>(end_date <span class="op">-</span> start_date)<span class="sc">.</span>days <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of days with at least one NEO: </span><span class="sc">{</span>days_with_neos<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Status Code: 200
+Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-01-01&amp;end_date=2026-01-07
+Status Code: 200
+Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-01-08&amp;end_date=2026-01-14
+Status Code: 200
+Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-01-15&amp;end_date=2026-01-21
+Status Code: 200
+Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-01-22&amp;end_date=2026-01-28
+Status Code: 200
+Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-01-29&amp;end_date=2026-02-04
+Status Code: 200
+Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-02-05&amp;end_date=2026-02-11
+Status Code: 200
+Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-02-12&amp;end_date=2026-02-18
+Status Code: 200
+Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-02-19&amp;end_date=2026-02-25
+Total NEOs pulled since 2026-01-01: 882
+Number of days from 2026-01-01 to 2026-02-25: 56
+Number of days with at least one NEO: 56</code></pre>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<p>Since 2026-01-01, by the end of 2026-02-25, 882 NEOs were pulled. From 2026-01-01 to 2026-02-25, there are 56 days, and 56 of those days had NEOs.</p>
 </section>
 <section id="points-1" class="level2">
 <h2 class="anchored" data-anchor-id="points-1">2. (5 points)</h2>

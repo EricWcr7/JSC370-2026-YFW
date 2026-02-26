@@ -2,7 +2,7 @@
 title: "Homework 3 — More APIs, Classification, NLP"
 subtitle: "JSC370 (Winter 2026)"
 author: "Yi Fan (Eric) Wang"
-date: "February 24, 2026"
+date: "February 25, 2026"
 format:
   live-html:
     toc: true
@@ -24,6 +24,26 @@ execute:
 - Conduct text analysis (natural language processing), topic modeling, and sentiment
   analysis.
 
+# Environment Setup
+```{python}
+#| label: environment-setup
+#| warning: false
+#| message: false
+
+import pandas as pd
+import datetime
+import numpy as np
+import requests
+from bs4 import BeautifulSoup
+from io import StringIO
+import re
+import json
+import time
+from plotnine import *
+import warnings
+warnings.filterwarnings('ignore')
+```
+
 # NASA API (Part 1)
 
 The aim is to get more practice working with APIs and to conduct logistic and random forest
@@ -37,6 +57,78 @@ address.
 ## 1. (3 points)
 
 The NASA NeoWs Feed API only allows pulls of 7 days of data at a time, so create a loop to pull all NEOs observed so far this year (i.e. start_date and end_date will be for a week but we want to get all asteroids since January 1, 2026).Your query will pull a list of asteroids based on their closest approach date and will have various attributes. Summarize the number of NEOs you pulled, the how many days had NEOs since January 1 of this year.
+
+```{python}
+#| label: Part-1-Q1-NASA-API-config
+#| warning: false
+#| message: false
+
+from datetime import date, timedelta
+import time
+
+# NASA API configuration
+BASE_URL = "https://api.nasa.gov/neo/rest/v1"
+API_KEY = "gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy"
+
+# Use feed endpoint to get all NEOs since January 1, 2026
+url = f"{BASE_URL}/feed"
+start_date = date(2026, 1, 1)
+end_date = date(2026, 2, 25)
+
+all_neos = []
+days_with_neos = 0
+
+window_start = start_date
+while window_start <= end_date:
+    # The feed endpoint allows up to 7 days per request
+    window_end = min(window_start + timedelta(days=6), end_date)
+
+    # 1. Build query parameters
+    params = {
+        "api_key": API_KEY,
+        "start_date": window_start.strftime("%Y-%m-%d"),
+        "end_date": window_end.strftime("%Y-%m-%d"),
+    }
+
+    # 2. Make the GET request
+    response = requests.get(url, params=params, timeout=30)
+    print(f"Status Code: {response.status_code}")
+    print(f"Request URL: {response.url}")
+
+    if response.status_code != 200:
+        window_start = window_end + timedelta(days=1)
+        time.sleep(0.1)
+        continue
+
+    # 3. Parse the JSON response
+    try:
+        payload = response.json()
+    except ValueError:
+        window_start = window_end + timedelta(days=1)
+        time.sleep(0.1)
+        continue
+
+    # 4. Extract NEOs by day and append to all_neos
+    neos_by_day = payload.get("near_earth_objects", {})
+    for obs_date, neos in neos_by_day.items():
+        if neos:
+            days_with_neos += 1
+        for neo in neos:
+            neo["close_approach_date"] = obs_date
+        all_neos.extend(neos)
+
+    # 5. Move to the next 7-day window
+    window_start = window_end + timedelta(days=1)
+    time.sleep(0.1)
+
+print(f"Total NEOs pulled since 2026-01-01: {len(all_neos)}")
+print(f"Number of days from {start_date} to {end_date}: {(end_date - start_date).days + 1}")
+print(f"Number of days with at least one NEO: {days_with_neos}")
+```
+
+**Summary:**
+
+Since `{python} start_date.strftime("%Y-%m-%d")`, by the end of `{python} end_date.strftime("%Y-%m-%d")`, `{python} len(all_neos)` NEOs were pulled. From `{python} start_date.strftime("%Y-%m-%d")` to `{python} end_date.strftime("%Y-%m-%d")`, there are `{python} (end_date - start_date).days + 1` days, and `{python} days_with_neos` of those days had NEOs.
 
 ## 2. (5 points)
 
