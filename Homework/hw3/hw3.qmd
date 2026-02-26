@@ -138,6 +138,163 @@ miss_distance, and relative_velocity. Create a variable for avg_estimated_diamet
 heatmap of the numeric variables, and create a stacked barplot of the number of asteroids
 by day, distinguishing those that are hazardous is_potentially_hazardous_asteroid.
 
+```{python}
+#| label: Part-1-Q2-Data-Extraction
+#| warning: false
+#| message: false
+
+extracted_rows = []
+
+for neo in all_neos:
+    km_info = neo.get("estimated_diameter", {}).get("kilometers", {})
+    diameter_min = km_info.get("estimated_diameter_min")
+    diameter_max = km_info.get("estimated_diameter_max")
+
+    close_approach = neo.get("close_approach_data", [])
+    if close_approach:
+        approach_0 = close_approach[0]
+        miss_distance_km = approach_0.get("miss_distance", {}).get("kilometers")
+        relative_velocity_kps = approach_0.get("relative_velocity", {}).get("kilometers_per_second")
+    else:
+        miss_distance_km = None
+        relative_velocity_kps = None
+
+    extracted_rows.append({
+        "neo_id": neo.get("id"),
+        "neo_name": neo.get("name"),
+        "close_approach_date": neo.get("close_approach_date"),
+        "estimated_diameter_min_km": diameter_min,
+        "estimated_diameter_max_km": diameter_max,
+        "is_potentially_hazardous_asteroid": neo.get("is_potentially_hazardous_asteroid"),
+        "miss_distance_km": miss_distance_km,
+        "relative_velocity_km_s": relative_velocity_kps
+    })
+
+neo_df = pd.DataFrame(extracted_rows)
+
+# Convert numeric columns from strings to numbers
+numeric_cols = [
+    "estimated_diameter_min_km",
+    "estimated_diameter_max_km",
+    "miss_distance_km",
+    "relative_velocity_km_s"
+]
+neo_df[numeric_cols] = neo_df[numeric_cols].apply(pd.to_numeric, errors="coerce")
+
+# Create a new variable for the average estimated diameter
+neo_df["avg_estimated_diameter"] = (
+    neo_df["estimated_diameter_min_km"] + neo_df["estimated_diameter_max_km"]
+) / 2
+
+neo_df_derived = neo_df[[
+    "neo_id",
+    "neo_name",
+    "close_approach_date",
+    "is_potentially_hazardous_asteroid",
+    "miss_distance_km",
+    "relative_velocity_km_s",
+    "avg_estimated_diameter"
+]].copy()
+
+# Encode hazardous asteroid indicator as 0/1 for numeric analysis
+neo_df_derived["is_potentially_hazardous"] = neo_df_derived["is_potentially_hazardous_asteroid"].astype(int)
+
+neo_df_derived.head()
+```
+
+```{python}
+#| label: Part-1-Q2-Data-Summary
+#| warning: false
+#| message: false
+
+# Summary table for required Q2 variables (+ 0/1 hazardous indicator)
+summary_vars = [
+    "avg_estimated_diameter",
+    "miss_distance_km",
+    "relative_velocity_km_s",
+    "is_potentially_hazardous",
+]
+
+summary_table = (
+    neo_df_derived[summary_vars]
+    .describe()
+    .T[["count", "mean", "std", "min", "25%", "50%", "75%", "max"]]
+    .rename(columns={"50%": "median"})
+)
+
+summary_table["missing"] = neo_df_derived[summary_vars].isna().sum()
+summary_table = summary_table.reset_index().rename(columns={"index": "variable"})
+
+summary_table
+```
+
+```{python}
+#| label: Part-1-Q2-Data-Correlation-Heatmap
+#| warning: false
+#| message: false
+
+heatmap_vars = [
+    "avg_estimated_diameter",
+    "miss_distance_km",
+    "relative_velocity_km_s",
+]
+
+corr_matrix = neo_df_derived[heatmap_vars].corr()
+
+corr_long = (
+    corr_matrix
+    .reset_index()
+    .melt(id_vars="index", var_name="variable_2", value_name="correlation")
+    .rename(columns={"index": "variable_1"})
+)
+corr_long["corr_label"] = corr_long["correlation"].round(2)
+
+(
+    ggplot(corr_long, aes(x="variable_1", y="variable_2", fill="correlation"))
+    + geom_tile()
+    + geom_text(aes(label="corr_label"), size=8, color="black")
+    + scale_fill_gradient2(low="#2166ac", mid="white", high="#b2182b", midpoint=0)
+    + labs(
+        title="Correlation Heatmap of NEO Numeric Variables",
+        x="Numerical Features",
+        y="Numerical Features",
+        fill="Correlation"
+    )
+    + theme_minimal()
+    + theme(axis_text_x=element_text(angle=45, ha="right"))
+)
+
+```
+
+```{python}
+#| label: Part-1-Q2-Data-Stacked-Barplot
+#| warning: false
+#| message: false
+
+plot_df = neo_df_derived.copy()
+plot_df["close_approach_date"] = pd.to_datetime(plot_df["close_approach_date"])
+plot_df["hazard_status"] = np.where(
+    plot_df["is_potentially_hazardous_asteroid"],
+    "Hazardous",
+    "Not hazardous"
+)
+
+(
+    ggplot(plot_df, aes(x="close_approach_date", fill="hazard_status"))
+    + geom_bar(position="stack")
+    + labs(
+        title="Number of NEOs by Day (Stacked by Hazard Status)",
+        x="Close approach date",
+        y="Number of asteroids",
+        fill="Hazard status"
+    )
+    + scale_fill_manual(values=["#1f77b4", "#d62728"])
+    + theme_minimal()
+    + theme(axis_text_x=element_text(angle=45, ha="right"))
+)
+
+```
+
 ## 3. (6 points)
 
 Are larger NEOs more hazardous? Are faster NEOs more hazardous? Create two histograms to explore these questions, and conduct two-sample t-tests. Is the relationship between diameter and velocity different between hazardous and non-hazardous NEOs? Create a scatterplot to explore this. Summarize your results.

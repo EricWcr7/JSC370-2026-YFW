@@ -60,7 +60,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="hw3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="hw3_files/libs/clipboard/clipboard.min.js"></script>
 <script src="hw3_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="hw3_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="hw3_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -76,6 +76,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="hw3_files/libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
 <script type="module" src="hw3_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
 <link href="hw3_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -266,6 +269,312 @@ Number of days with at least one NEO: 56</code></pre>
 <section id="points-1" class="level2">
 <h2 class="anchored" data-anchor-id="points-1">2. (5 points)</h2>
 <p>Extract information on estimated_diameter, is_potentially_hazardous_asteroid, miss_distance, and relative_velocity. Create a variable for avg_estimated_diameter (take the mean of min and max). Make a summary table of these variables, a correlation heatmap of the numeric variables, and create a stacked barplot of the number of asteroids by day, distinguishing those that are hazardous is_potentially_hazardous_asteroid.</p>
+<div id="cell-Part-1-Q2-Data-Extraction" class="cell" data-message="false" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>extracted_rows <span class="op">=</span> []</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> neo <span class="kw">in</span> all_neos:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    km_info <span class="op">=</span> neo.get(<span class="st">"estimated_diameter"</span>, {}).get(<span class="st">"kilometers"</span>, {})</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    diameter_min <span class="op">=</span> km_info.get(<span class="st">"estimated_diameter_min"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    diameter_max <span class="op">=</span> km_info.get(<span class="st">"estimated_diameter_max"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    close_approach <span class="op">=</span> neo.get(<span class="st">"close_approach_data"</span>, [])</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> close_approach:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        approach_0 <span class="op">=</span> close_approach[<span class="dv">0</span>]</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        miss_distance_km <span class="op">=</span> approach_0.get(<span class="st">"miss_distance"</span>, {}).get(<span class="st">"kilometers"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        relative_velocity_kps <span class="op">=</span> approach_0.get(<span class="st">"relative_velocity"</span>, {}).get(<span class="st">"kilometers_per_second"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        miss_distance_km <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        relative_velocity_kps <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    extracted_rows.append({</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"neo_id"</span>: neo.get(<span class="st">"id"</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"neo_name"</span>: neo.get(<span class="st">"name"</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"close_approach_date"</span>: neo.get(<span class="st">"close_approach_date"</span>),</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"estimated_diameter_min_km"</span>: diameter_min,</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"estimated_diameter_max_km"</span>: diameter_max,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"is_potentially_hazardous_asteroid"</span>: neo.get(<span class="st">"is_potentially_hazardous_asteroid"</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"miss_distance_km"</span>: miss_distance_km,</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"relative_velocity_km_s"</span>: relative_velocity_kps</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>neo_df <span class="op">=</span> pd.DataFrame(extracted_rows)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert numeric columns from strings to numbers</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>numeric_cols <span class="op">=</span> [</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"estimated_diameter_min_km"</span>,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"estimated_diameter_max_km"</span>,</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"miss_distance_km"</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"relative_velocity_km_s"</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>neo_df[numeric_cols] <span class="op">=</span> neo_df[numeric_cols].<span class="bu">apply</span>(pd.to_numeric, errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new variable for the average estimated diameter</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>neo_df[<span class="st">"avg_estimated_diameter"</span>] <span class="op">=</span> (</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    neo_df[<span class="st">"estimated_diameter_min_km"</span>] <span class="op">+</span> neo_df[<span class="st">"estimated_diameter_max_km"</span>]</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>neo_df_derived <span class="op">=</span> neo_df[[</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    <span class="st">"neo_id"</span>,</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"neo_name"</span>,</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">"close_approach_date"</span>,</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"is_potentially_hazardous_asteroid"</span>,</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"miss_distance_km"</span>,</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    <span class="st">"relative_velocity_km_s"</span>,</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avg_estimated_diameter"</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>]].copy()</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Encode hazardous asteroid indicator as 0/1 for numeric analysis</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>neo_df_derived[<span class="st">"is_potentially_hazardous"</span>] <span class="op">=</span> neo_df_derived[<span class="st">"is_potentially_hazardous_asteroid"</span>].astype(<span class="bu">int</span>)</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>neo_df_derived.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-1-q2-data-extraction" class="cell-output cell-output-display" data-execution_count="21">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">neo_id</th>
+<th data-quarto-table-cell-role="th">neo_name</th>
+<th data-quarto-table-cell-role="th">close_approach_date</th>
+<th data-quarto-table-cell-role="th">is_potentially_hazardous_asteroid</th>
+<th data-quarto-table-cell-role="th">miss_distance_km</th>
+<th data-quarto-table-cell-role="th">relative_velocity_km_s</th>
+<th data-quarto-table-cell-role="th">avg_estimated_diameter</th>
+<th data-quarto-table-cell-role="th">is_potentially_hazardous</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2026663</td>
+<td>26663 (2000 XK47)</td>
+<td>2026-01-07</td>
+<td>True</td>
+<td>2.025407e+07</td>
+<td>17.184795</td>
+<td>1.003558</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>54105509</td>
+<td>(2021 AM5)</td>
+<td>2026-01-07</td>
+<td>False</td>
+<td>2.464357e+07</td>
+<td>10.693029</td>
+<td>0.040137</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>54248949</td>
+<td>(2022 EO)</td>
+<td>2026-01-07</td>
+<td>False</td>
+<td>4.104900e+07</td>
+<td>7.051860</td>
+<td>0.005439</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>54317205</td>
+<td>(2022 UE3)</td>
+<td>2026-01-07</td>
+<td>False</td>
+<td>4.570810e+07</td>
+<td>8.209910</td>
+<td>0.051469</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>54417170</td>
+<td>(2023 XM15)</td>
+<td>2026-01-07</td>
+<td>False</td>
+<td>5.819989e+06</td>
+<td>6.889580</td>
+<td>0.061879</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-Part-1-Q2-Data-Summary" class="cell" data-message="false" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary table for required Q2 variables (+ 0/1 hazardous indicator)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>summary_vars <span class="op">=</span> [</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avg_estimated_diameter"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"miss_distance_km"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"relative_velocity_km_s"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"is_potentially_hazardous"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> (</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    neo_df_derived[summary_vars]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    .describe()</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    .T[[<span class="st">"count"</span>, <span class="st">"mean"</span>, <span class="st">"std"</span>, <span class="st">"min"</span>, <span class="st">"25%"</span>, <span class="st">"50%"</span>, <span class="st">"75%"</span>, <span class="st">"max"</span>]]</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"50%"</span>: <span class="st">"median"</span>})</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>summary_table[<span class="st">"missing"</span>] <span class="op">=</span> neo_df_derived[summary_vars].isna().<span class="bu">sum</span>()</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> summary_table.reset_index().rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"variable"</span>})</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>summary_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-1-q2-data-summary" class="cell-output cell-output-display" data-execution_count="22">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">variable</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">std</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">25%</th>
+<th data-quarto-table-cell-role="th">median</th>
+<th data-quarto-table-cell-role="th">75%</th>
+<th data-quarto-table-cell-role="th">max</th>
+<th data-quarto-table-cell-role="th">missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>avg_estimated_diameter</td>
+<td>882.0</td>
+<td>7.894121e-02</td>
+<td>1.451230e-01</td>
+<td>0.001660</td>
+<td>1.998461e-02</td>
+<td>3.718299e-02</td>
+<td>7.473820e-02</td>
+<td>2.165422e+00</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>miss_distance_km</td>
+<td>882.0</td>
+<td>2.476274e+07</td>
+<td>2.261249e+07</td>
+<td>43043.346341</td>
+<td>5.014621e+06</td>
+<td>1.711277e+07</td>
+<td>4.181465e+07</td>
+<td>7.472261e+07</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>relative_velocity_km_s</td>
+<td>882.0</td>
+<td>1.234448e+01</td>
+<td>6.516253e+00</td>
+<td>1.220285</td>
+<td>7.388070e+00</td>
+<td>1.121601e+01</td>
+<td>1.616781e+01</td>
+<td>4.118599e+01</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>is_potentially_hazardous</td>
+<td>882.0</td>
+<td>3.854875e-02</td>
+<td>1.926261e-01</td>
+<td>0.000000</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>1.000000e+00</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-Part-1-Q2-Data-Correlation-Heatmap" class="cell" data-message="false" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>heatmap_vars <span class="op">=</span> [</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avg_estimated_diameter"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"miss_distance_km"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"relative_velocity_km_s"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>corr_matrix <span class="op">=</span> neo_df_derived[heatmap_vars].corr()</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>corr_long <span class="op">=</span> (</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    corr_matrix</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    .melt(id_vars<span class="op">=</span><span class="st">"index"</span>, var_name<span class="op">=</span><span class="st">"variable_2"</span>, value_name<span class="op">=</span><span class="st">"correlation"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"variable_1"</span>})</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>corr_long[<span class="st">"corr_label"</span>] <span class="op">=</span> corr_long[<span class="st">"correlation"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    ggplot(corr_long, aes(x<span class="op">=</span><span class="st">"variable_1"</span>, y<span class="op">=</span><span class="st">"variable_2"</span>, fill<span class="op">=</span><span class="st">"correlation"</span>))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_tile()</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_text(aes(label<span class="op">=</span><span class="st">"corr_label"</span>), size<span class="op">=</span><span class="dv">8</span>, color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_gradient2(low<span class="op">=</span><span class="st">"#2166ac"</span>, mid<span class="op">=</span><span class="st">"white"</span>, high<span class="op">=</span><span class="st">"#b2182b"</span>, midpoint<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Correlation Heatmap of NEO Numeric Variables"</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Numerical Features"</span>,</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Numerical Features"</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        fill<span class="op">=</span><span class="st">"Correlation"</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, ha<span class="op">=</span><span class="st">"right"</span>))</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-1-q2-data-correlation-heatmap-output-1.png" id="part-1-q2-data-correlation-heatmap" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-Part-1-Q2-Data-Stacked-Barplot" class="cell" data-message="false" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plot_df <span class="op">=</span> neo_df_derived.copy()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>plot_df[<span class="st">"close_approach_date"</span>] <span class="op">=</span> pd.to_datetime(plot_df[<span class="st">"close_approach_date"</span>])</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>plot_df[<span class="st">"hazard_status"</span>] <span class="op">=</span> np.where(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    plot_df[<span class="st">"is_potentially_hazardous_asteroid"</span>],</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hazardous"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Not hazardous"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    ggplot(plot_df, aes(x<span class="op">=</span><span class="st">"close_approach_date"</span>, fill<span class="op">=</span><span class="st">"hazard_status"</span>))</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_bar(position<span class="op">=</span><span class="st">"stack"</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Number of NEOs by Day (Stacked by Hazard Status)"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Close approach date"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Number of asteroids"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        fill<span class="op">=</span><span class="st">"Hazard status"</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_manual(values<span class="op">=</span>[<span class="st">"#1f77b4"</span>, <span class="st">"#d62728"</span>])</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, ha<span class="op">=</span><span class="st">"right"</span>))</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-1-q2-data-stacked-barplot-output-1.png" id="part-1-q2-data-stacked-barplot" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="points-2" class="level2">
 <h2 class="anchored" data-anchor-id="points-2">3. (6 points)</h2>
