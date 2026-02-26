@@ -57,7 +57,7 @@ Summarize and interpret the results (include a confusion matrix, accuracy, preci
 
 ## 5. (5 points)
 
-Repeat 4a but using random forest. Summarize and include a comparison of your results in 4a.
+Repeat 4 but using random forest. Summarize and include a comparison of your results in 4.
 
 # CFPB API (Part 2)
 
@@ -97,4 +97,4 @@ Conduct sentence-level tokenization, summarize the number of sentences, and the 
 
 ## 12. (4 points)
 
-Conduct sentiment analysis of the sentence tokens. Like above, visualize the histogram of the sentiment scores, categorize sentiments into negative, neutral, positive and visualize counts with a barplot as well as a barplot by product categories. Interpret, summarize, and discuss differences from word token sentiment analysis in 8a.
+Conduct sentiment analysis of the sentence tokens. Like above, visualize the histogram of the sentiment scores, categorize sentiments into negative, neutral, positive and visualize counts with a barplot as well as a barplot by product categories. Interpret, summarize, and discuss differences from word token sentiment analysis in 10.
