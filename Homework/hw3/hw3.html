@@ -169,10 +169,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier, DecisionTreeRegressor, plot_tree</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier, RandomForestRegressor</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> (</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    confusion_matrix, ConfusionMatrixDisplay,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    accuracy_score, precision_score, recall_score, f1_score,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    roc_curve, roc_auc_score, mean_squared_error, r2_score</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="nasa-api-part-1" class="level1">
@@ -325,7 +335,9 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Encode hazardous asteroid indicator as 0/1 for numeric analysis</span></span>
 <span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>neo_df_derived[<span class="st">"is_potentially_hazardous"</span>] <span class="op">=</span> neo_df_derived[<span class="st">"is_potentially_hazardous_asteroid"</span>].astype(<span class="bu">int</span>)</span>
 <span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>neo_df_derived.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>neo_df_derived <span class="op">=</span> neo_df_derived.drop(columns<span class="op">=</span>[<span class="st">"is_potentially_hazardous_asteroid"</span>])</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>neo_df_derived.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="part-1-q2-data-extraction" class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
@@ -337,7 +349,6 @@ Number of days with at least one NEO: 56</code></pre>
 <th data-quarto-table-cell-role="th">neo_id</th>
 <th data-quarto-table-cell-role="th">neo_name</th>
 <th data-quarto-table-cell-role="th">close_approach_date</th>
-<th data-quarto-table-cell-role="th">is_potentially_hazardous_asteroid</th>
 <th data-quarto-table-cell-role="th">miss_distance_km</th>
 <th data-quarto-table-cell-role="th">relative_velocity_km_s</th>
 <th data-quarto-table-cell-role="th">avg_estimated_diameter</th>
@@ -350,7 +361,6 @@ Number of days with at least one NEO: 56</code></pre>
 <td>2026663</td>
 <td>26663 (2000 XK47)</td>
 <td>2026-01-07</td>
-<td>True</td>
 <td>2.025407e+07</td>
 <td>17.184795</td>
 <td>1.003558</td>
@@ -361,7 +371,6 @@ Number of days with at least one NEO: 56</code></pre>
 <td>54105509</td>
 <td>(2021 AM5)</td>
 <td>2026-01-07</td>
-<td>False</td>
 <td>2.464357e+07</td>
 <td>10.693029</td>
 <td>0.040137</td>
@@ -372,7 +381,6 @@ Number of days with at least one NEO: 56</code></pre>
 <td>54248949</td>
 <td>(2022 EO)</td>
 <td>2026-01-07</td>
-<td>False</td>
 <td>4.104900e+07</td>
 <td>7.051860</td>
 <td>0.005439</td>
@@ -383,7 +391,6 @@ Number of days with at least one NEO: 56</code></pre>
 <td>54317205</td>
 <td>(2022 UE3)</td>
 <td>2026-01-07</td>
-<td>False</td>
 <td>4.570810e+07</td>
 <td>8.209910</td>
 <td>0.051469</td>
@@ -394,7 +401,6 @@ Number of days with at least one NEO: 56</code></pre>
 <td>54417170</td>
 <td>(2023 XM15)</td>
 <td>2026-01-07</td>
-<td>False</td>
 <td>5.819989e+06</td>
 <td>6.889580</td>
 <td>0.061879</td>
@@ -407,25 +413,24 @@ Number of days with at least one NEO: 56</code></pre>
 </div>
 </div>
 <div id="cell-Part-1-Q2-Data-Summary" class="cell" data-message="false" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary table for required Q2 variables (+ 0/1 hazardous indicator)</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>summary_vars <span class="op">=</span> [</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avg_estimated_diameter"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"miss_distance_km"</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"relative_velocity_km_s"</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"is_potentially_hazardous"</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> (</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    neo_df_derived[summary_vars]</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    .describe()</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    .T[[<span class="st">"count"</span>, <span class="st">"mean"</span>, <span class="st">"std"</span>, <span class="st">"min"</span>, <span class="st">"25%"</span>, <span class="st">"50%"</span>, <span class="st">"75%"</span>, <span class="st">"max"</span>]]</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"50%"</span>: <span class="st">"median"</span>})</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>summary_table[<span class="st">"missing"</span>] <span class="op">=</span> neo_df_derived[summary_vars].isna().<span class="bu">sum</span>()</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> summary_table.reset_index().rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"variable"</span>})</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>summary_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>summary_vars <span class="op">=</span> [</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"avg_estimated_diameter"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"miss_distance_km"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"relative_velocity_km_s"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"is_potentially_hazardous"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> (</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    neo_df_derived[summary_vars]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    .describe()</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    .T[[<span class="st">"count"</span>, <span class="st">"mean"</span>, <span class="st">"std"</span>, <span class="st">"min"</span>, <span class="st">"25%"</span>, <span class="st">"50%"</span>, <span class="st">"75%"</span>, <span class="st">"max"</span>]]</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"50%"</span>: <span class="st">"median"</span>})</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>summary_table[<span class="st">"missing"</span>] <span class="op">=</span> neo_df_derived[summary_vars].isna().<span class="bu">sum</span>()</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> summary_table.reset_index().rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"variable"</span>})</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>summary_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="part-1-q2-data-summary" class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -548,7 +553,7 @@ Number of days with at least one NEO: 56</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plot_df <span class="op">=</span> neo_df_derived.copy()</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>plot_df[<span class="st">"close_approach_date"</span>] <span class="op">=</span> pd.to_datetime(plot_df[<span class="st">"close_approach_date"</span>])</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>plot_df[<span class="st">"hazard_status"</span>] <span class="op">=</span> np.where(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    plot_df[<span class="st">"is_potentially_hazardous_asteroid"</span>],</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    plot_df[<span class="st">"is_potentially_hazardous"</span>] <span class="op">==</span> <span class="dv">1</span>,</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hazardous"</span>,</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Not hazardous"</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -581,7 +586,7 @@ Number of days with at least one NEO: 56</code></pre>
 <div id="cell-Part-1-Q3-Diameter-Histogram" class="cell" data-message="false" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>q3_df <span class="op">=</span> neo_df_derived.copy()</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>q3_df[<span class="st">"hazard_status"</span>] <span class="op">=</span> np.where(</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    q3_df[<span class="st">"is_potentially_hazardous_asteroid"</span>],</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    q3_df[<span class="st">"is_potentially_hazardous"</span>] <span class="op">==</span> <span class="dv">1</span>,</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hazardous"</span>,</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Not hazardous"</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -635,8 +640,8 @@ Number of days with at least one NEO: 56</code></pre>
 </div>
 <div id="cell-Part-1-Q3-Two-Sample-T-Tests" class="cell" data-message="false" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Split data into hazardous and non-hazardous groups</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>haz <span class="op">=</span> neo_df_derived[neo_df_derived[<span class="st">"is_potentially_hazardous_asteroid"</span>]]</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>non_haz <span class="op">=</span> neo_df_derived[<span class="op">~</span>neo_df_derived[<span class="st">"is_potentially_hazardous_asteroid"</span>]]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>haz <span class="op">=</span> neo_df_derived[neo_df_derived[<span class="st">"is_potentially_hazardous"</span>] <span class="op">==</span> <span class="dv">1</span>]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>non_haz <span class="op">=</span> neo_df_derived[neo_df_derived[<span class="st">"is_potentially_hazardous"</span>] <span class="op">==</span> <span class="dv">0</span>]</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Run two-sample t-test for average estimated diameter (Welch's t-test)</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>diam_haz <span class="op">=</span> haz[<span class="st">"avg_estimated_diameter"</span>]</span>
@@ -716,7 +721,7 @@ Number of days with at least one NEO: 56</code></pre>
 <div id="cell-Part-1-Q3-Scatterplot" class="cell" data-message="false" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>scatter_df <span class="op">=</span> neo_df_derived.copy()</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>scatter_df[<span class="st">"hazard_status"</span>] <span class="op">=</span> np.where(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    scatter_df[<span class="st">"is_potentially_hazardous_asteroid"</span>],</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    scatter_df[<span class="st">"is_potentially_hazardous"</span>] <span class="op">==</span> <span class="dv">1</span>,</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Hazardous"</span>,</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Not hazardous"</span></span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -753,10 +758,234 @@ Number of days with at least one NEO: 56</code></pre>
 <section id="points-3" class="level2">
 <h2 class="anchored" data-anchor-id="points-3">4. (5 points)</h2>
 <p>Split the data into 70% train and 30% test, and fit a logistic regression model on train to see if we can predict on test whether an asteroid is hazardous based on its attributes (include diameter, velocity, miss distance). Summarize and interpret the results (include a confusion matrix, accuracy, precision, recall, and F1; plot the ROC curve).</p>
+<div id="cell-Part-1-Q4-Logistic-Regression" class="cell" data-message="false" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Set up predictors and target</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>feature_cols <span class="op">=</span> [<span class="st">"avg_estimated_diameter"</span>, <span class="st">"relative_velocity_km_s"</span>, <span class="st">"miss_distance_km"</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>X_class <span class="op">=</span> neo_df_derived[feature_cols]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>y_class <span class="op">=</span> neo_df_derived[<span class="st">"is_potentially_hazardous"</span>]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Train/test split (70/30) with random_state=65</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>X_train_c, X_test_c, y_train_c, y_test_c <span class="op">=</span> train_test_split(</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    X_class, y_class, test_size<span class="op">=</span><span class="fl">0.30</span>, random_state<span class="op">=</span><span class="dv">65</span>, stratify<span class="op">=</span>y_class</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Training set size: </span><span class="sc">{</span>X_train_c<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Testing set size: </span><span class="sc">{</span>X_test_c<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Training target proportions:"</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(y_train_c.value_counts(normalize<span class="op">=</span><span class="va">True</span>).sort_index())</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Fit logistic regression</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>log_reg_c <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>log_reg_c.fit(X_train_c, y_train_c)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Predict on test set</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>y_pred_c <span class="op">=</span> log_reg_c.predict(X_test_c)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>y_prob_c <span class="op">=</span> log_reg_c.predict_proba(X_test_c)[:, <span class="dv">1</span>]</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Test metrics + confusion matrix display</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>test_acc_c <span class="op">=</span> accuracy_score(y_test_c, y_pred_c)</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>test_precision_c <span class="op">=</span> precision_score(y_test_c, y_pred_c, zero_division<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>test_recall_c <span class="op">=</span> recall_score(y_test_c, y_pred_c, zero_division<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>test_f1_c <span class="op">=</span> f1_score(y_test_c, y_pred_c, zero_division<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>test_auc_c <span class="op">=</span> roc_auc_score(y_test_c, y_prob_c)</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test Accuracy: </span><span class="sc">{</span>test_acc_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test Precision: </span><span class="sc">{</span>test_precision_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test Recall: </span><span class="sc">{</span>test_recall_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test F1: </span><span class="sc">{</span>test_f1_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test ROC AUC: </span><span class="sc">{</span>test_auc_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>class_labels <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> confusion_matrix(y_test_c, y_pred_c, labels<span class="op">=</span>class_labels)</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>disp <span class="op">=</span> ConfusionMatrixDisplay(confusion_matrix<span class="op">=</span>cm, display_labels<span class="op">=</span>class_labels)</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>disp.plot(cmap<span class="op">=</span><span class="st">"Blues"</span>)</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Confusion Matrix - Logistic Regression"</span>)</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training set size: 617
+Testing set size: 265
+
+Training target proportions:
+is_potentially_hazardous
+0    0.961102
+1    0.038898
+Name: proportion, dtype: float64
+Test Accuracy: 0.9623
+Test Precision: 0.0000
+Test Recall: 0.0000
+Test F1: 0.0000
+Test ROC AUC: 0.7161</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-1-q4-logistic-regression-output-2.png" id="part-1-q4-logistic-regression" width="504" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-Part-1-Q4-ROC-Curve" class="cell" data-message="false" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fpr, tpr, _ <span class="op">=</span> roc_curve(y_test_c, y_prob_c)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>roc_df <span class="op">=</span> pd.DataFrame({<span class="st">"fpr"</span>: fpr, <span class="st">"tpr"</span>: tpr})</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    ggplot(roc_df, aes(x<span class="op">=</span><span class="st">"fpr"</span>, y<span class="op">=</span><span class="st">"tpr"</span>))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_line(color<span class="op">=</span><span class="st">"#1f77b4"</span>, size<span class="op">=</span><span class="fl">1.1</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_abline(intercept<span class="op">=</span><span class="dv">0</span>, slope<span class="op">=</span><span class="dv">1</span>, linetype<span class="op">=</span><span class="st">"dashed"</span>, color<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"ROC Curve - Logistic Regression"</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"False Positive Rate"</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"True Positive Rate"</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-1-q4-roc-curve-output-1.png" id="part-1-q4-roc-curve" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li><strong>Class Imbalance</strong>: The training set is highly imbalanced, with hazardous NEOs representing only approximately 4% of the data. A naive model predicting “non-hazardous” for every instance would achieve approximately 96% accuracy by default.</li>
+<li><strong>Confusion Matrix</strong>: The logistic regression model correctly identified all 255 non-hazardous NEOs (True Negatives) but missed all 10 hazardous NEOs (False Negatives), resulting in 0 True Positives. This proves that the model performed as expected and failed to detect hazardous NEOs.</li>
+<li><strong>Metrics Interpretation</strong>: The high <strong>accuracy</strong> (96.23%) is misleading due to the imbalance and naiveness. The **precision, recall, and F1 scores of 0.00 accurately reflect that the model failed completely at its primary task: detecting hazardous asteroids.</li>
+<li><strong>ROC AUC</strong>: The ROC AUC of 0.7161 suggests the model has some underlying ability to distinguish classes (better than random guessing at 0.5). The ROC curve confirms this potential: it rises above the diagonal random-guess line, showing that the model assigns higher probabilities to hazardous asteroids on average. However, at the default threshold, the True Positive Rate is 0, meaning no hazardous asteroids are caught.</li>
+</ul>
 </section>
 <section id="points-4" class="level2">
 <h2 class="anchored" data-anchor-id="points-4">5. (5 points)</h2>
 <p>Repeat 4 but using random forest. Summarize and include a comparison of your results in 4.</p>
+<div id="cell-Part-1-Q5-Random-Forest" class="cell" data-message="false" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Fit random forest on the same train/test split used in Q4</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>rf_class <span class="op">=</span> RandomForestClassifier(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    n_estimators<span class="op">=</span><span class="dv">500</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">65</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>rf_class.fit(X_train_c, y_train_c)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Predict on test set</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>y_pred_rf_c <span class="op">=</span> rf_class.predict(X_test_c)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>y_prob_rf_c <span class="op">=</span> rf_class.predict_proba(X_test_c)[:, <span class="dv">1</span>]</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Evaluate random forest performance</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>rf_test_acc_c <span class="op">=</span> accuracy_score(y_test_c, y_pred_rf_c)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>rf_test_precision_c <span class="op">=</span> precision_score(y_test_c, y_pred_rf_c, zero_division<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>rf_test_recall_c <span class="op">=</span> recall_score(y_test_c, y_pred_rf_c, zero_division<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>rf_test_f1_c <span class="op">=</span> f1_score(y_test_c, y_pred_rf_c, zero_division<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>rf_test_auc_c <span class="op">=</span> roc_auc_score(y_test_c, y_prob_rf_c)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RF Test Accuracy: </span><span class="sc">{</span>rf_test_acc_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RF Test Precision: </span><span class="sc">{</span>rf_test_precision_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RF Test Recall: </span><span class="sc">{</span>rf_test_recall_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RF Test F1: </span><span class="sc">{</span>rf_test_f1_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RF Test ROC AUC: </span><span class="sc">{</span>rf_test_auc_c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>class_labels <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>rf_cm <span class="op">=</span> confusion_matrix(y_test_c, y_pred_rf_c, labels<span class="op">=</span>class_labels)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>rf_disp <span class="op">=</span> ConfusionMatrixDisplay(confusion_matrix<span class="op">=</span>rf_cm, display_labels<span class="op">=</span>class_labels)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>rf_disp.plot(cmap<span class="op">=</span><span class="st">"Greens"</span>)</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Confusion Matrix - Random Forest"</span>)</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>RF Test Accuracy: 0.9623
+RF Test Precision: 0.5000
+RF Test Recall: 0.3000
+RF Test F1: 0.3750
+RF Test ROC AUC: 0.9845</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-1-q5-random-forest-output-2.png" id="part-1-q5-random-forest" width="504" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-Part-1-Q5-ROC-Curve" class="cell" data-message="false" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rf_fpr, rf_tpr, _ <span class="op">=</span> roc_curve(y_test_c, y_prob_rf_c)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>rf_roc_df <span class="op">=</span> pd.DataFrame({<span class="st">"fpr"</span>: rf_fpr, <span class="st">"tpr"</span>: rf_tpr})</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    ggplot(rf_roc_df, aes(x<span class="op">=</span><span class="st">"fpr"</span>, y<span class="op">=</span><span class="st">"tpr"</span>))</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_line(color<span class="op">=</span><span class="st">"#2ca02c"</span>, size<span class="op">=</span><span class="fl">1.1</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_abline(intercept<span class="op">=</span><span class="dv">0</span>, slope<span class="op">=</span><span class="dv">1</span>, linetype<span class="op">=</span><span class="st">"dashed"</span>, color<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"ROC Curve - Random Forest"</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"False Positive Rate"</span>,</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"True Positive Rate"</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-1-q5-roc-curve-output-1.png" id="part-1-q5-roc-curve" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-Part-1-Q5-Comparison-with-Q4" class="cell" data-message="false" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>comparison_df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"model"</span>: [<span class="st">"Logistic Regression"</span>, <span class="st">"Random Forest"</span>],</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"accuracy"</span>: [test_acc_c, rf_test_acc_c],</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"precision"</span>: [test_precision_c, rf_test_precision_c],</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"recall"</span>: [test_recall_c, rf_test_recall_c],</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"f1"</span>: [test_f1_c, rf_test_f1_c],</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"roc_auc"</span>: [test_auc_c, rf_test_auc_c],</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>display(comparison_df.<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-1-q5-comparison-with-q4" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">model</th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">precision</th>
+<th data-quarto-table-cell-role="th">recall</th>
+<th data-quarto-table-cell-role="th">f1</th>
+<th data-quarto-table-cell-role="th">roc_auc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Logistic Regression</td>
+<td>0.9623</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.000</td>
+<td>0.7161</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Random Forest</td>
+<td>0.9623</td>
+<td>0.5</td>
+<td>0.3</td>
+<td>0.375</td>
+<td>0.9845</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li><strong>Confusion Matrix:</strong> Out of the 10 actual hazardous NEOs in the test set, the Random Forest model correctly identified 3 (True Positives) but missed 7 (False Negatives). It correctly identified 252 non-hazardous NEOs (True Negatives) while incorrectly labeling 3 non-hazardous NEOs as hazardous (False Positives).</li>
+<li><strong>Metrics Interpretation:</strong> The model achieved an accuracy of 96.23%, a precision of 0.5000, a recall of 0.3000, and an F1 score of 0.3750. Because 50% of the asteroids it flagged as hazardous were actually hazardous, it demonstrates some reliability in its positive predictions, though the low recall (30%) means it is still missing the majority of the dangerous asteroids.</li>
+<li><strong>ROC Curve:</strong> The ROC curve rises sharply toward the top-left corner, yielding an exceptionally high ROC AUC of 0.9845. This indicates the model has an excellent underlying ability to separate hazardous from non-hazardous NEOs based on their predicted probabilities, even if the default classification threshold isn’t capturing all of them yet.</li>
+<li><strong>Comparison with Logistic Regression:</strong> The Random Forest model performed better than the Logistic Regression model in terms of the metrics. Even though they have the same accuracy, the logistic regression achieved this naively by guessing NEOs are non-hazardous every time, while the random forest model actively learned from the data and was able to identify more hazardous NEOs. Since LR missed all hazardous NEOs, its precison, recall, and F1 scores are all 0.00, while the random forest model detected 3 hazardous NEOs with a precision of 0.5000, a recall of 0.3000, and an F1 score of 0.375, which is significantly better than the logistic regression model. In terms of the ROC Curve, the Random Forest model has a higher ROC AUC of 0.9845, proving that it is able to separate hazardous from non-hazardous NEOs better than the logistic regression model.</li>
+</ul>
 </section>
 </section>
 <section id="cfpb-api-part-2" class="level1">

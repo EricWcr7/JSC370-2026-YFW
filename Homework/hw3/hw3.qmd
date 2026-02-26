@@ -40,10 +40,21 @@ from io import StringIO
 import re
 import json
 import time
+import matplotlib.pyplot as plt
 from scipy import stats
 from plotnine import *
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor, plot_tree
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.metrics import (
+    confusion_matrix, ConfusionMatrixDisplay,
+    accuracy_score, precision_score, recall_score, f1_score,
+    roc_curve, roc_auc_score, mean_squared_error, r2_score
+)
 import warnings
 warnings.filterwarnings('ignore')
+
 ```
 
 # NASA API (Part 1)
@@ -198,6 +209,8 @@ neo_df_derived = neo_df[[
 # Encode hazardous asteroid indicator as 0/1 for numeric analysis
 neo_df_derived["is_potentially_hazardous"] = neo_df_derived["is_potentially_hazardous_asteroid"].astype(int)
 
+neo_df_derived = neo_df_derived.drop(columns=["is_potentially_hazardous_asteroid"])
+
 neo_df_derived.head()
 ```
 
@@ -206,7 +219,6 @@ neo_df_derived.head()
 #| warning: false
 #| message: false
 
-# Summary table for required Q2 variables (+ 0/1 hazardous indicator)
 summary_vars = [
     "avg_estimated_diameter",
     "miss_distance_km",
@@ -273,7 +285,7 @@ corr_long["corr_label"] = corr_long["correlation"].round(2)
 plot_df = neo_df_derived.copy()
 plot_df["close_approach_date"] = pd.to_datetime(plot_df["close_approach_date"])
 plot_df["hazard_status"] = np.where(
-    plot_df["is_potentially_hazardous_asteroid"],
+    plot_df["is_potentially_hazardous"] == 1,
     "Hazardous",
     "Not hazardous"
 )
@@ -305,7 +317,7 @@ Are larger NEOs more hazardous? Are faster NEOs more hazardous? Create two histo
 
 q3_df = neo_df_derived.copy()
 q3_df["hazard_status"] = np.where(
-    q3_df["is_potentially_hazardous_asteroid"],
+    q3_df["is_potentially_hazardous"] == 1,
     "Hazardous",
     "Not hazardous"
 )
@@ -356,8 +368,8 @@ q3_df["hazard_status"] = np.where(
 #| message: false
 
 # 1. Split data into hazardous and non-hazardous groups
-haz = neo_df_derived[neo_df_derived["is_potentially_hazardous_asteroid"]]
-non_haz = neo_df_derived[~neo_df_derived["is_potentially_hazardous_asteroid"]]
+haz = neo_df_derived[neo_df_derived["is_potentially_hazardous"] == 1]
+non_haz = neo_df_derived[neo_df_derived["is_potentially_hazardous"] == 0]
 
 # 2. Run two-sample t-test for average estimated diameter (Welch's t-test)
 diam_haz = haz["avg_estimated_diameter"]
@@ -397,7 +409,7 @@ display(ttest_results.round(6))
 
 scatter_df = neo_df_derived.copy()
 scatter_df["hazard_status"] = np.where(
-    scatter_df["is_potentially_hazardous_asteroid"],
+    scatter_df["is_potentially_hazardous"] == 1,
     "Hazardous",
     "Not hazardous"
 )
@@ -430,9 +442,168 @@ scatter_df["hazard_status"] = np.where(
 Split the data into 70% train and 30% test, and fit a logistic regression model on train to see if we can predict on test whether an asteroid is hazardous based on its attributes (include diameter, velocity, miss distance).
 Summarize and interpret the results (include a confusion matrix, accuracy, precision, recall, and F1; plot the ROC curve).
 
+```{python}
+#| label: Part-1-Q4-Logistic-Regression
+#| warning: false
+#| message: false
+
+# 1. Set up predictors and target
+feature_cols = ["avg_estimated_diameter", "relative_velocity_km_s", "miss_distance_km"]
+X_class = neo_df_derived[feature_cols]
+y_class = neo_df_derived["is_potentially_hazardous"]
+
+# 2. Train/test split (70/30) with random_state=65
+X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(
+    X_class, y_class, test_size=0.30, random_state=65, stratify=y_class
+)
+
+print(f"Training set size: {X_train_c.shape[0]}")
+print(f"Testing set size: {X_test_c.shape[0]}")
+print("\nTraining target proportions:")
+print(y_train_c.value_counts(normalize=True).sort_index())
+
+# 3. Fit logistic regression
+log_reg_c = LogisticRegression(max_iter=1000)
+log_reg_c.fit(X_train_c, y_train_c)
+
+# 4. Predict on test set
+y_pred_c = log_reg_c.predict(X_test_c)
+y_prob_c = log_reg_c.predict_proba(X_test_c)[:, 1]
+
+# 5. Test metrics + confusion matrix display
+test_acc_c = accuracy_score(y_test_c, y_pred_c)
+test_precision_c = precision_score(y_test_c, y_pred_c, zero_division=0)
+test_recall_c = recall_score(y_test_c, y_pred_c, zero_division=0)
+test_f1_c = f1_score(y_test_c, y_pred_c, zero_division=0)
+test_auc_c = roc_auc_score(y_test_c, y_prob_c)
+
+print(f"Test Accuracy: {test_acc_c:.4f}")
+print(f"Test Precision: {test_precision_c:.4f}")
+print(f"Test Recall: {test_recall_c:.4f}")
+print(f"Test F1: {test_f1_c:.4f}")
+print(f"Test ROC AUC: {test_auc_c:.4f}")
+
+class_labels = [0, 1]
+cm = confusion_matrix(y_test_c, y_pred_c, labels=class_labels)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_labels)
+disp.plot(cmap="Blues")
+plt.title("Confusion Matrix - Logistic Regression")
+plt.show()
+```
+
+```{python}
+#| label: Part-1-Q4-ROC-Curve
+#| warning: false
+#| message: false
+
+fpr, tpr, _ = roc_curve(y_test_c, y_prob_c)
+roc_df = pd.DataFrame({"fpr": fpr, "tpr": tpr})
+
+(
+    ggplot(roc_df, aes(x="fpr", y="tpr"))
+    + geom_line(color="#1f77b4", size=1.1)
+    + geom_abline(intercept=0, slope=1, linetype="dashed", color="gray")
+    + labs(
+        title="ROC Curve - Logistic Regression",
+        x="False Positive Rate",
+        y="True Positive Rate"
+    )
+    + theme_minimal()
+)
+```
+
+**Summary:**
+ 
+- **Class Imbalance**: The training set is highly imbalanced, with hazardous NEOs representing only approximately 4% of the data. A naive model predicting "non-hazardous" for every instance would achieve approximately 96% accuracy by default.
+- **Confusion Matrix**: The logistic regression model correctly identified all 255 non-hazardous NEOs (True Negatives) but missed all 10 hazardous NEOs (False Negatives), resulting in 0 True Positives. This proves that the model performed as expected and failed to detect hazardous NEOs.
+- **Metrics Interpretation**: The high **accuracy** (96.23%) is misleading due to the imbalance and naiveness. The **precision, recall, and F1 scores of 0.00 accurately reflect that the model failed completely at its primary task: detecting hazardous asteroids.
+- **ROC AUC**: The ROC AUC of 0.7161 suggests the model has some underlying ability to distinguish classes (better than random guessing at 0.5). The ROC curve confirms this potential: it rises above the diagonal random-guess line, showing that the model assigns higher probabilities to hazardous asteroids on average. However, at the default threshold, the True Positive Rate is 0, meaning no hazardous asteroids are caught.
+
 ## 5. (5 points)
 
 Repeat 4 but using random forest. Summarize and include a comparison of your results in 4.
+
+```{python}
+#| label: Part-1-Q5-Random-Forest
+#| warning: false
+#| message: false
+
+# 1. Fit random forest on the same train/test split used in Q4
+rf_class = RandomForestClassifier(
+    n_estimators=500,
+    random_state=65
+)
+rf_class.fit(X_train_c, y_train_c)
+
+# 2. Predict on test set
+y_pred_rf_c = rf_class.predict(X_test_c)
+y_prob_rf_c = rf_class.predict_proba(X_test_c)[:, 1]
+
+# 3. Evaluate random forest performance
+rf_test_acc_c = accuracy_score(y_test_c, y_pred_rf_c)
+rf_test_precision_c = precision_score(y_test_c, y_pred_rf_c, zero_division=0)
+rf_test_recall_c = recall_score(y_test_c, y_pred_rf_c, zero_division=0)
+rf_test_f1_c = f1_score(y_test_c, y_pred_rf_c, zero_division=0)
+rf_test_auc_c = roc_auc_score(y_test_c, y_prob_rf_c)
+
+print(f"RF Test Accuracy: {rf_test_acc_c:.4f}")
+print(f"RF Test Precision: {rf_test_precision_c:.4f}")
+print(f"RF Test Recall: {rf_test_recall_c:.4f}")
+print(f"RF Test F1: {rf_test_f1_c:.4f}")
+print(f"RF Test ROC AUC: {rf_test_auc_c:.4f}")
+
+class_labels = [0, 1]
+rf_cm = confusion_matrix(y_test_c, y_pred_rf_c, labels=class_labels)
+rf_disp = ConfusionMatrixDisplay(confusion_matrix=rf_cm, display_labels=class_labels)
+rf_disp.plot(cmap="Greens")
+plt.title("Confusion Matrix - Random Forest")
+plt.show()
+```
+
+```{python}
+#| label: Part-1-Q5-ROC-Curve
+#| warning: false
+#| message: false
+
+rf_fpr, rf_tpr, _ = roc_curve(y_test_c, y_prob_rf_c)
+rf_roc_df = pd.DataFrame({"fpr": rf_fpr, "tpr": rf_tpr})
+
+(
+    ggplot(rf_roc_df, aes(x="fpr", y="tpr"))
+    + geom_line(color="#2ca02c", size=1.1)
+    + geom_abline(intercept=0, slope=1, linetype="dashed", color="gray")
+    + labs(
+        title="ROC Curve - Random Forest",
+        x="False Positive Rate",
+        y="True Positive Rate"
+    )
+    + theme_minimal()
+)
+```
+
+```{python}
+#| label: Part-1-Q5-Comparison-with-Q4
+#| warning: false
+#| message: false
+
+comparison_df = pd.DataFrame({
+    "model": ["Logistic Regression", "Random Forest"],
+    "accuracy": [test_acc_c, rf_test_acc_c],
+    "precision": [test_precision_c, rf_test_precision_c],
+    "recall": [test_recall_c, rf_test_recall_c],
+    "f1": [test_f1_c, rf_test_f1_c],
+    "roc_auc": [test_auc_c, rf_test_auc_c],
+})
+
+display(comparison_df.round(4))
+```
+
+**Summary:**
+
+- **Confusion Matrix:** Out of the 10 actual hazardous NEOs in the test set, the Random Forest model correctly identified 3 (True Positives) but missed 7 (False Negatives). It correctly identified 252 non-hazardous NEOs (True Negatives) while incorrectly labeling 3 non-hazardous NEOs as hazardous (False Positives).
+- **Metrics Interpretation:** The model achieved an accuracy of 96.23%, a precision of 0.5000, a recall of 0.3000, and an F1 score of 0.3750. Because 50% of the asteroids it flagged as hazardous were actually hazardous, it demonstrates some reliability in its positive predictions, though the low recall (30%) means it is still missing the majority of the dangerous asteroids.
+- **ROC Curve:** The ROC curve rises sharply toward the top-left corner, yielding an exceptionally high ROC AUC of 0.9845. This indicates the model has an excellent underlying ability to separate hazardous from non-hazardous NEOs based on their predicted probabilities, even if the default classification threshold isn't capturing all of them yet.
+- **Comparison with Logistic Regression:** The Random Forest model performed better than the Logistic Regression model in terms of the metrics. Even though they have the same accuracy, the logistic regression achieved this naively by guessing NEOs are non-hazardous every time, while the random forest model actively learned from the data and was able to identify more hazardous NEOs. Since LR missed all hazardous NEOs, its precison, recall, and F1 scores are all 0.00, while the random forest model detected 3 hazardous NEOs with a precision of 0.5000, a recall of 0.3000, and an F1 score of 0.375, which is significantly better than the logistic regression model. In terms of the ROC Curve, the Random Forest model has a higher ROC AUC of 0.9845, proving that it is able to separate hazardous from non-hazardous NEOs better than the logistic regression model.
 
 # CFPB API (Part 2)
 
