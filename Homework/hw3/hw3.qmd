@@ -2,7 +2,7 @@
 title: "Homework 3 — More APIs, Classification, NLP"
 subtitle: "JSC370 (Winter 2026)"
 author: "Yi Fan (Eric) Wang"
-date: "February 25, 2026"
+date: "February 27, 2026"
 format:
   live-html:
     toc: true
@@ -62,9 +62,11 @@ import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.util import ngrams
+from nltk.sentiment import SentimentIntensityAnalyzer
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('punkt_tab')
+nltk.download('vader_lexicon')
 
 # Word cloud
 from wordcloud import WordCloud
@@ -534,9 +536,9 @@ roc_df = pd.DataFrame({"fpr": fpr, "tpr": tpr})
 **Summary:**
  
 - **Class Imbalance**: The training set is highly imbalanced, with hazardous NEOs representing only approximately 4% of the data. A naive model predicting "non-hazardous" for every instance would achieve approximately 96% accuracy by default.
-- **Confusion Matrix**: The logistic regression model correctly identified all 255 non-hazardous NEOs (True Negatives) but missed all 10 hazardous NEOs (False Negatives), resulting in 0 True Positives. This proves that the model performed as expected and failed to detect hazardous NEOs.
+- **Confusion Matrix**: The logistic regression model correctly identified all 260 non-hazardous NEOs (True Negatives) but missed all 10 hazardous NEOs (False Negatives), resulting in 0 True Positives. This proves that the model performed as expected and failed to detect hazardous NEOs.
 - **Metrics Interpretation**: The high **accuracy** (96.23%) is misleading due to the imbalance and naiveness. The **precision, recall, and F1 scores of 0.00 accurately reflect that the model failed completely at its primary task: detecting hazardous asteroids.
-- **ROC AUC**: The ROC AUC of 0.7161 suggests the model has some underlying ability to distinguish classes (better than random guessing at 0.5). The ROC curve confirms this potential: it rises above the diagonal random-guess line, showing that the model assigns higher probabilities to hazardous asteroids on average. However, at the default threshold, the True Positive Rate is 0, meaning no hazardous asteroids are caught.
+- **ROC AUC**: The ROC AUC of 0.2581 suggests the model has some underlying ability to distinguish classes (better than random guessing at 0.5). The ROC curve confirms this potential: it rises above the diagonal random-guess line, showing that the model assigns higher probabilities to hazardous asteroids on average. However, at the default threshold, the True Positive Rate is 0, meaning no hazardous asteroids are caught.
 
 ## 5. (5 points)
 
@@ -619,10 +621,10 @@ display(comparison_df.round(4))
 
 **Summary:**
 
-- **Confusion Matrix:** Out of the 10 actual hazardous NEOs in the test set, the Random Forest model correctly identified 3 (True Positives) but missed 7 (False Negatives). It correctly identified 252 non-hazardous NEOs (True Negatives) while incorrectly labeling 3 non-hazardous NEOs as hazardous (False Positives).
-- **Metrics Interpretation:** The model achieved an accuracy of 96.23%, a precision of 0.5000, a recall of 0.3000, and an F1 score of 0.3750. Because 50% of the asteroids it flagged as hazardous were actually hazardous, it demonstrates some reliability in its positive predictions, though the low recall (30%) means it is still missing the majority of the dangerous asteroids.
-- **ROC Curve:** The ROC curve rises sharply toward the top-left corner, yielding an exceptionally high ROC AUC of 0.9845. This indicates the model has an excellent underlying ability to separate hazardous from non-hazardous NEOs based on their predicted probabilities, even if the default classification threshold isn't capturing all of them yet.
-- **Comparison with Logistic Regression:** The Random Forest model performed better than the Logistic Regression model in terms of the metrics. Even though they have the same accuracy, the logistic regression achieved this naively by guessing NEOs are non-hazardous every time, while the random forest model actively learned from the data and was able to identify more hazardous NEOs. Since LR missed all hazardous NEOs, its precison, recall, and F1 scores are all 0.00, while the random forest model detected 3 hazardous NEOs with a precision of 0.5000, a recall of 0.3000, and an F1 score of 0.375, which is significantly better than the logistic regression model. In terms of the ROC Curve, the Random Forest model has a higher ROC AUC of 0.9845, proving that it is able to separate hazardous from non-hazardous NEOs better than the logistic regression model.
+- **Confusion Matrix:** Out of the 10 actual hazardous NEOs in the test set, the Random Forest model correctly identified 4 (True Positives) but missed 6 (False Negatives). It correctly identified 259 non-hazardous NEOs (True Negatives) while incorrectly labeling 1 non-hazardous NEO as hazardous (False Positives).
+- **Metrics Interpretation:** The model achieved an accuracy of 97.41%, a precision of 0.8000, a recall of 0.4000, and an F1 score of 0.5333. Because 80% of the asteroids it flagged as hazardous were actually hazardous, it demonstrates good reliability in its positive predictions, though the recall (40%) means it is still missing more than half of the dangerous asteroids.
+- **ROC Curve:** The ROC curve rises sharply toward the top-left corner, yielding an exceptionally high ROC AUC of 0.9898. This indicates the model has an excellent underlying ability to separate hazardous from non-hazardous NEOs based on their predicted probabilities.
+- **Comparison with Logistic Regression:** The Random Forest model performed significantly better than the Logistic Regression model. While Logistic Regression failed to identify any hazardous NEOs (Precision=0.0, Recall=0.0), the Random Forest model successfully identified 4 hazardous NEOs with a precision of 0.8000 and a recall of 0.4000. The Random Forest's ROC AUC of 0.9898 is also much higher than the Logistic Regression's, confirming its superior predictive power for this imbalanced dataset.
 
 # CFPB API (Part 2)
 
@@ -709,7 +711,7 @@ product_counts.columns = ["Product", "Count"]
 
 **Summary:**
 
-- The dataset contains 132,939 customer complaint narratives since November 1, 2025 with 18 features each.
+- The dataset contains `{python} cfpb_df.shape[0]` customer complaint narratives since November 1, 2025 with 18 features each.
 - According to CFPB Complaint Counts by Product Category Since November 1, 2025 bar chart, the most frequent product category with complaints is "Credit reporting or other personal consumer reports". Note, this product category have way more complaints than all the other product categories.
 
 ## 7. (2 points)
@@ -758,7 +760,7 @@ display(top_20_tokens_df)
 
 **Summary:**
 
-- There are 27,103,135 tokens in total in the customer complaint narratives since November 1, 2025.
+- There are `{python} total_tokens` tokens in total in the customer complaint narratives since November 1, 2025.
 - It is very obvious that punctuations, stopwords, and privacy mask words like "XXXX" are the most frequent words in the data. Without removing them, we cannot discover any meaningful themes and trends in the customer complaint narratives.
 
 ## 8. (3 points)
@@ -822,14 +824,604 @@ top_20_cleaned_df = pd.DataFrame(top_20_cleaned, columns=["word", "count"])
 
 Use Latent Dirichlet Allocation (LDA) topic modeling to discover topics in the complaint narratives. First, use perplexity and log-likelihood on a held-out sample of 50,000 to evaluate different numbers of topics (e.g., 2 to 10) and select an appropriate number. Plot perplexity and log-likelihood as a function of the number of topics. Then fit an LDA model with your chosen number of topics. Display the top 10 words for each topic. Do the discovered topics align with the actual product categories? Create a visualization to compare. Summarize and interpret your findings.
 
+```{python}
+#| label: Part-2-Q9-LDA-Model-Selection
+#| warning: false
+#| message: false
+
+# Prepare text and product data
+lda_df = cfpb_df[["Consumer complaint narrative", "Product"]].dropna(
+    subset=["Consumer complaint narrative", "Product"]
+).copy()
+lda_df["Consumer complaint narrative"] = lda_df["Consumer complaint narrative"].astype(str)
+
+print(f"Total documents available for LDA: {lda_df.shape[0]}")
+
+# Create held-out sample of 50,000
+heldout_n = 50000
+if lda_df.shape[0] <= heldout_n:
+    raise ValueError("Not enough rows to create a held-out sample of 50,000.")
+
+train_df, holdout_df = train_test_split(
+    lda_df,
+    test_size=heldout_n,
+    random_state=65
+)
+
+print(f"Training documents: {train_df.shape[0]}")
+print(f"Held-out documents: {holdout_df.shape[0]}")
+
+# Build document-term matrices
+lda_stop_words = set(stopwords.words("english")).union({"xxxx", "xxx", "xx", "x"})
+
+vectorizer_eval = CountVectorizer(
+    stop_words=list(lda_stop_words),
+    token_pattern=r"(?u)\b[a-zA-Z]{3,}\b",
+    max_df=0.95,
+    min_df=5,
+    max_features=5000
+)
+
+X_train_eval = vectorizer_eval.fit_transform(train_df["Consumer complaint narrative"])
+X_holdout_eval = vectorizer_eval.transform(holdout_df["Consumer complaint narrative"])
+
+# Evaluate k = 2..10 using held-out perplexity and log-likelihood
+k_values = list(range(2, 11))
+lda_eval_rows = []
+
+for k in k_values:
+    lda_k = LatentDirichletAllocation(
+        n_components=k,
+        random_state=65,
+        max_iter=10,
+        learning_method="batch"
+    )
+    lda_k.fit(X_train_eval)
+
+    lda_eval_rows.append({
+        "n_topics": k,
+        "perplexity": lda_k.perplexity(X_holdout_eval),
+        "log_likelihood": lda_k.score(X_holdout_eval)
+    })
+
+lda_eval_df = pd.DataFrame(lda_eval_rows)
+display(lda_eval_df)
+
+```
+
+```{python}
+#| label: Part-2-Q9-LDA-Model-Selection-Metrics
+#| warning: false
+#| message: false
+
+(
+    ggplot(lda_eval_df, aes(x="n_topics", y="perplexity"))
+    + geom_line(color="steelblue")
+    + geom_point(color="steelblue", size=2)
+    + labs(
+        title="LDA Model Selection: Held-out Perplexity",
+        x="Number of Topics (k)",
+        y="Perplexity"
+    )
+    + theme_minimal()
+    + theme(figure_size=(8, 4))
+)
+
+(
+    ggplot(lda_eval_df, aes(x="n_topics", y="log_likelihood"))
+    + geom_line(color="tomato")
+    + geom_point(color="tomato", size=2)
+    + labs(
+        title="LDA Model Selection: Held-out Log-Likelihood",
+        x="Number of Topics (k)",
+        y="Log-Likelihood"
+    )
+    + theme_minimal()
+    + theme(figure_size=(8, 4))
+)
+
+```
+
+```{python}
+#| label: Part-2-Q9-LDA-Model-Selection-Best-K
+#| warning: false
+#| message: false
+
+# Choose k using minimum held-out perplexity
+best_k = int(lda_eval_df.loc[lda_eval_df["perplexity"].idxmin(), "n_topics"])
+print(f"Chosen number of topics (based on minimum held-out perplexity): {best_k}")
+```
+
+```{python}
+#| label: Part-2-Q9-LDA-Final-Model-and-Comparison
+#| warning: false
+#| message: false
+
+# Fit final LDA model on all complaint narratives
+vectorizer_final = CountVectorizer(
+    stop_words=list(lda_stop_words),
+    token_pattern=r"(?u)\b[a-zA-Z]{3,}\b",
+    max_df=0.95,
+    min_df=5,
+    max_features=5000
+)
+X_full = vectorizer_final.fit_transform(lda_df["Consumer complaint narrative"])
+
+lda_final = LatentDirichletAllocation(
+    n_components=best_k,
+    random_state=65,
+    max_iter=10,
+    learning_method="batch"
+)
+lda_final.fit(X_full)
+
+feature_names = vectorizer_final.get_feature_names_out()
+
+# Display top 10 words for each topic
+topic_rows = []
+for topic_idx, topic in enumerate(lda_final.components_):
+    top_indices = topic.argsort()[:-11:-1]
+    for rank, idx in enumerate(top_indices, start=1):
+        topic_rows.append({
+            "topic": f"Topic {topic_idx + 1}",
+            "rank": rank,
+            "word": feature_names[idx],
+            "weight": topic[idx]
+        })
+
+topic_words_df = pd.DataFrame(topic_rows)
+topic_words_df = topic_words_df.sort_values(["topic", "rank"])
+display(topic_words_df)
+
+# Print each topic separately (one block per topic)
+for t in range(1, best_k + 1):
+    topic_label = f"Topic {t}"
+    topic_slice = topic_words_df[topic_words_df["topic"] == topic_label]
+    print(f"\n{topic_label} - Top 10 words")
+    if topic_slice.empty:
+        print("No topic found for this index.")
+    else:
+        print(", ".join(topic_slice["word"].tolist()))
+        display(topic_slice[["rank", "word", "weight"]])
+
+# Compare discovered topics with actual product categories
+doc_topic_dist = lda_final.transform(X_full)
+lda_df["dominant_topic"] = [f"Topic {i + 1}" for i in doc_topic_dist.argmax(axis=1)]
+
+top_products = lda_df["Product"].value_counts().head(10).index
+compare_df = lda_df[lda_df["Product"].isin(top_products)].copy()
+
+topic_product_counts = (
+    compare_df.groupby(["Product", "dominant_topic"])
+    .size()
+    .reset_index(name="count")
+)
+
+display(topic_product_counts.head(20))
+
+(
+    ggplot(topic_product_counts, aes(x="Product", y="count", fill="dominant_topic"))
+    + geom_col(position="fill")
+    + coord_flip()
+    + labs(
+        title="Topic Composition by Product Category (Top 10 Products)",
+        x="Product",
+        y="Proportion",
+        fill="Dominant Topic"
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 7), axis_text_y=element_text(size=8))
+)
+```
+
+**Summary:**
+
+Based on the held-out perplexity and log-likelihood evaluation, we selected **10 topics** for the final model.
+
+The visualization demonstrates a strong alignment between the discovered topics and the actual product categories:
+
+-   **Loans (Topic 4):** There is a very clear "Loan" theme (Topic 4) that dominates **Mortgage**, **Student loan**, and **Vehicle loan or lease**. This suggests the model successfully grouped these distinct products under a shared vocabulary of loan-related terms.
+-   **Accounts (Topic 9):** Products like **Checking or savings account**, **Prepaid card**, and **Money transfer** are heavily dominated by Topic 9, indicating a shared theme around account management and transactions.
+-   **Debt Collection (Topic 2):** This category shows a distinct association with Topic 2, separating it from the general loan or account topics.
+-   **Credit Reporting:** This category is the most diverse, composed of a mix of topics. This makes sense as credit reporting complaints often encompass a wide variety of issues—from identity theft to incorrect status updates—that might overlap with debt collection or loan terminology.
+
+Overall, the LDA model successfully recovered latent themes that correspond well to the official product classifications, with clear distinctions between loans, banking services, and debt collection.
+
 ## 10. (5 points)
 
 Use the vader lexicon to conduct sentiment analysis on the word tokens to determine if consumer complaints express positive, neutral, or negative sentiments. Create a histogram of the sentiment scores, and make a barplot to show the counts of tokens by sentiment category. Make another barplot to compare sentiment category counts by product categories. Make another barplot to show which words have top positive sentiment scores and which words have most negative sentiment scores. Summarize and interpret your results.
+
+```{python}
+#| label: Part-2-Q10-Vader-Token-Sentiment
+#| warning: false
+#| message: false
+
+# Initialize VADER
+sia = SentimentIntensityAnalyzer()
+
+# Build token-frequency table from cleaned tokens (from Q8)
+token_freq_df = pd.DataFrame(
+    Counter(cleaned_tokens).items(),
+    columns=["word", "count"]
+)
+
+# VADER compound score per unique token
+token_freq_df["sentiment_score"] = token_freq_df["word"].apply(
+    lambda w: sia.polarity_scores(w)["compound"]
+)
+
+# Convert score to sentiment category
+def get_sentiment_category(score):
+    if score >= 0.05:
+        return "Positive"
+    if score <= -0.05:
+        return "Negative"
+    return "Neutral"
+
+token_freq_df["sentiment_category"] = token_freq_df["sentiment_score"].apply(get_sentiment_category)
+
+display(token_freq_df.head())
+print(f"Unique cleaned tokens scored: {token_freq_df.shape[0]}")
+```
+
+```{python}
+#| label: Part-2-Q10-Sentiment-Histogram-and-Category-Bar
+#| warning: false
+#| message: false
+
+# Histogram of sentiment scores (weighted by token counts)
+(
+    ggplot(token_freq_df, aes(x="sentiment_score", weight="count"))
+    + geom_histogram(bins=40, fill="steelblue", color="white", alpha=0.8)
+    + labs(
+        title="Histogram of Token Sentiment Scores (VADER)",
+        x="VADER Compound Sentiment Score",
+        y="Token Count"
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 5))
+)
+```
+
+```{python}
+#| label: Part-2-Q10-Sentiment-Category-Bar-Plot
+#| warning: false
+#| message: false
+
+# Count tokens by sentiment category
+sentiment_category_counts = (
+    token_freq_df.groupby("sentiment_category", as_index=False)["count"]
+    .sum()
+)
+
+display(sentiment_category_counts)
+
+```
+
+```{python}
+#| label: Part-2-Q10-Sentiment-Category-Bar
+#| warning: false
+#| message: false
+
+(
+    ggplot(sentiment_category_counts, aes(x="sentiment_category", y="count", fill="sentiment_category"))
+    + geom_col()
+    + labs(
+        title="Token Counts by Sentiment Category",
+        x="Sentiment Category",
+        y="Token Count"
+    )
+    + theme_minimal()
+    + theme(figure_size=(7, 5))
+)
+```
+
+```{python}
+#| label: Part-2-Q10-Sentiment-By-Product
+#| warning: false
+#| message: false
+
+def clean_tokens_for_sentiment(text):
+    if pd.isna(text):
+        return []
+    tokens = word_tokenize(str(text).lower())
+    return [
+        token for token in tokens
+        if token not in stop_words
+        and not token.isdigit()
+        and len(token) > 2
+        and token.isalpha()
+    ]
+
+# Cache token sentiment scores for speed
+token_score_lookup = dict(zip(token_freq_df["word"], token_freq_df["sentiment_score"]))
+
+product_sentiment_counter = Counter()
+cfpb_sentiment_df = cfpb_df[["Product", "Consumer complaint narrative"]].dropna(
+    subset=["Product", "Consumer complaint narrative"]
+).copy()
+
+for _, row in cfpb_sentiment_df.iterrows():
+    product = row["Product"]
+    tokens = clean_tokens_for_sentiment(row["Consumer complaint narrative"])
+    for token in tokens:
+        score = token_score_lookup.get(token)
+        if score is None:
+            score = sia.polarity_scores(token)["compound"]
+            token_score_lookup[token] = score
+        category = get_sentiment_category(score)
+        product_sentiment_counter[(product, category)] += 1
+
+product_sentiment_counts = pd.DataFrame(
+    [
+        {"Product": k[0], "sentiment_category": k[1], "count": v}
+        for k, v in product_sentiment_counter.items()
+    ]
+)
+
+top_products = (
+    cfpb_sentiment_df["Product"].value_counts().head(10).index.tolist()
+)
+
+product_sentiment_plot_df = product_sentiment_counts[
+    product_sentiment_counts["Product"].isin(top_products)
+].copy()
+
+display(product_sentiment_plot_df.head(20))
+
+(
+    ggplot(
+        product_sentiment_plot_df,
+        aes(x="Product", y="count", fill="sentiment_category")
+    )
+    + geom_col(position="fill")
+    + coord_flip()
+    + labs(
+        title="Sentiment Category Composition by Product (Top 10 Products)",
+        x="Product",
+        y="Proportion",
+        fill="Sentiment"
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 7), axis_text_y=element_text(size=8))
+)
+```
+
+```{python}
+#| label: Part-2-Q10-Top-Positive-Negative-Words
+#| warning: false
+#| message: false
+
+# Keep words with reasonable frequency to avoid one-off noise
+sentiment_word_df = token_freq_df[token_freq_df["count"] >= 50].copy()
+
+top_positive_words = sentiment_word_df.sort_values(
+    ["sentiment_score", "count"], ascending=[False, False]
+).head(15).copy()
+top_positive_words["polarity"] = "Most Positive"
+
+top_negative_words = sentiment_word_df.sort_values(
+    ["sentiment_score", "count"], ascending=[True, False]
+).head(15).copy()
+top_negative_words["polarity"] = "Most Negative"
+
+top_sentiment_words = pd.concat(
+    [top_positive_words, top_negative_words],
+    ignore_index=True
+)
+
+display(
+    top_sentiment_words[["polarity", "word", "sentiment_score", "count"]]
+)
+
+(
+    ggplot(
+        top_sentiment_words,
+        aes(x="reorder(word, sentiment_score)", y="sentiment_score", fill="polarity")
+    )
+    + geom_col()
+    + coord_flip()
+    + facet_wrap("~polarity", scales="free_y")
+    + labs(
+        title="Words with Highest Positive and Most Negative Sentiment Scores",
+        x="Word",
+        y="VADER Compound Score"
+    )
+    + theme_minimal()
+    + theme(figure_size=(12, 7))
+)
+```
+
+**Summary:**
+
+
+
+**Summary:**
+
+-   **Sentiment Distribution:** The histogram shows a massive spike at 0.0, indicating that the vast majority of tokens are **neutral**. This is expected in financial narratives which contain many factual terms.
+-   **Category Counts:** Token counts by sentiment category bar plot confirms this dominance: **Neutral** tokens are way more than **Positive** and **Negative** tokens. Surprisingly, the counts for positive and negative tokens are visually balanced.
+-   **Product Sentiment:** Across all top products, the sentiment composition is remarkably consistent—dominated by neutral terms. However, Debt collection and Credit reporting product categories show slightly larger proportions of negative sentiment compared to products like Checking or savings account, which is intuitive given the adversarial nature of those complaints.
+-   **Top Words:**
+    -   **Positive:** Words like "best", "freedom", "great", "outstanding", and "success" have high positive scores.
+    -   **Negative:** Words like "negative", "fraud", "scams", "abusive", and "devastating" have strong negative scores.
+    -   "fraud" and "negative" appear frequently, highlighting key points in customer complaint narratives.
 
 ## 11. (2 points)
 
 Conduct sentence-level tokenization, summarize the number of sentences, and the average number of sentences by complaint.
 
+```{python}
+#| label: Part-2-Q11-Sentence-Tokenization
+#| warning: false
+#| message: false
+
+# Keep complaints with narratives
+cfpb_sentence_df = cfpb_df[["Consumer complaint narrative"]].dropna(
+    subset=["Consumer complaint narrative"]
+).copy()
+
+# Sentence-level tokenization (lab style)
+def get_sentence_counts(text):
+    if pd.isna(text):
+        return 0
+    return len(sent_tokenize(str(text)))
+
+cfpb_sentence_df["num_sentences"] = cfpb_sentence_df["Consumer complaint narrative"].apply(
+    get_sentence_counts
+)
+
+# Summaries requested in Q11
+total_sentences = int(cfpb_sentence_df["num_sentences"].sum())
+avg_sentences_per_complaint = cfpb_sentence_df["num_sentences"].mean()
+
+print(f"Total number of sentences: {total_sentences}")
+print(f"Average number of sentences per complaint: {avg_sentences_per_complaint:.2f}")
+
+display(cfpb_sentence_df["num_sentences"].describe())
+```
+
+**Summary:**
+
+-   **Total Sentences:** There are `{python} total_sentences` sentences in total across all consumer complaint narratives.
+-   **Average Sentences per Complaint:** On average, each complaint contains approximately `{python} round(avg_sentences_per_complaint, 2)` sentences.
+
 ## 12. (4 points)
 
-Conduct sentiment analysis of the sentence tokens. Like above, visualize the histogram of the sentiment scores, categorize sentiments into negative, neutral, positive and visualize counts with a barplot as well as a barplot by product categories. Interpret, summarize, and discuss differences from word token sentiment analysis in 10.
+Conduct sentiment analysis of the sentence tokens. Like above, visualize the histogram of the sentiment scores, categorize sentiments into negative, neutral, positive and visualize counts with a barplot as well as a barplot by product categories. Interpret, summarize, and discuss differences from word token sentiment analysis in Q10.
+
+```{python}
+#| label: Part-2-Q12-Sentence-Sentiment-Scoring
+#| warning: false
+#| message: false
+
+# Keep complaints with narratives and product labels
+cfpb_sentence_sentiment_df = cfpb_df[["Product", "Consumer complaint narrative"]].dropna(
+    subset=["Product", "Consumer complaint narrative"]
+).copy()
+
+# Reuse VADER from Q10
+sentence_scores = []
+sentence_sentiment_counter = Counter()
+product_sentence_sentiment_counter = Counter()
+
+for _, row in cfpb_sentence_sentiment_df.iterrows():
+    product = row["Product"]
+    sentences = sent_tokenize(str(row["Consumer complaint narrative"]))
+
+    for sent in sentences:
+        score = sia.polarity_scores(sent)["compound"]
+        sentence_scores.append(score)
+
+        category = get_sentiment_category(score)
+        sentence_sentiment_counter[category] += 1
+        product_sentence_sentiment_counter[(product, category)] += 1
+
+sentence_score_df = pd.DataFrame({"sentiment_score": sentence_scores})
+print(f"Total number of sentence sentiment scores: {len(sentence_scores)}")
+display(sentence_score_df.head())
+```
+
+```{python}
+#| label: Part-2-Q12-Sentence-Sentiment-Plots
+#| warning: false
+#| message: false
+
+# Histogram of sentence sentiment scores
+(
+    ggplot(sentence_score_df, aes(x="sentiment_score"))
+    + geom_histogram(bins=40, fill="steelblue", color="white", alpha=0.8)
+    + labs(
+        title="Histogram of Sentence Sentiment Scores (VADER)",
+        x="VADER Compound Sentiment Score",
+        y="Count of Sentences"
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 5))
+)
+
+```
+
+```{python}
+#| label: Part-2-Q12-Sentence-Sentiment-By-Product-Data
+#| warning: false
+#| message: false
+
+
+# Sentence counts by sentiment category
+sentence_sentiment_counts = pd.DataFrame(
+    [
+        {"sentiment_category": k, "count": v}
+        for k, v in sentence_sentiment_counter.items()
+    ]
+)
+
+display(sentence_sentiment_counts)
+
+(
+    ggplot(sentence_sentiment_counts, aes(x="sentiment_category", y="count", fill="sentiment_category"))
+    + geom_col()
+    + labs(
+        title="Sentence Counts by Sentiment Category",
+        x="Sentiment Category",
+        y="Count of Sentences"
+    )
+    + theme_minimal()
+    + theme(figure_size=(7, 5))
+)
+
+```
+
+```{python}
+#| label: Part-2-Q12-Sentence-Sentiment-By-Product-Plot
+#| warning: false
+#| message: false
+
+# Sentence sentiment composition by product category (top 10 products)
+product_sentence_sentiment_counts = pd.DataFrame(
+    [
+        {"Product": k[0], "sentiment_category": k[1], "count": v}
+        for k, v in product_sentence_sentiment_counter.items()
+    ]
+)
+
+top_products_q12 = cfpb_sentence_sentiment_df["Product"].value_counts().head(10).index.tolist()
+product_sentence_sentiment_plot_df = product_sentence_sentiment_counts[
+    product_sentence_sentiment_counts["Product"].isin(top_products_q12)
+].copy()
+
+display(product_sentence_sentiment_plot_df.head(20))
+
+```
+
+```{python}
+#| label: Part-2-Q12-Sentence-Sentiment-Category-Bar
+#| warning: false
+#| message: false
+
+(
+    ggplot(
+        product_sentence_sentiment_plot_df,
+        aes(x="Product", y="count", fill="sentiment_category")
+    )
+    + geom_col(position="fill")
+    + coord_flip()
+    + labs(
+        title="Sentence Sentiment Composition by Product (Top 10 Products)",
+        x="Product",
+        y="Proportion",
+        fill="Sentiment"
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 7), axis_text_y=element_text(size=8))
+)
+```
+
+**Summary:**
+
+- **Sentiment Distribution:** The histogram shows a trimodal distribution with spikes at 0.0 (neutral), and significant density around highly positive (+0.4 to +0.8) and highly negative (-0.4 to -0.8) scores. This indicates that sentences carry much stronger emotional signals than individual words.
+- **Category Counts:** Unlike the token-level analysis (Q10) where neutral tokens dominated, the sentence-level analysis shows that **Negative** sentences are actually the most frequent category, followed by **Neutral** and **Positive**. This is a major shift—complaint narratives are fundamentally negative stories, and sentence-level scoring correctly captures this tone where word-level scoring diluted it with neutral stopwords.
+- **Product Sentiment:** The stacked bar plot reveals that **Debt collection**, **Credit reporting**, and **Vehicle loan or lease** have the highest proportions of negative sentences. Conversely, **Student loan** and **Prepaid card** categories show comparatively higher proportions of positive sentences, though negative sentiment remains substantial across all categories.
+- **Comparison with Q10:**
+    - **Q10 (Word-level):** Dominated by neutral tokens, masking the complaint's intent.
+    - **Q12 (Sentence-level):** Dominated by negative sentences, accurately reflecting the "complaint" nature of the dataset.
+    - **Conclusion:** Sentence-level analysis is far superior for understanding customer sentiment in this context because it captures the *meaning* of phrases rather than just counting isolated words.

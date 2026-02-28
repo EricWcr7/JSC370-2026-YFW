@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Yi Fan (Eric) Wang">
-<meta name="dcterms.date" content="2026-02-25">
+<meta name="dcterms.date" content="2026-02-27">
 
 <title>Homework 3 — More APIs, Classification, NLP</title>
 <style>
@@ -136,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 25, 2026</p>
+      <p class="date">February 27, 2026</p>
     </div>
   </div>
   
@@ -191,16 +191,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.tokenize <span class="im">import</span> word_tokenize, sent_tokenize</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.util <span class="im">import</span> ngrams</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'punkt'</span>)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'stopwords'</span>)</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'punkt_tab'</span>)</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Word cloud</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> wordcloud <span class="im">import</span> WordCloud</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Topic modeling</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer, TfidfVectorizer</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> LatentDirichletAllocation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.sentiment <span class="im">import</span> SentimentIntensityAnalyzer</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'punkt'</span>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'stopwords'</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'punkt_tab'</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>nltk.download(<span class="st">'vader_lexicon'</span>)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Word cloud</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> wordcloud <span class="im">import</span> WordCloud</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Topic modeling</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer, TfidfVectorizer</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> LatentDirichletAllocation</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="nasa-api-part-1" class="level1">
@@ -285,13 +287,13 @@ Status Code: 200
 Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-02-12&amp;end_date=2026-02-18
 Status Code: 200
 Request URL: https://api.nasa.gov/neo/rest/v1/feed?api_key=gyPqOHBIVEUNEGCZ7qqccj8ohbFAGVANiPQpFvPy&amp;start_date=2026-02-19&amp;end_date=2026-02-25
-Total NEOs pulled since 2026-01-01: 882
+Total NEOs pulled since 2026-01-01: 899
 Number of days from 2026-01-01 to 2026-02-25: 56
 Number of days with at least one NEO: 56</code></pre>
 </div>
 </div>
 <p><strong>Summary:</strong></p>
-<p>Since 2026-01-01, by the end of 2026-02-25, 882 NEOs were pulled. From 2026-01-01 to 2026-02-25, there are 56 days, and 56 of those days had NEOs.</p>
+<p>Since 2026-01-01, by the end of 2026-02-25, 899 NEOs were pulled. From 2026-01-01 to 2026-02-25, there are 56 days, and 56 of those days had NEOs.</p>
 </section>
 <section id="points-1" class="level2">
 <h2 class="anchored" data-anchor-id="points-1">2. (5 points)</h2>
@@ -356,7 +358,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>neo_df_derived <span class="op">=</span> neo_df_derived.drop(columns<span class="op">=</span>[<span class="st">"is_potentially_hazardous_asteroid"</span>])</span>
 <span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>neo_df_derived.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="part-1-q2-data-extraction" class="cell-output cell-output-display" data-execution_count="23">
+<div id="part-1-q2-data-extraction" class="cell-output cell-output-display" data-execution_count="39">
 <div>
 
 
@@ -449,7 +451,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>summary_table <span class="op">=</span> summary_table.reset_index().rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"variable"</span>})</span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>summary_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="part-1-q2-data-summary" class="cell-output cell-output-display" data-execution_count="24">
+<div id="part-1-q2-data-summary" class="cell-output cell-output-display" data-execution_count="40">
 <div>
 
 
@@ -473,48 +475,48 @@ Number of days with at least one NEO: 56</code></pre>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>avg_estimated_diameter</td>
-<td>882.0</td>
-<td>7.894121e-02</td>
-<td>1.451230e-01</td>
+<td>899.0</td>
+<td>7.812952e-02</td>
+<td>1.438885e-01</td>
 <td>0.001660</td>
-<td>1.998461e-02</td>
-<td>3.718299e-02</td>
-<td>7.473820e-02</td>
+<td>1.984484e-02</td>
+<td>3.658833e-02</td>
+<td>7.436056e-02</td>
 <td>2.165422e+00</td>
 <td>0</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>miss_distance_km</td>
-<td>882.0</td>
-<td>2.476274e+07</td>
-<td>2.261249e+07</td>
+<td>899.0</td>
+<td>2.442790e+07</td>
+<td>2.254798e+07</td>
 <td>43043.346341</td>
-<td>5.014621e+06</td>
-<td>1.711277e+07</td>
-<td>4.181465e+07</td>
+<td>4.737708e+06</td>
+<td>1.672134e+07</td>
+<td>4.126669e+07</td>
 <td>7.472261e+07</td>
 <td>0</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>relative_velocity_km_s</td>
-<td>882.0</td>
-<td>1.234448e+01</td>
-<td>6.516253e+00</td>
+<td>899.0</td>
+<td>1.232559e+01</td>
+<td>6.471498e+00</td>
 <td>1.220285</td>
-<td>7.388070e+00</td>
-<td>1.121601e+01</td>
-<td>1.616781e+01</td>
+<td>7.436607e+00</td>
+<td>1.127679e+01</td>
+<td>1.608546e+01</td>
 <td>4.118599e+01</td>
 <td>0</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
 <td>is_potentially_hazardous</td>
-<td>882.0</td>
-<td>3.854875e-02</td>
-<td>1.926261e-01</td>
+<td>899.0</td>
+<td>3.781980e-02</td>
+<td>1.908664e-01</td>
 <td>0.000000</td>
 <td>0.000000e+00</td>
 <td>0.000000e+00</td>
@@ -559,7 +561,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, ha<span class="op">=</span><span class="st">"right"</span>))</span>
 <span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="cell-output cell-output-display" data-execution_count="41">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q2-data-correlation-heatmap-output-1.png" id="part-1-q2-data-correlation-heatmap" width="672" height="480" class="figure-img"></p>
@@ -589,7 +591,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, ha<span class="op">=</span><span class="st">"right"</span>))</span>
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="cell-output cell-output-display" data-execution_count="42">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q2-data-stacked-barplot-output-1.png" id="part-1-q2-data-stacked-barplot" width="672" height="480" class="figure-img"></p>
@@ -624,7 +626,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_manual(values<span class="op">=</span>[<span class="st">"#1f77b4"</span>, <span class="st">"#d62728"</span>])</span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
+<div class="cell-output cell-output-display" data-execution_count="43">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q3-diameter-histogram-output-1.png" id="part-1-q3-diameter-histogram" width="672" height="480" class="figure-img"></p>
@@ -648,7 +650,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_manual(values<span class="op">=</span>[<span class="st">"#1f77b4"</span>, <span class="st">"#d62728"</span>])</span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="28">
+<div class="cell-output cell-output-display" data-execution_count="44">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q3-velocity-histogram-output-1.png" id="part-1-q3-velocity-histogram" width="672" height="480" class="figure-img"></p>
@@ -706,23 +708,23 @@ Number of days with at least one NEO: 56</code></pre>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>avg_estimated_diameter</td>
-<td>0.397253</td>
-<td>0.066179</td>
+<td>0.397224</td>
+<td>0.065587</td>
 <td>34</td>
-<td>848</td>
-<td>7.906701</td>
-<td>0.000000</td>
+<td>865</td>
+<td>7.920825</td>
+<td>0.00000</td>
 <td>True</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>relative_velocity_km_s</td>
-<td>16.794433</td>
-<td>12.166061</td>
+<td>16.794644</td>
+<td>12.149927</td>
 <td>34</td>
-<td>848</td>
-<td>3.355874</td>
-<td>0.001926</td>
+<td>865</td>
+<td>3.369157</td>
+<td>0.00186</td>
 <td>True</td>
 </tr>
 </tbody>
@@ -760,7 +762,7 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_color_manual(values<span class="op">=</span>[<span class="st">"#1f77b4"</span>, <span class="st">"#d62728"</span>])</span>
 <span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="30">
+<div class="cell-output cell-output-display" data-execution_count="46">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q3-scatterplot-output-1.png" id="part-1-q3-scatterplot" width="672" height="480" class="figure-img"></p>
@@ -820,19 +822,19 @@ Number of days with at least one NEO: 56</code></pre>
 <span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Confusion Matrix - Logistic Regression"</span>)</span>
 <span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Training set size: 617
-Testing set size: 265
+<pre><code>Training set size: 629
+Testing set size: 270
 
 Training target proportions:
 is_potentially_hazardous
-0    0.961102
-1    0.038898
+0    0.961844
+1    0.038156
 Name: proportion, dtype: float64
-Test Accuracy: 0.9623
+Test Accuracy: 0.9630
 Test Precision: 0.0000
 Test Recall: 0.0000
 Test F1: 0.0000
-Test ROC AUC: 0.7161</code></pre>
+Test ROC AUC: 0.2581</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -857,7 +859,7 @@ Test ROC AUC: 0.7161</code></pre>
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="cell-output cell-output-display" data-execution_count="48">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q4-roc-curve-output-1.png" id="part-1-q4-roc-curve" width="672" height="480" class="figure-img"></p>
@@ -868,9 +870,9 @@ Test ROC AUC: 0.7161</code></pre>
 <p><strong>Summary:</strong></p>
 <ul>
 <li><strong>Class Imbalance</strong>: The training set is highly imbalanced, with hazardous NEOs representing only approximately 4% of the data. A naive model predicting “non-hazardous” for every instance would achieve approximately 96% accuracy by default.</li>
-<li><strong>Confusion Matrix</strong>: The logistic regression model correctly identified all 255 non-hazardous NEOs (True Negatives) but missed all 10 hazardous NEOs (False Negatives), resulting in 0 True Positives. This proves that the model performed as expected and failed to detect hazardous NEOs.</li>
+<li><strong>Confusion Matrix</strong>: The logistic regression model correctly identified all 260 non-hazardous NEOs (True Negatives) but missed all 10 hazardous NEOs (False Negatives), resulting in 0 True Positives. This proves that the model performed as expected and failed to detect hazardous NEOs.</li>
 <li><strong>Metrics Interpretation</strong>: The high <strong>accuracy</strong> (96.23%) is misleading due to the imbalance and naiveness. The **precision, recall, and F1 scores of 0.00 accurately reflect that the model failed completely at its primary task: detecting hazardous asteroids.</li>
-<li><strong>ROC AUC</strong>: The ROC AUC of 0.7161 suggests the model has some underlying ability to distinguish classes (better than random guessing at 0.5). The ROC curve confirms this potential: it rises above the diagonal random-guess line, showing that the model assigns higher probabilities to hazardous asteroids on average. However, at the default threshold, the True Positive Rate is 0, meaning no hazardous asteroids are caught.</li>
+<li><strong>ROC AUC</strong>: The ROC AUC of 0.2581 suggests the model has some underlying ability to distinguish classes (better than random guessing at 0.5). The ROC curve confirms this potential: it rises above the diagonal random-guess line, showing that the model assigns higher probabilities to hazardous asteroids on average. However, at the default threshold, the True Positive Rate is 0, meaning no hazardous asteroids are caught.</li>
 </ul>
 </section>
 <section id="points-4" class="level2">
@@ -908,11 +910,11 @@ Test ROC AUC: 0.7161</code></pre>
 <span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Confusion Matrix - Random Forest"</span>)</span>
 <span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>RF Test Accuracy: 0.9623
-RF Test Precision: 0.5000
-RF Test Recall: 0.3000
-RF Test F1: 0.3750
-RF Test ROC AUC: 0.9845</code></pre>
+<pre><code>RF Test Accuracy: 0.9741
+RF Test Precision: 0.8000
+RF Test Recall: 0.4000
+RF Test F1: 0.5333
+RF Test ROC AUC: 0.9898</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -937,7 +939,7 @@ RF Test ROC AUC: 0.9845</code></pre>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="50">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-1-q5-roc-curve-output-1.png" id="part-1-q5-roc-curve" width="672" height="480" class="figure-img"></p>
@@ -976,20 +978,20 @@ RF Test ROC AUC: 0.9845</code></pre>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>Logistic Regression</td>
-<td>0.9623</td>
+<td>0.9630</td>
 <td>0.0</td>
 <td>0.0</td>
-<td>0.000</td>
-<td>0.7161</td>
+<td>0.0000</td>
+<td>0.2581</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>Random Forest</td>
-<td>0.9623</td>
-<td>0.5</td>
-<td>0.3</td>
-<td>0.375</td>
-<td>0.9845</td>
+<td>0.9741</td>
+<td>0.8</td>
+<td>0.4</td>
+<td>0.5333</td>
+<td>0.9898</td>
 </tr>
 </tbody>
 </table>
@@ -999,10 +1001,10 @@ RF Test ROC AUC: 0.9845</code></pre>
 </div>
 <p><strong>Summary:</strong></p>
 <ul>
-<li><strong>Confusion Matrix:</strong> Out of the 10 actual hazardous NEOs in the test set, the Random Forest model correctly identified 3 (True Positives) but missed 7 (False Negatives). It correctly identified 252 non-hazardous NEOs (True Negatives) while incorrectly labeling 3 non-hazardous NEOs as hazardous (False Positives).</li>
-<li><strong>Metrics Interpretation:</strong> The model achieved an accuracy of 96.23%, a precision of 0.5000, a recall of 0.3000, and an F1 score of 0.3750. Because 50% of the asteroids it flagged as hazardous were actually hazardous, it demonstrates some reliability in its positive predictions, though the low recall (30%) means it is still missing the majority of the dangerous asteroids.</li>
-<li><strong>ROC Curve:</strong> The ROC curve rises sharply toward the top-left corner, yielding an exceptionally high ROC AUC of 0.9845. This indicates the model has an excellent underlying ability to separate hazardous from non-hazardous NEOs based on their predicted probabilities, even if the default classification threshold isn’t capturing all of them yet.</li>
-<li><strong>Comparison with Logistic Regression:</strong> The Random Forest model performed better than the Logistic Regression model in terms of the metrics. Even though they have the same accuracy, the logistic regression achieved this naively by guessing NEOs are non-hazardous every time, while the random forest model actively learned from the data and was able to identify more hazardous NEOs. Since LR missed all hazardous NEOs, its precison, recall, and F1 scores are all 0.00, while the random forest model detected 3 hazardous NEOs with a precision of 0.5000, a recall of 0.3000, and an F1 score of 0.375, which is significantly better than the logistic regression model. In terms of the ROC Curve, the Random Forest model has a higher ROC AUC of 0.9845, proving that it is able to separate hazardous from non-hazardous NEOs better than the logistic regression model.</li>
+<li><strong>Confusion Matrix:</strong> Out of the 10 actual hazardous NEOs in the test set, the Random Forest model correctly identified 4 (True Positives) but missed 6 (False Negatives). It correctly identified 259 non-hazardous NEOs (True Negatives) while incorrectly labeling 1 non-hazardous NEO as hazardous (False Positives).</li>
+<li><strong>Metrics Interpretation:</strong> The model achieved an accuracy of 97.41%, a precision of 0.8000, a recall of 0.4000, and an F1 score of 0.5333. Because 80% of the asteroids it flagged as hazardous were actually hazardous, it demonstrates good reliability in its positive predictions, though the recall (40%) means it is still missing more than half of the dangerous asteroids.</li>
+<li><strong>ROC Curve:</strong> The ROC curve rises sharply toward the top-left corner, yielding an exceptionally high ROC AUC of 0.9898. This indicates the model has an excellent underlying ability to separate hazardous from non-hazardous NEOs based on their predicted probabilities.</li>
+<li><strong>Comparison with Logistic Regression:</strong> The Random Forest model performed significantly better than the Logistic Regression model. While Logistic Regression failed to identify any hazardous NEOs (Precision=0.0, Recall=0.0), the Random Forest model successfully identified 4 hazardous NEOs with a precision of 0.8000 and a recall of 0.4000. The Random Forest’s ROC AUC of 0.9898 is also much higher than the Logistic Regression’s, confirming its superior predictive power for this imbalanced dataset.</li>
 </ul>
 </section>
 </section>
@@ -1041,7 +1043,7 @@ RF Test ROC AUC: 0.9845</code></pre>
 <pre><code>Status Code: 200
 Request URL: https://www.consumerfinance.gov/data-research/consumer-complaints/search/api/v1/?format=csv&amp;date_received_min=2025-11-01&amp;has_narrative=true&amp;no_aggs=true&amp;field=all&amp;sort=created_date_desc&amp;size=250000</code></pre>
 </div>
-<div id="part-2-q6-cfpb-api-config" class="cell-output cell-output-display" data-execution_count="36">
+<div id="part-2-q6-cfpb-api-config" class="cell-output cell-output-display" data-execution_count="52">
 <div>
 
 
@@ -1073,48 +1075,6 @@ Request URL: https://www.consumerfinance.gov/data-research/consumer-complaints/s
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>12/22/25</td>
-<td>Student loan</td>
-<td>Private student loan</td>
-<td>Issue where my lender is my school</td>
-<td>Issues with fees connected to the loan</td>
-<td>My spouse and I attended XXXX XXXX XXXX from X...</td>
-<td>NaN</td>
-<td>Maximus Federal Services, Inc.</td>
-<td>TX</td>
-<td>75243</td>
-<td>NaN</td>
-<td>Consent provided</td>
-<td>Web</td>
-<td>12/22/25</td>
-<td>Closed with explanation</td>
-<td>Yes</td>
-<td>NaN</td>
-<td>18232083</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1</th>
-<td>11/21/25</td>
-<td>Credit reporting or other personal consumer re...</td>
-<td>Credit reporting</td>
-<td>Improper use of your report</td>
-<td>Credit inquiries on your report that you don't...</td>
-<td>I am reaching out to formally request an urgen...</td>
-<td>NaN</td>
-<td>EQUIFAX, INC.</td>
-<td>OH</td>
-<td>43202</td>
-<td>NaN</td>
-<td>Consent provided</td>
-<td>Web</td>
-<td>11/21/25</td>
-<td>Closed with non-monetary relief</td>
-<td>Yes</td>
-<td>NaN</td>
-<td>17397785</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">2</th>
-<td>12/22/25</td>
 <td>Credit card</td>
 <td>Store credit card</td>
 <td>Getting a credit card</td>
@@ -1134,7 +1094,7 @@ Request URL: https://www.consumerfinance.gov/data-research/consumer-complaints/s
 <td>18219388</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">3</th>
+<th data-quarto-table-cell-role="th">1</th>
 <td>11/10/25</td>
 <td>Credit reporting or other personal consumer re...</td>
 <td>Credit reporting</td>
@@ -1155,25 +1115,67 @@ Request URL: https://www.consumerfinance.gov/data-research/consumer-complaints/s
 <td>17120972</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">4</th>
-<td>12/04/25</td>
-<td>Credit reporting or other personal consumer re...</td>
-<td>Credit reporting</td>
-<td>Improper use of your report</td>
-<td>Reporting company used your report improperly</td>
-<td>You have reported inaccurate and unauthorized ...</td>
+<th data-quarto-table-cell-role="th">2</th>
+<td>12/22/25</td>
+<td>Student loan</td>
+<td>Private student loan</td>
+<td>Issue where my lender is my school</td>
+<td>Issues with fees connected to the loan</td>
+<td>My spouse and I attended XXXX XXXX XXXX from X...</td>
 <td>NaN</td>
-<td>EQUIFAX, INC.</td>
-<td>SC</td>
-<td>292XX</td>
+<td>Maximus Federal Services, Inc.</td>
+<td>TX</td>
+<td>75243</td>
 <td>NaN</td>
 <td>Consent provided</td>
 <td>Web</td>
-<td>12/04/25</td>
+<td>12/22/25</td>
 <td>Closed with explanation</td>
 <td>Yes</td>
 <td>NaN</td>
-<td>17704511</td>
+<td>18232083</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>11/12/25</td>
+<td>Student loan</td>
+<td>Federal student loan servicing</td>
+<td>Dealing with your lender or servicer</td>
+<td>Trouble with how payments are being handled</td>
+<td>In XX/XX/year&gt;, I received a letter stating my...</td>
+<td>NaN</td>
+<td>Maximus Federal Services, Inc.</td>
+<td>VA</td>
+<td>241XX</td>
+<td>NaN</td>
+<td>Consent provided</td>
+<td>Web</td>
+<td>12/09/25</td>
+<td>Closed with explanation</td>
+<td>Yes</td>
+<td>NaN</td>
+<td>17874558</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>11/13/25</td>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Credit reporting</td>
+<td>Incorrect information on your report</td>
+<td>Information belongs to someone else</td>
+<td>I am disputing the following inquiries on my E...</td>
+<td>NaN</td>
+<td>EQUIFAX, INC.</td>
+<td>NC</td>
+<td>27215</td>
+<td>NaN</td>
+<td>Consent provided</td>
+<td>Web</td>
+<td>11/13/25</td>
+<td>Closed with non-monetary relief</td>
+<td>Yes</td>
+<td>NaN</td>
+<td>17234963</td>
 </tr>
 </tbody>
 </table>
@@ -1186,33 +1188,33 @@ Request URL: https://www.consumerfinance.gov/data-research/consumer-complaints/s
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of variables: </span><span class="sc">{</span><span class="bu">len</span>(cfpb_df.columns)<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cfpb_df.info())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>CFPB dataset dimensions: (132939, 18)
+<pre><code>CFPB dataset dimensions: (136104, 18)
 Number of variables: 18
 &lt;class 'pandas.core.frame.DataFrame'&gt;
-RangeIndex: 132939 entries, 0 to 132938
+RangeIndex: 136104 entries, 0 to 136103
 Data columns (total 18 columns):
  #   Column                        Non-Null Count   Dtype  
 ---  ------                        --------------   -----  
- 0   Date received                 132939 non-null  object 
- 1   Product                       132939 non-null  object 
- 2   Sub-product                   132939 non-null  object 
- 3   Issue                         132939 non-null  object 
- 4   Sub-issue                     128033 non-null  object 
- 5   Consumer complaint narrative  132939 non-null  object 
- 6   Company public response       75090 non-null   object 
- 7   Company                       132939 non-null  object 
- 8   State                         132568 non-null  object 
- 9   ZIP code                      132939 non-null  object 
- 10  Tags                          8403 non-null    object 
- 11  Consumer consent provided?    132939 non-null  object 
- 12  Submitted via                 132939 non-null  object 
- 13  Date sent to company          132939 non-null  object 
- 14  Company response to consumer  132939 non-null  object 
- 15  Timely response?              132939 non-null  object 
+ 0   Date received                 136104 non-null  object 
+ 1   Product                       136104 non-null  object 
+ 2   Sub-product                   136104 non-null  object 
+ 3   Issue                         136104 non-null  object 
+ 4   Sub-issue                     130952 non-null  object 
+ 5   Consumer complaint narrative  136104 non-null  object 
+ 6   Company public response       75728 non-null   object 
+ 7   Company                       136104 non-null  object 
+ 8   State                         135725 non-null  object 
+ 9   ZIP code                      136104 non-null  object 
+ 10  Tags                          8698 non-null    object 
+ 11  Consumer consent provided?    136104 non-null  object 
+ 12  Submitted via                 136104 non-null  object 
+ 13  Date sent to company          136104 non-null  object 
+ 14  Company response to consumer  136104 non-null  object 
+ 15  Timely response?              136104 non-null  object 
  16  Consumer disputed?            0 non-null       float64
- 17  Complaint ID                  132939 non-null  int64  
+ 17  Complaint ID                  136104 non-null  int64  
 dtypes: float64(1), int64(1), object(16)
-memory usage: 18.3+ MB
+memory usage: 18.7+ MB
 None</code></pre>
 </div>
 </div>
@@ -1235,7 +1237,7 @@ None</code></pre>
 <span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
 <span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="38">
+<div class="cell-output cell-output-display" data-execution_count="54">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-2-q6-bar-chart-output-1.png" id="part-2-q6-bar-chart" width="672" height="480" class="figure-img"></p>
@@ -1245,7 +1247,7 @@ None</code></pre>
 </div>
 <p><strong>Summary:</strong></p>
 <ul>
-<li>The dataset contains 132,939 customer complaint narratives since November 1, 2025 with 18 features each.</li>
+<li>The dataset contains 136104 customer complaint narratives since November 1, 2025 with 18 features each.</li>
 <li>According to CFPB Complaint Counts by Product Category Since November 1, 2025 bar chart, the most frequent product category with complaints is “Credit reporting or other personal consumer reports”. Note, this product category have way more complaints than all the other product categories.</li>
 </ul>
 </section>
@@ -1287,7 +1289,7 @@ None</code></pre>
 <span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
 <span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Total number of tokens: 27103135</code></pre>
+<pre><code>Total number of tokens: 27766456</code></pre>
 </div>
 <div id="part-2-q7-tokenization-1" class="cell-output cell-output-display">
 <div>
@@ -1305,109 +1307,109 @@ None</code></pre>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
 <td>xxxx</td>
-<td>1755379</td>
+<td>1785184</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>.</td>
-<td>1054240</td>
+<td>1080805</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>,</td>
-<td>975295</td>
+<td>999833</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
 <td>the</td>
-<td>894764</td>
+<td>917171</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
 <td>and</td>
-<td>696319</td>
+<td>714198</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">5</th>
 <td>to</td>
-<td>621207</td>
+<td>637825</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
 <td>i</td>
-<td>551248</td>
+<td>566255</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">7</th>
 <td>of</td>
-<td>477811</td>
+<td>489382</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">8</th>
 <td>a</td>
-<td>447061</td>
+<td>458555</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">9</th>
 <td>my</td>
-<td>427528</td>
+<td>438223</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">10</th>
 <td>)</td>
-<td>344480</td>
+<td>352004</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">11</th>
 <td>(</td>
-<td>341395</td>
+<td>348875</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">12</th>
 <td>credit</td>
-<td>301561</td>
+<td>307726</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">13</th>
 <td>:</td>
-<td>298109</td>
+<td>302947</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">14</th>
 <td>this</td>
-<td>272293</td>
+<td>279456</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">15</th>
 <td>that</td>
-<td>255876</td>
+<td>262768</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">16</th>
 <td>account</td>
-<td>227896</td>
+<td>233645</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">17</th>
 <td>is</td>
-<td>224020</td>
+<td>229221</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">18</th>
 <td>not</td>
-<td>211962</td>
+<td>217619</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">19</th>
 <td>on</td>
-<td>182533</td>
+<td>187478</td>
 </tr>
 </tbody>
 </table>
 
 </div>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="39">
+<div class="cell-output cell-output-display" data-execution_count="55">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-2-q7-tokenization-output-3.png" id="part-2-q7-tokenization-2" width="960" height="576" class="figure-img"></p>
@@ -1417,7 +1419,7 @@ None</code></pre>
 </div>
 <p><strong>Summary:</strong></p>
 <ul>
-<li>There are 27,103,135 tokens in total in the customer complaint narratives since November 1, 2025.</li>
+<li>There are 27766456 tokens in total in the customer complaint narratives since November 1, 2025.</li>
 <li>It is very obvious that punctuations, stopwords, and privacy mask words like “XXXX” are the most frequent words in the data. Without removing them, we cannot discover any meaningful themes and trends in the customer complaint narratives.</li>
 </ul>
 </section>
@@ -1465,9 +1467,9 @@ None</code></pre>
 <span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
 <span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Number of cleaned tokens: 11491733</code></pre>
+<pre><code>Number of cleaned tokens: 11781517</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="40">
+<div class="cell-output cell-output-display" data-execution_count="56">
 <div>
 <figure class="figure">
 <p><img src="hw3_files/figure-html/part-2-q8-stopwords-removal-output-2.png" id="part-2-q8-stopwords-removal" width="960" height="576" class="figure-img"></p>
@@ -1485,18 +1487,2427 @@ None</code></pre>
 <section id="points-8" class="level2">
 <h2 class="anchored" data-anchor-id="points-8">9. (10 points)</h2>
 <p>Use Latent Dirichlet Allocation (LDA) topic modeling to discover topics in the complaint narratives. First, use perplexity and log-likelihood on a held-out sample of 50,000 to evaluate different numbers of topics (e.g., 2 to 10) and select an appropriate number. Plot perplexity and log-likelihood as a function of the number of topics. Then fit an LDA model with your chosen number of topics. Display the top 10 words for each topic. Do the discovered topics align with the actual product categories? Create a visualization to compare. Summarize and interpret your findings.</p>
+<div id="cell-Part-2-Q9-LDA-Model-Selection" class="cell" data-message="false" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare text and product data</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>lda_df <span class="op">=</span> cfpb_df[[<span class="st">"Consumer complaint narrative"</span>, <span class="st">"Product"</span>]].dropna(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    subset<span class="op">=</span>[<span class="st">"Consumer complaint narrative"</span>, <span class="st">"Product"</span>]</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>).copy()</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>lda_df[<span class="st">"Consumer complaint narrative"</span>] <span class="op">=</span> lda_df[<span class="st">"Consumer complaint narrative"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total documents available for LDA: </span><span class="sc">{</span>lda_df<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create held-out sample of 50,000</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>heldout_n <span class="op">=</span> <span class="dv">50000</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> lda_df.shape[<span class="dv">0</span>] <span class="op">&lt;=</span> heldout_n:</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Not enough rows to create a held-out sample of 50,000."</span>)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>train_df, holdout_df <span class="op">=</span> train_test_split(</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    lda_df,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    test_size<span class="op">=</span>heldout_n,</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">65</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Training documents: </span><span class="sc">{</span>train_df<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Held-out documents: </span><span class="sc">{</span>holdout_df<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Build document-term matrices</span></span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>lda_stop_words <span class="op">=</span> <span class="bu">set</span>(stopwords.words(<span class="st">"english"</span>)).union({<span class="st">"xxxx"</span>, <span class="st">"xxx"</span>, <span class="st">"xx"</span>, <span class="st">"x"</span>})</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>vectorizer_eval <span class="op">=</span> CountVectorizer(</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>    stop_words<span class="op">=</span><span class="bu">list</span>(lda_stop_words),</span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>    token_pattern<span class="op">=</span><span class="vs">r"</span><span class="fu">(?u)</span><span class="dv">\b</span><span class="pp">[a-zA-Z]</span><span class="op">{3,}</span><span class="dv">\b</span><span class="vs">"</span>,</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>    max_df<span class="op">=</span><span class="fl">0.95</span>,</span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>    min_df<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>    max_features<span class="op">=</span><span class="dv">5000</span></span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>X_train_eval <span class="op">=</span> vectorizer_eval.fit_transform(train_df[<span class="st">"Consumer complaint narrative"</span>])</span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>X_holdout_eval <span class="op">=</span> vectorizer_eval.transform(holdout_df[<span class="st">"Consumer complaint narrative"</span>])</span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate k = 2..10 using held-out perplexity and log-likelihood</span></span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>k_values <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">11</span>))</span>
+<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>lda_eval_rows <span class="op">=</span> []</span>
+<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> k_values:</span>
+<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>    lda_k <span class="op">=</span> LatentDirichletAllocation(</span>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>        n_components<span class="op">=</span>k,</span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>        random_state<span class="op">=</span><span class="dv">65</span>,</span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>        max_iter<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>        learning_method<span class="op">=</span><span class="st">"batch"</span></span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a>    lda_k.fit(X_train_eval)</span>
+<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a>    lda_eval_rows.append({</span>
+<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a>        <span class="st">"n_topics"</span>: k,</span>
+<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a>        <span class="st">"perplexity"</span>: lda_k.perplexity(X_holdout_eval),</span>
+<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a>        <span class="st">"log_likelihood"</span>: lda_k.score(X_holdout_eval)</span>
+<span id="cb28-54"><a href="#cb28-54" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb28-55"><a href="#cb28-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-56"><a href="#cb28-56" aria-hidden="true" tabindex="-1"></a>lda_eval_df <span class="op">=</span> pd.DataFrame(lda_eval_rows)</span>
+<span id="cb28-57"><a href="#cb28-57" aria-hidden="true" tabindex="-1"></a>display(lda_eval_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total documents available for LDA: 136104
+Training documents: 86104
+Held-out documents: 50000</code></pre>
+</div>
+<div id="part-2-q9-lda-model-selection" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">n_topics</th>
+<th data-quarto-table-cell-role="th">perplexity</th>
+<th data-quarto-table-cell-role="th">log_likelihood</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2</td>
+<td>792.335950</td>
+<td>-2.894224e+07</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>3</td>
+<td>744.495689</td>
+<td>-2.867220e+07</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>4</td>
+<td>703.528526</td>
+<td>-2.842679e+07</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>5</td>
+<td>659.478965</td>
+<td>-2.814644e+07</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>6</td>
+<td>643.065792</td>
+<td>-2.803716e+07</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>7</td>
+<td>626.265338</td>
+<td>-2.792238e+07</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>8</td>
+<td>607.388661</td>
+<td>-2.778968e+07</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>9</td>
+<td>608.002512</td>
+<td>-2.779406e+07</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>10</td>
+<td>598.284750</td>
+<td>-2.772419e+07</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-Part-2-Q9-LDA-Model-Selection-Metrics" class="cell" data-message="false" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    ggplot(lda_eval_df, aes(x<span class="op">=</span><span class="st">"n_topics"</span>, y<span class="op">=</span><span class="st">"perplexity"</span>))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_line(color<span class="op">=</span><span class="st">"steelblue"</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_point(color<span class="op">=</span><span class="st">"steelblue"</span>, size<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"LDA Model Selection: Held-out Perplexity"</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Number of Topics (k)"</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Perplexity"</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>    ggplot(lda_eval_df, aes(x<span class="op">=</span><span class="st">"n_topics"</span>, y<span class="op">=</span><span class="st">"log_likelihood"</span>))</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_line(color<span class="op">=</span><span class="st">"tomato"</span>)</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_point(color<span class="op">=</span><span class="st">"tomato"</span>, size<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"LDA Model Selection: Held-out Log-Likelihood"</span>,</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Number of Topics (k)"</span>,</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Log-Likelihood"</span></span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="58">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q9-lda-model-selection-metrics-output-1.png" id="part-2-q9-lda-model-selection-metrics" width="768" height="384" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="part-2-q9-lda-model-selection-best-k" class="cell" data-message="false" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Choose k using minimum held-out perplexity</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>best_k <span class="op">=</span> <span class="bu">int</span>(lda_eval_df.loc[lda_eval_df[<span class="st">"perplexity"</span>].idxmin(), <span class="st">"n_topics"</span>])</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Chosen number of topics (based on minimum held-out perplexity): </span><span class="sc">{</span>best_k<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chosen number of topics (based on minimum held-out perplexity): 10</code></pre>
+</div>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison" class="cell" data-message="false" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit final LDA model on all complaint narratives</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>vectorizer_final <span class="op">=</span> CountVectorizer(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    stop_words<span class="op">=</span><span class="bu">list</span>(lda_stop_words),</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    token_pattern<span class="op">=</span><span class="vs">r"</span><span class="fu">(?u)</span><span class="dv">\b</span><span class="pp">[a-zA-Z]</span><span class="op">{3,}</span><span class="dv">\b</span><span class="vs">"</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    max_df<span class="op">=</span><span class="fl">0.95</span>,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    min_df<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    max_features<span class="op">=</span><span class="dv">5000</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>X_full <span class="op">=</span> vectorizer_final.fit_transform(lda_df[<span class="st">"Consumer complaint narrative"</span>])</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>lda_final <span class="op">=</span> LatentDirichletAllocation(</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    n_components<span class="op">=</span>best_k,</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">65</span>,</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>    max_iter<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    learning_method<span class="op">=</span><span class="st">"batch"</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>lda_final.fit(X_full)</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>feature_names <span class="op">=</span> vectorizer_final.get_feature_names_out()</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Display top 10 words for each topic</span></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>topic_rows <span class="op">=</span> []</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> topic_idx, topic <span class="kw">in</span> <span class="bu">enumerate</span>(lda_final.components_):</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> topic.argsort()[:<span class="op">-</span><span class="dv">11</span>:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> rank, idx <span class="kw">in</span> <span class="bu">enumerate</span>(top_indices, start<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>        topic_rows.append({</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>            <span class="st">"topic"</span>: <span class="ss">f"Topic </span><span class="sc">{</span>topic_idx <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>            <span class="st">"rank"</span>: rank,</span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">"word"</span>: feature_names[idx],</span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>            <span class="st">"weight"</span>: topic[idx]</span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a>topic_words_df <span class="op">=</span> pd.DataFrame(topic_rows)</span>
+<span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a>topic_words_df <span class="op">=</span> topic_words_df.sort_values([<span class="st">"topic"</span>, <span class="st">"rank"</span>])</span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a>display(topic_words_df)</span>
+<span id="cb33-36"><a href="#cb33-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-37"><a href="#cb33-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Print each topic separately (one block per topic)</span></span>
+<span id="cb33-38"><a href="#cb33-38" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, best_k <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb33-39"><a href="#cb33-39" aria-hidden="true" tabindex="-1"></a>    topic_label <span class="op">=</span> <span class="ss">f"Topic </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb33-40"><a href="#cb33-40" aria-hidden="true" tabindex="-1"></a>    topic_slice <span class="op">=</span> topic_words_df[topic_words_df[<span class="st">"topic"</span>] <span class="op">==</span> topic_label]</span>
+<span id="cb33-41"><a href="#cb33-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>topic_label<span class="sc">}</span><span class="ss"> - Top 10 words"</span>)</span>
+<span id="cb33-42"><a href="#cb33-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> topic_slice.empty:</span>
+<span id="cb33-43"><a href="#cb33-43" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"No topic found for this index."</span>)</span>
+<span id="cb33-44"><a href="#cb33-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb33-45"><a href="#cb33-45" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">", "</span>.join(topic_slice[<span class="st">"word"</span>].tolist()))</span>
+<span id="cb33-46"><a href="#cb33-46" aria-hidden="true" tabindex="-1"></a>        display(topic_slice[[<span class="st">"rank"</span>, <span class="st">"word"</span>, <span class="st">"weight"</span>]])</span>
+<span id="cb33-47"><a href="#cb33-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-48"><a href="#cb33-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare discovered topics with actual product categories</span></span>
+<span id="cb33-49"><a href="#cb33-49" aria-hidden="true" tabindex="-1"></a>doc_topic_dist <span class="op">=</span> lda_final.transform(X_full)</span>
+<span id="cb33-50"><a href="#cb33-50" aria-hidden="true" tabindex="-1"></a>lda_df[<span class="st">"dominant_topic"</span>] <span class="op">=</span> [<span class="ss">f"Topic </span><span class="sc">{</span>i <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> doc_topic_dist.argmax(axis<span class="op">=</span><span class="dv">1</span>)]</span>
+<span id="cb33-51"><a href="#cb33-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-52"><a href="#cb33-52" aria-hidden="true" tabindex="-1"></a>top_products <span class="op">=</span> lda_df[<span class="st">"Product"</span>].value_counts().head(<span class="dv">10</span>).index</span>
+<span id="cb33-53"><a href="#cb33-53" aria-hidden="true" tabindex="-1"></a>compare_df <span class="op">=</span> lda_df[lda_df[<span class="st">"Product"</span>].isin(top_products)].copy()</span>
+<span id="cb33-54"><a href="#cb33-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-55"><a href="#cb33-55" aria-hidden="true" tabindex="-1"></a>topic_product_counts <span class="op">=</span> (</span>
+<span id="cb33-56"><a href="#cb33-56" aria-hidden="true" tabindex="-1"></a>    compare_df.groupby([<span class="st">"Product"</span>, <span class="st">"dominant_topic"</span>])</span>
+<span id="cb33-57"><a href="#cb33-57" aria-hidden="true" tabindex="-1"></a>    .size()</span>
+<span id="cb33-58"><a href="#cb33-58" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">"count"</span>)</span>
+<span id="cb33-59"><a href="#cb33-59" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-60"><a href="#cb33-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-61"><a href="#cb33-61" aria-hidden="true" tabindex="-1"></a>display(topic_product_counts.head(<span class="dv">20</span>))</span>
+<span id="cb33-62"><a href="#cb33-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-63"><a href="#cb33-63" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb33-64"><a href="#cb33-64" aria-hidden="true" tabindex="-1"></a>    ggplot(topic_product_counts, aes(x<span class="op">=</span><span class="st">"Product"</span>, y<span class="op">=</span><span class="st">"count"</span>, fill<span class="op">=</span><span class="st">"dominant_topic"</span>))</span>
+<span id="cb33-65"><a href="#cb33-65" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_col(position<span class="op">=</span><span class="st">"fill"</span>)</span>
+<span id="cb33-66"><a href="#cb33-66" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> coord_flip()</span>
+<span id="cb33-67"><a href="#cb33-67" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb33-68"><a href="#cb33-68" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Topic Composition by Product Category (Top 10 Products)"</span>,</span>
+<span id="cb33-69"><a href="#cb33-69" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Product"</span>,</span>
+<span id="cb33-70"><a href="#cb33-70" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Proportion"</span>,</span>
+<span id="cb33-71"><a href="#cb33-71" aria-hidden="true" tabindex="-1"></a>        fill<span class="op">=</span><span class="st">"Dominant Topic"</span></span>
+<span id="cb33-72"><a href="#cb33-72" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb33-73"><a href="#cb33-73" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb33-74"><a href="#cb33-74" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">7</span>), axis_text_y<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">8</span>))</span>
+<span id="cb33-75"><a href="#cb33-75" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-2-q9-lda-final-model-and-comparison-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">topic</th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Topic 1</td>
+<td>1</td>
+<td>credit</td>
+<td>16875.606732</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Topic 1</td>
+<td>2</td>
+<td>late</td>
+<td>13294.171384</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Topic 1</td>
+<td>3</td>
+<td>system</td>
+<td>11081.830512</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Topic 1</td>
+<td>4</td>
+<td>act</td>
+<td>10439.284991</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Topic 1</td>
+<td>5</td>
+<td>banking</td>
+<td>10328.409450</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">85</th>
+<td>Topic 9</td>
+<td>6</td>
+<td>told</td>
+<td>13879.926414</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">86</th>
+<td>Topic 9</td>
+<td>7</td>
+<td>called</td>
+<td>11960.828617</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">87</th>
+<td>Topic 9</td>
+<td>8</td>
+<td>money</td>
+<td>11852.551511</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">88</th>
+<td>Topic 9</td>
+<td>9</td>
+<td>back</td>
+<td>10498.379138</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">89</th>
+<td>Topic 9</td>
+<td>10</td>
+<td>payment</td>
+<td>10434.903551</td>
+</tr>
+</tbody>
+</table>
+
+<p>100 rows × 4 columns</p>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 1 - Top 10 words
+credit, late, system, act, banking, reporting, payments, fair, code, consumer</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-2" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>credit</td>
+<td>16875.606732</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2</td>
+<td>late</td>
+<td>13294.171384</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>3</td>
+<td>system</td>
+<td>11081.830512</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>4</td>
+<td>act</td>
+<td>10439.284991</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>5</td>
+<td>banking</td>
+<td>10328.409450</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>6</td>
+<td>reporting</td>
+<td>9983.132908</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>7</td>
+<td>payments</td>
+<td>9594.679585</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>8</td>
+<td>fair</td>
+<td>8758.505401</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>9</td>
+<td>code</td>
+<td>7668.734655</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>10</td>
+<td>consumer</td>
+<td>7467.214788</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 2 - Top 10 words
+debt, account, collection, reporting, provide, documentation, credit, validation, information, proof</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-3" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>1</td>
+<td>debt</td>
+<td>51771.430588</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>2</td>
+<td>account</td>
+<td>30810.285388</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>3</td>
+<td>collection</td>
+<td>29293.962397</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>4</td>
+<td>reporting</td>
+<td>24245.686163</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>5</td>
+<td>provide</td>
+<td>20779.023127</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>6</td>
+<td>documentation</td>
+<td>20404.951317</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>7</td>
+<td>credit</td>
+<td>18865.081928</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>8</td>
+<td>validation</td>
+<td>18635.828935</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>9</td>
+<td>information</td>
+<td>14936.794815</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>10</td>
+<td>proof</td>
+<td>14073.221198</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 3 - Top 10 words
+report, identity, credit, theft, information, fraudulent, consumer, accounts, block, request</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-4" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>1</td>
+<td>report</td>
+<td>41860.528458</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>2</td>
+<td>identity</td>
+<td>39833.247072</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>3</td>
+<td>credit</td>
+<td>36944.239524</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>4</td>
+<td>theft</td>
+<td>35219.262418</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>5</td>
+<td>information</td>
+<td>24940.696626</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>6</td>
+<td>fraudulent</td>
+<td>22754.769310</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>7</td>
+<td>consumer</td>
+<td>13827.996322</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>8</td>
+<td>accounts</td>
+<td>13456.799475</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>9</td>
+<td>block</td>
+<td>10480.124039</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>10</td>
+<td>request</td>
+<td>10076.668011</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 4 - Top 10 words
+credit, report, accounts, information, please, inaccuracies, update, reports, accurate, inaccurate</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-5" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>1</td>
+<td>credit</td>
+<td>33115.378910</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">31</th>
+<td>2</td>
+<td>report</td>
+<td>23018.693924</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">32</th>
+<td>3</td>
+<td>accounts</td>
+<td>22261.249324</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">33</th>
+<td>4</td>
+<td>information</td>
+<td>11685.808789</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34</th>
+<td>5</td>
+<td>please</td>
+<td>10669.511603</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">35</th>
+<td>6</td>
+<td>inaccuracies</td>
+<td>7129.252358</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>7</td>
+<td>update</td>
+<td>6388.311323</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">37</th>
+<td>8</td>
+<td>reports</td>
+<td>6033.798720</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">38</th>
+<td>9</td>
+<td>accurate</td>
+<td>6015.108321</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39</th>
+<td>10</td>
+<td>inaccurate</td>
+<td>5937.184747</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 5 - Top 10 words
+account, bank, year, funds, dispute, card, payment, loan, despite, without</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-6" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">40</th>
+<td>1</td>
+<td>account</td>
+<td>20707.663299</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">41</th>
+<td>2</td>
+<td>bank</td>
+<td>16778.379380</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">42</th>
+<td>3</td>
+<td>year</td>
+<td>13331.018886</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">43</th>
+<td>4</td>
+<td>funds</td>
+<td>11320.420712</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">44</th>
+<td>5</td>
+<td>dispute</td>
+<td>11147.019974</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">45</th>
+<td>6</td>
+<td>card</td>
+<td>10914.719769</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">46</th>
+<td>7</td>
+<td>payment</td>
+<td>10201.978384</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">47</th>
+<td>8</td>
+<td>loan</td>
+<td>9752.393197</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">48</th>
+<td>9</td>
+<td>despite</td>
+<td>8196.610585</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">49</th>
+<td>10</td>
+<td>without</td>
+<td>8098.523645</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 6 - Top 10 words
+credit, reporting, violation, account, code, fcra, system, information, data, fair</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-7" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">50</th>
+<td>1</td>
+<td>credit</td>
+<td>26571.607404</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">51</th>
+<td>2</td>
+<td>reporting</td>
+<td>24970.341885</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">52</th>
+<td>3</td>
+<td>violation</td>
+<td>19315.495066</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">53</th>
+<td>4</td>
+<td>account</td>
+<td>14257.876957</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">54</th>
+<td>5</td>
+<td>code</td>
+<td>12596.453901</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">55</th>
+<td>6</td>
+<td>fcra</td>
+<td>12479.839734</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">56</th>
+<td>7</td>
+<td>system</td>
+<td>11842.651502</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">57</th>
+<td>8</td>
+<td>information</td>
+<td>11574.074772</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">58</th>
+<td>9</td>
+<td>data</td>
+<td>11286.646910</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">59</th>
+<td>10</td>
+<td>fair</td>
+<td>10941.775648</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 7 - Top 10 words
+consumer, information, reporting, section, report, agency, usc, credit, privacy, states</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-8" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">60</th>
+<td>1</td>
+<td>consumer</td>
+<td>46089.471630</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">61</th>
+<td>2</td>
+<td>information</td>
+<td>35708.023529</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">62</th>
+<td>3</td>
+<td>reporting</td>
+<td>22840.986950</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">63</th>
+<td>4</td>
+<td>section</td>
+<td>18967.706849</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">64</th>
+<td>5</td>
+<td>report</td>
+<td>18810.929631</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">65</th>
+<td>6</td>
+<td>agency</td>
+<td>17635.385104</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">66</th>
+<td>7</td>
+<td>usc</td>
+<td>15817.571029</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">67</th>
+<td>8</td>
+<td>credit</td>
+<td>13070.066473</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">68</th>
+<td>9</td>
+<td>privacy</td>
+<td>9257.166001</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">69</th>
+<td>10</td>
+<td>states</td>
+<td>9212.161390</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 8 - Top 10 words
+credit, fcra, reporting, accounts, report, information, act, inaccurate, fair, accuracy</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-9" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">70</th>
+<td>1</td>
+<td>credit</td>
+<td>78869.041372</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">71</th>
+<td>2</td>
+<td>fcra</td>
+<td>52290.094520</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">72</th>
+<td>3</td>
+<td>reporting</td>
+<td>52102.142152</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">73</th>
+<td>4</td>
+<td>accounts</td>
+<td>36024.809129</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">74</th>
+<td>5</td>
+<td>report</td>
+<td>30108.826354</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">75</th>
+<td>6</td>
+<td>information</td>
+<td>29607.154555</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">76</th>
+<td>7</td>
+<td>act</td>
+<td>28305.611473</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">77</th>
+<td>8</td>
+<td>inaccurate</td>
+<td>26111.958618</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">78</th>
+<td>9</td>
+<td>fair</td>
+<td>24503.146377</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">79</th>
+<td>10</td>
+<td>accuracy</td>
+<td>20594.518800</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 9 - Top 10 words
+account, card, would, credit, bank, told, called, money, back, payment</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-10" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">80</th>
+<td>1</td>
+<td>account</td>
+<td>34501.701069</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">81</th>
+<td>2</td>
+<td>card</td>
+<td>14476.700425</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">82</th>
+<td>3</td>
+<td>would</td>
+<td>14161.110870</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">83</th>
+<td>4</td>
+<td>credit</td>
+<td>14149.861894</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">84</th>
+<td>5</td>
+<td>bank</td>
+<td>13937.547024</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">85</th>
+<td>6</td>
+<td>told</td>
+<td>13879.926414</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">86</th>
+<td>7</td>
+<td>called</td>
+<td>11960.828617</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">87</th>
+<td>8</td>
+<td>money</td>
+<td>11852.551511</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">88</th>
+<td>9</td>
+<td>back</td>
+<td>10498.379138</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">89</th>
+<td>10</td>
+<td>payment</td>
+<td>10434.903551</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Topic 10 - Top 10 words
+account, balance, credit, date, late, payment, reporting, opened, xxxxxxxx, reported</code></pre>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-11" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">90</th>
+<td>1</td>
+<td>account</td>
+<td>108486.525219</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">91</th>
+<td>2</td>
+<td>balance</td>
+<td>62670.430387</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">92</th>
+<td>3</td>
+<td>credit</td>
+<td>62500.947781</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">93</th>
+<td>4</td>
+<td>date</td>
+<td>58280.489815</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">94</th>
+<td>5</td>
+<td>late</td>
+<td>50767.616707</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">95</th>
+<td>6</td>
+<td>payment</td>
+<td>49363.391031</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">96</th>
+<td>7</td>
+<td>reporting</td>
+<td>43938.910304</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">97</th>
+<td>8</td>
+<td>opened</td>
+<td>38212.355837</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">98</th>
+<td>9</td>
+<td>xxxxxxxx</td>
+<td>37484.883656</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">99</th>
+<td>10</td>
+<td>reported</td>
+<td>37181.817771</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="part-2-q9-lda-final-model-and-comparison-12" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Product</th>
+<th data-quarto-table-cell-role="th">dominant_topic</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Checking or savings account</td>
+<td>Topic 1</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Checking or savings account</td>
+<td>Topic 10</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Checking or savings account</td>
+<td>Topic 2</td>
+<td>42</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Checking or savings account</td>
+<td>Topic 3</td>
+<td>36</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Checking or savings account</td>
+<td>Topic 4</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Checking or savings account</td>
+<td>Topic 5</td>
+<td>3272</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Checking or savings account</td>
+<td>Topic 6</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Checking or savings account</td>
+<td>Topic 7</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Checking or savings account</td>
+<td>Topic 8</td>
+<td>29</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Checking or savings account</td>
+<td>Topic 9</td>
+<td>4204</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Credit card</td>
+<td>Topic 1</td>
+<td>23</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Credit card</td>
+<td>Topic 10</td>
+<td>392</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Credit card</td>
+<td>Topic 2</td>
+<td>238</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Credit card</td>
+<td>Topic 3</td>
+<td>169</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Credit card</td>
+<td>Topic 4</td>
+<td>38</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Credit card</td>
+<td>Topic 5</td>
+<td>3138</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>Credit card</td>
+<td>Topic 6</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>Credit card</td>
+<td>Topic 7</td>
+<td>19</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Credit card</td>
+<td>Topic 8</td>
+<td>114</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Credit card</td>
+<td>Topic 9</td>
+<td>3342</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="60">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q9-lda-final-model-and-comparison-output-23.png" id="part-2-q9-lda-final-model-and-comparison-13" width="960" height="672" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<p>Based on the held-out perplexity and log-likelihood evaluation, we selected <strong>10 topics</strong> for the final model.</p>
+<p>The visualization demonstrates a strong alignment between the discovered topics and the actual product categories:</p>
+<ul>
+<li><strong>Loans (Topic 4):</strong> There is a very clear “Loan” theme (Topic 4) that dominates <strong>Mortgage</strong>, <strong>Student loan</strong>, and <strong>Vehicle loan or lease</strong>. This suggests the model successfully grouped these distinct products under a shared vocabulary of loan-related terms.</li>
+<li><strong>Accounts (Topic 9):</strong> Products like <strong>Checking or savings account</strong>, <strong>Prepaid card</strong>, and <strong>Money transfer</strong> are heavily dominated by Topic 9, indicating a shared theme around account management and transactions.</li>
+<li><strong>Debt Collection (Topic 2):</strong> This category shows a distinct association with Topic 2, separating it from the general loan or account topics.</li>
+<li><strong>Credit Reporting:</strong> This category is the most diverse, composed of a mix of topics. This makes sense as credit reporting complaints often encompass a wide variety of issues—from identity theft to incorrect status updates—that might overlap with debt collection or loan terminology.</li>
+</ul>
+<p>Overall, the LDA model successfully recovered latent themes that correspond well to the official product classifications, with clear distinctions between loans, banking services, and debt collection.</p>
 </section>
 <section id="points-9" class="level2">
 <h2 class="anchored" data-anchor-id="points-9">10. (5 points)</h2>
 <p>Use the vader lexicon to conduct sentiment analysis on the word tokens to determine if consumer complaints express positive, neutral, or negative sentiments. Create a histogram of the sentiment scores, and make a barplot to show the counts of tokens by sentiment category. Make another barplot to compare sentiment category counts by product categories. Make another barplot to show which words have top positive sentiment scores and which words have most negative sentiment scores. Summarize and interpret your results.</p>
+<div id="cell-Part-2-Q10-Vader-Token-Sentiment" class="cell" data-message="false" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize VADER</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>sia <span class="op">=</span> SentimentIntensityAnalyzer()</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Build token-frequency table from cleaned tokens (from Q8)</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>token_freq_df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    Counter(cleaned_tokens).items(),</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"word"</span>, <span class="st">"count"</span>]</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="co"># VADER compound score per unique token</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>token_freq_df[<span class="st">"sentiment_score"</span>] <span class="op">=</span> token_freq_df[<span class="st">"word"</span>].<span class="bu">apply</span>(</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> w: sia.polarity_scores(w)[<span class="st">"compound"</span>]</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert score to sentiment category</span></span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_sentiment_category(score):</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> score <span class="op">&gt;=</span> <span class="fl">0.05</span>:</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Positive"</span></span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> score <span class="op">&lt;=</span> <span class="op">-</span><span class="fl">0.05</span>:</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Negative"</span></span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">"Neutral"</span></span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>token_freq_df[<span class="st">"sentiment_category"</span>] <span class="op">=</span> token_freq_df[<span class="st">"sentiment_score"</span>].<span class="bu">apply</span>(get_sentiment_category)</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>display(token_freq_df.head())</span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Unique cleaned tokens scored: </span><span class="sc">{</span>token_freq_df<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-2-q10-vader-token-sentiment" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">sentiment_score</th>
+<th data-quarto-table-cell-role="th">sentiment_category</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>macy</td>
+<td>54</td>
+<td>0.0000</td>
+<td>Neutral</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>credit</td>
+<td>307726</td>
+<td>0.3818</td>
+<td>Positive</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>card</td>
+<td>29321</td>
+<td>0.0000</td>
+<td>Neutral</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>opened</td>
+<td>48303</td>
+<td>0.0000</td>
+<td>Neutral</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>name</td>
+<td>27866</td>
+<td>0.0000</td>
+<td>Neutral</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unique cleaned tokens scored: 36781</code></pre>
+</div>
+</div>
+<div id="cell-Part-2-Q10-Sentiment-Histogram-and-Category-Bar" class="cell" data-message="false" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of sentiment scores (weighted by token counts)</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>    ggplot(token_freq_df, aes(x<span class="op">=</span><span class="st">"sentiment_score"</span>, weight<span class="op">=</span><span class="st">"count"</span>))</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_histogram(bins<span class="op">=</span><span class="dv">40</span>, fill<span class="op">=</span><span class="st">"steelblue"</span>, color<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Histogram of Token Sentiment Scores (VADER)"</span>,</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"VADER Compound Sentiment Score"</span>,</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Token Count"</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="62">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q10-sentiment-histogram-and-category-bar-output-1.png" id="part-2-q10-sentiment-histogram-and-category-bar" width="960" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-Part-2-Q10-Sentiment-Category-Bar-Plot" class="cell" data-message="false" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count tokens by sentiment category</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>sentiment_category_counts <span class="op">=</span> (</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    token_freq_df.groupby(<span class="st">"sentiment_category"</span>, as_index<span class="op">=</span><span class="va">False</span>)[<span class="st">"count"</span>]</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">sum</span>()</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>display(sentiment_category_counts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-2-q10-sentiment-category-bar-plot" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sentiment_category</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Negative</td>
+<td>936586</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Neutral</td>
+<td>9879697</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Positive</td>
+<td>965234</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-Part-2-Q10-Sentiment-Category-Bar" class="cell" data-message="false" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    ggplot(sentiment_category_counts, aes(x<span class="op">=</span><span class="st">"sentiment_category"</span>, y<span class="op">=</span><span class="st">"count"</span>, fill<span class="op">=</span><span class="st">"sentiment_category"</span>))</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_col()</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Token Counts by Sentiment Category"</span>,</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Sentiment Category"</span>,</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Token Count"</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="64">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q10-sentiment-category-bar-output-1.png" id="part-2-q10-sentiment-category-bar" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="part-2-q10-sentiment-by-product" class="cell" data-message="false" data-execution_count="29">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_tokens_for_sentiment(text):</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pd.isna(text):</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> []</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> word_tokenize(<span class="bu">str</span>(text).lower())</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>        token <span class="cf">for</span> token <span class="kw">in</span> tokens</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> token <span class="kw">not</span> <span class="kw">in</span> stop_words</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">and</span> <span class="kw">not</span> token.isdigit()</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">and</span> <span class="bu">len</span>(token) <span class="op">&gt;</span> <span class="dv">2</span></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">and</span> token.isalpha()</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Cache token sentiment scores for speed</span></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>token_score_lookup <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>(token_freq_df[<span class="st">"word"</span>], token_freq_df[<span class="st">"sentiment_score"</span>]))</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>product_sentiment_counter <span class="op">=</span> Counter()</span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>cfpb_sentiment_df <span class="op">=</span> cfpb_df[[<span class="st">"Product"</span>, <span class="st">"Consumer complaint narrative"</span>]].dropna(</span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>    subset<span class="op">=</span>[<span class="st">"Product"</span>, <span class="st">"Consumer complaint narrative"</span>]</span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>).copy()</span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _, row <span class="kw">in</span> cfpb_sentiment_df.iterrows():</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>    product <span class="op">=</span> row[<span class="st">"Product"</span>]</span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> clean_tokens_for_sentiment(row[<span class="st">"Consumer complaint narrative"</span>])</span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> token <span class="kw">in</span> tokens:</span>
+<span id="cb49-25"><a href="#cb49-25" aria-hidden="true" tabindex="-1"></a>        score <span class="op">=</span> token_score_lookup.get(token)</span>
+<span id="cb49-26"><a href="#cb49-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> score <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb49-27"><a href="#cb49-27" aria-hidden="true" tabindex="-1"></a>            score <span class="op">=</span> sia.polarity_scores(token)[<span class="st">"compound"</span>]</span>
+<span id="cb49-28"><a href="#cb49-28" aria-hidden="true" tabindex="-1"></a>            token_score_lookup[token] <span class="op">=</span> score</span>
+<span id="cb49-29"><a href="#cb49-29" aria-hidden="true" tabindex="-1"></a>        category <span class="op">=</span> get_sentiment_category(score)</span>
+<span id="cb49-30"><a href="#cb49-30" aria-hidden="true" tabindex="-1"></a>        product_sentiment_counter[(product, category)] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb49-31"><a href="#cb49-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-32"><a href="#cb49-32" aria-hidden="true" tabindex="-1"></a>product_sentiment_counts <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb49-33"><a href="#cb49-33" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb49-34"><a href="#cb49-34" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"Product"</span>: k[<span class="dv">0</span>], <span class="st">"sentiment_category"</span>: k[<span class="dv">1</span>], <span class="st">"count"</span>: v}</span>
+<span id="cb49-35"><a href="#cb49-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> k, v <span class="kw">in</span> product_sentiment_counter.items()</span>
+<span id="cb49-36"><a href="#cb49-36" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb49-37"><a href="#cb49-37" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-38"><a href="#cb49-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-39"><a href="#cb49-39" aria-hidden="true" tabindex="-1"></a>top_products <span class="op">=</span> (</span>
+<span id="cb49-40"><a href="#cb49-40" aria-hidden="true" tabindex="-1"></a>    cfpb_sentiment_df[<span class="st">"Product"</span>].value_counts().head(<span class="dv">10</span>).index.tolist()</span>
+<span id="cb49-41"><a href="#cb49-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb49-42"><a href="#cb49-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-43"><a href="#cb49-43" aria-hidden="true" tabindex="-1"></a>product_sentiment_plot_df <span class="op">=</span> product_sentiment_counts[</span>
+<span id="cb49-44"><a href="#cb49-44" aria-hidden="true" tabindex="-1"></a>    product_sentiment_counts[<span class="st">"Product"</span>].isin(top_products)</span>
+<span id="cb49-45"><a href="#cb49-45" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb49-46"><a href="#cb49-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-47"><a href="#cb49-47" aria-hidden="true" tabindex="-1"></a>display(product_sentiment_plot_df.head(<span class="dv">20</span>))</span>
+<span id="cb49-48"><a href="#cb49-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-49"><a href="#cb49-49" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb49-50"><a href="#cb49-50" aria-hidden="true" tabindex="-1"></a>    ggplot(</span>
+<span id="cb49-51"><a href="#cb49-51" aria-hidden="true" tabindex="-1"></a>        product_sentiment_plot_df,</span>
+<span id="cb49-52"><a href="#cb49-52" aria-hidden="true" tabindex="-1"></a>        aes(x<span class="op">=</span><span class="st">"Product"</span>, y<span class="op">=</span><span class="st">"count"</span>, fill<span class="op">=</span><span class="st">"sentiment_category"</span>)</span>
+<span id="cb49-53"><a href="#cb49-53" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-54"><a href="#cb49-54" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_col(position<span class="op">=</span><span class="st">"fill"</span>)</span>
+<span id="cb49-55"><a href="#cb49-55" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> coord_flip()</span>
+<span id="cb49-56"><a href="#cb49-56" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb49-57"><a href="#cb49-57" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Sentiment Category Composition by Product (Top 10 Products)"</span>,</span>
+<span id="cb49-58"><a href="#cb49-58" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Product"</span>,</span>
+<span id="cb49-59"><a href="#cb49-59" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Proportion"</span>,</span>
+<span id="cb49-60"><a href="#cb49-60" aria-hidden="true" tabindex="-1"></a>        fill<span class="op">=</span><span class="st">"Sentiment"</span></span>
+<span id="cb49-61"><a href="#cb49-61" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-62"><a href="#cb49-62" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb49-63"><a href="#cb49-63" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">7</span>), axis_text_y<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">8</span>))</span>
+<span id="cb49-64"><a href="#cb49-64" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-2-q10-sentiment-by-product-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Product</th>
+<th data-quarto-table-cell-role="th">sentiment_category</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Credit card</td>
+<td>Neutral</td>
+<td>694798</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Credit card</td>
+<td>Positive</td>
+<td>63874</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Credit card</td>
+<td>Negative</td>
+<td>60133</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Neutral</td>
+<td>6282481</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Negative</td>
+<td>618401</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Positive</td>
+<td>668264</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Student loan</td>
+<td>Neutral</td>
+<td>100313</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Student loan</td>
+<td>Negative</td>
+<td>6653</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Student loan</td>
+<td>Positive</td>
+<td>7936</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Checking or savings account</td>
+<td>Neutral</td>
+<td>717954</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Checking or savings account</td>
+<td>Negative</td>
+<td>57088</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Debt collection</td>
+<td>Negative</td>
+<td>112214</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Debt collection</td>
+<td>Neutral</td>
+<td>1057914</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Debt collection</td>
+<td>Positive</td>
+<td>106156</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Vehicle loan or lease</td>
+<td>Negative</td>
+<td>17562</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Vehicle loan or lease</td>
+<td>Neutral</td>
+<td>223309</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>Vehicle loan or lease</td>
+<td>Positive</td>
+<td>16791</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>Mortgage</td>
+<td>Neutral</td>
+<td>346753</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Mortgage</td>
+<td>Negative</td>
+<td>27139</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Mortgage</td>
+<td>Positive</td>
+<td>22805</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="65">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q10-sentiment-by-product-output-2.png" id="part-2-q10-sentiment-by-product-2" width="960" height="672" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="part-2-q10-top-positive-negative-words" class="cell" data-message="false" data-execution_count="30">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep words with reasonable frequency to avoid one-off noise</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>sentiment_word_df <span class="op">=</span> token_freq_df[token_freq_df[<span class="st">"count"</span>] <span class="op">&gt;=</span> <span class="dv">50</span>].copy()</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>top_positive_words <span class="op">=</span> sentiment_word_df.sort_values(</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"sentiment_score"</span>, <span class="st">"count"</span>], ascending<span class="op">=</span>[<span class="va">False</span>, <span class="va">False</span>]</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>).head(<span class="dv">15</span>).copy()</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>top_positive_words[<span class="st">"polarity"</span>] <span class="op">=</span> <span class="st">"Most Positive"</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>top_negative_words <span class="op">=</span> sentiment_word_df.sort_values(</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"sentiment_score"</span>, <span class="st">"count"</span>], ascending<span class="op">=</span>[<span class="va">True</span>, <span class="va">False</span>]</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>).head(<span class="dv">15</span>).copy()</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>top_negative_words[<span class="st">"polarity"</span>] <span class="op">=</span> <span class="st">"Most Negative"</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>top_sentiment_words <span class="op">=</span> pd.concat(</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>    [top_positive_words, top_negative_words],</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>    ignore_index<span class="op">=</span><span class="va">True</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>display(</span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>    top_sentiment_words[[<span class="st">"polarity"</span>, <span class="st">"word"</span>, <span class="st">"sentiment_score"</span>, <span class="st">"count"</span>]]</span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a>    ggplot(</span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>        top_sentiment_words,</span>
+<span id="cb50-26"><a href="#cb50-26" aria-hidden="true" tabindex="-1"></a>        aes(x<span class="op">=</span><span class="st">"reorder(word, sentiment_score)"</span>, y<span class="op">=</span><span class="st">"sentiment_score"</span>, fill<span class="op">=</span><span class="st">"polarity"</span>)</span>
+<span id="cb50-27"><a href="#cb50-27" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb50-28"><a href="#cb50-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_col()</span>
+<span id="cb50-29"><a href="#cb50-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> coord_flip()</span>
+<span id="cb50-30"><a href="#cb50-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> facet_wrap(<span class="st">"~polarity"</span>, scales<span class="op">=</span><span class="st">"free_y"</span>)</span>
+<span id="cb50-31"><a href="#cb50-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb50-32"><a href="#cb50-32" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Words with Highest Positive and Most Negative Sentiment Scores"</span>,</span>
+<span id="cb50-33"><a href="#cb50-33" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Word"</span>,</span>
+<span id="cb50-34"><a href="#cb50-34" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"VADER Compound Score"</span></span>
+<span id="cb50-35"><a href="#cb50-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb50-36"><a href="#cb50-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb50-37"><a href="#cb50-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">7</span>))</span>
+<span id="cb50-38"><a href="#cb50-38" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-2-q10-top-positive-negative-words-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">polarity</th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">sentiment_score</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Most Positive</td>
+<td>best</td>
+<td>0.6369</td>
+<td>1955</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Most Positive</td>
+<td>freedom</td>
+<td>0.6369</td>
+<td>782</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Most Positive</td>
+<td>love</td>
+<td>0.6369</td>
+<td>51</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Most Positive</td>
+<td>great</td>
+<td>0.6249</td>
+<td>312</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Most Positive</td>
+<td>outstanding</td>
+<td>0.6124</td>
+<td>1188</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Most Positive</td>
+<td>honored</td>
+<td>0.5859</td>
+<td>334</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Most Positive</td>
+<td>successful</td>
+<td>0.5859</td>
+<td>297</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Most Positive</td>
+<td>excellent</td>
+<td>0.5719</td>
+<td>456</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Most Positive</td>
+<td>perfect</td>
+<td>0.5719</td>
+<td>346</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Most Positive</td>
+<td>reward</td>
+<td>0.5719</td>
+<td>250</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Most Positive</td>
+<td>success</td>
+<td>0.5719</td>
+<td>234</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Most Positive</td>
+<td>happy</td>
+<td>0.5719</td>
+<td>221</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Most Positive</td>
+<td>perfected</td>
+<td>0.5719</td>
+<td>60</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Most Positive</td>
+<td>positive</td>
+<td>0.5574</td>
+<td>1473</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Most Positive</td>
+<td>supreme</td>
+<td>0.5574</td>
+<td>182</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Most Negative</td>
+<td>dead</td>
+<td>-0.6486</td>
+<td>87</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>Most Negative</td>
+<td>devastating</td>
+<td>-0.6486</td>
+<td>79</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>Most Negative</td>
+<td>abusive</td>
+<td>-0.6369</td>
+<td>1470</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Most Negative</td>
+<td>abuse</td>
+<td>-0.6369</td>
+<td>542</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Most Negative</td>
+<td>kia</td>
+<td>-0.6369</td>
+<td>157</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>Most Negative</td>
+<td>worst</td>
+<td>-0.6249</td>
+<td>217</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>Most Negative</td>
+<td>disaster</td>
+<td>-0.6249</td>
+<td>212</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>Most Negative</td>
+<td>crisis</td>
+<td>-0.6249</td>
+<td>113</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>Most Negative</td>
+<td>devastated</td>
+<td>-0.6124</td>
+<td>83</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>Most Negative</td>
+<td>death</td>
+<td>-0.5994</td>
+<td>277</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>Most Negative</td>
+<td>anguish</td>
+<td>-0.5994</td>
+<td>178</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>Most Negative</td>
+<td>fraud</td>
+<td>-0.5859</td>
+<td>20888</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>Most Negative</td>
+<td>scams</td>
+<td>-0.5859</td>
+<td>123</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>Most Negative</td>
+<td>ruin</td>
+<td>-0.5859</td>
+<td>66</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>Most Negative</td>
+<td>negative</td>
+<td>-0.5719</td>
+<td>11095</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="66">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q10-top-positive-negative-words-output-2.png" id="part-2-q10-top-positive-negative-words-2" width="1152" height="672" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<p><strong>Summary:</strong></p>
+<ul>
+<li><strong>Sentiment Distribution:</strong> The histogram shows a massive spike at 0.0, indicating that the vast majority of tokens are <strong>neutral</strong>. This is expected in financial narratives which contain many factual terms.</li>
+<li><strong>Category Counts:</strong> Token counts by sentiment category bar plot confirms this dominance: <strong>Neutral</strong> tokens are way more than <strong>Positive</strong> and <strong>Negative</strong> tokens. Surprisingly, the counts for positive and negative tokens are visually balanced.</li>
+<li><strong>Product Sentiment:</strong> Across all top products, the sentiment composition is remarkably consistent—dominated by neutral terms. However, Debt collection and Credit reporting product categories show slightly larger proportions of negative sentiment compared to products like Checking or savings account, which is intuitive given the adversarial nature of those complaints.</li>
+<li><strong>Top Words:</strong>
+<ul>
+<li><strong>Positive:</strong> Words like “best”, “freedom”, “great”, “outstanding”, and “success” have high positive scores.</li>
+<li><strong>Negative:</strong> Words like “negative”, “fraud”, “scams”, “abusive”, and “devastating” have strong negative scores.</li>
+<li>“fraud” and “negative” appear frequently, highlighting key points in customer complaint narratives.</li>
+</ul></li>
+</ul>
 </section>
 <section id="points-10" class="level2">
 <h2 class="anchored" data-anchor-id="points-10">11. (2 points)</h2>
 <p>Conduct sentence-level tokenization, summarize the number of sentences, and the average number of sentences by complaint.</p>
+<div id="cell-Part-2-Q11-Sentence-Tokenization" class="cell" data-message="false" data-execution_count="31">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep complaints with narratives</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>cfpb_sentence_df <span class="op">=</span> cfpb_df[[<span class="st">"Consumer complaint narrative"</span>]].dropna(</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    subset<span class="op">=</span>[<span class="st">"Consumer complaint narrative"</span>]</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>).copy()</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Sentence-level tokenization (lab style)</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_sentence_counts(text):</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pd.isna(text):</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">len</span>(sent_tokenize(<span class="bu">str</span>(text)))</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>cfpb_sentence_df[<span class="st">"num_sentences"</span>] <span class="op">=</span> cfpb_sentence_df[<span class="st">"Consumer complaint narrative"</span>].<span class="bu">apply</span>(</span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>    get_sentence_counts</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Summaries requested in Q11</span></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>total_sentences <span class="op">=</span> <span class="bu">int</span>(cfpb_sentence_df[<span class="st">"num_sentences"</span>].<span class="bu">sum</span>())</span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>avg_sentences_per_complaint <span class="op">=</span> cfpb_sentence_df[<span class="st">"num_sentences"</span>].mean()</span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total number of sentences: </span><span class="sc">{</span>total_sentences<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average number of sentences per complaint: </span><span class="sc">{</span>avg_sentences_per_complaint<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a>display(cfpb_sentence_df[<span class="st">"num_sentences"</span>].describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total number of sentences: 1174776
+Average number of sentences per complaint: 8.63</code></pre>
+</div>
+<div id="part-2-q11-sentence-tokenization" class="cell-output cell-output-display">
+<pre><code>count    136104.000000
+mean          8.631458
+std          10.467573
+min           1.000000
+25%           3.000000
+50%           6.000000
+75%          10.000000
+max         379.000000
+Name: num_sentences, dtype: float64</code></pre>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li><strong>Total Sentences:</strong> There are 1174776 sentences in total across all consumer complaint narratives.</li>
+<li><strong>Average Sentences per Complaint:</strong> On average, each complaint contains approximately np.float64(8.63) sentences.</li>
+</ul>
 </section>
 <section id="points-11" class="level2">
 <h2 class="anchored" data-anchor-id="points-11">12. (4 points)</h2>
-<p>Conduct sentiment analysis of the sentence tokens. Like above, visualize the histogram of the sentiment scores, categorize sentiments into negative, neutral, positive and visualize counts with a barplot as well as a barplot by product categories. Interpret, summarize, and discuss differences from word token sentiment analysis in 10.</p>
+<p>Conduct sentiment analysis of the sentence tokens. Like above, visualize the histogram of the sentiment scores, categorize sentiments into negative, neutral, positive and visualize counts with a barplot as well as a barplot by product categories. Interpret, summarize, and discuss differences from word token sentiment analysis in Q10.</p>
+<div id="cell-Part-2-Q12-Sentence-Sentiment-Scoring" class="cell" data-message="false" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep complaints with narratives and product labels</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>cfpb_sentence_sentiment_df <span class="op">=</span> cfpb_df[[<span class="st">"Product"</span>, <span class="st">"Consumer complaint narrative"</span>]].dropna(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    subset<span class="op">=</span>[<span class="st">"Product"</span>, <span class="st">"Consumer complaint narrative"</span>]</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>).copy()</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Reuse VADER from Q10</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>sentence_scores <span class="op">=</span> []</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>sentence_sentiment_counter <span class="op">=</span> Counter()</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>product_sentence_sentiment_counter <span class="op">=</span> Counter()</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _, row <span class="kw">in</span> cfpb_sentence_sentiment_df.iterrows():</span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>    product <span class="op">=</span> row[<span class="st">"Product"</span>]</span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>    sentences <span class="op">=</span> sent_tokenize(<span class="bu">str</span>(row[<span class="st">"Consumer complaint narrative"</span>]))</span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> sent <span class="kw">in</span> sentences:</span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a>        score <span class="op">=</span> sia.polarity_scores(sent)[<span class="st">"compound"</span>]</span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a>        sentence_scores.append(score)</span>
+<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-19"><a href="#cb54-19" aria-hidden="true" tabindex="-1"></a>        category <span class="op">=</span> get_sentiment_category(score)</span>
+<span id="cb54-20"><a href="#cb54-20" aria-hidden="true" tabindex="-1"></a>        sentence_sentiment_counter[category] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb54-21"><a href="#cb54-21" aria-hidden="true" tabindex="-1"></a>        product_sentence_sentiment_counter[(product, category)] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb54-22"><a href="#cb54-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-23"><a href="#cb54-23" aria-hidden="true" tabindex="-1"></a>sentence_score_df <span class="op">=</span> pd.DataFrame({<span class="st">"sentiment_score"</span>: sentence_scores})</span>
+<span id="cb54-24"><a href="#cb54-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Total number of sentence sentiment scores: </span><span class="sc">{</span><span class="bu">len</span>(sentence_scores)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb54-25"><a href="#cb54-25" aria-hidden="true" tabindex="-1"></a>display(sentence_score_df.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Total number of sentence sentiment scores: 1174776</code></pre>
+</div>
+<div id="part-2-q12-sentence-sentiment-scoring" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sentiment_score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.6369</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>-0.2960</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.2860</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.2263</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.0000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-Part-2-Q12-Sentence-Sentiment-Plots" class="cell" data-message="false" data-execution_count="33">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of sentence sentiment scores</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>    ggplot(sentence_score_df, aes(x<span class="op">=</span><span class="st">"sentiment_score"</span>))</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_histogram(bins<span class="op">=</span><span class="dv">40</span>, fill<span class="op">=</span><span class="st">"steelblue"</span>, color<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Histogram of Sentence Sentiment Scores (VADER)"</span>,</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"VADER Compound Sentiment Score"</span>,</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Count of Sentences"</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="69">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q12-sentence-sentiment-plots-output-1.png" id="part-2-q12-sentence-sentiment-plots" width="960" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="part-2-q12-sentence-sentiment-by-product-data" class="cell" data-message="false" data-execution_count="34">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sentence counts by sentiment category</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>sentence_sentiment_counts <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"sentiment_category"</span>: k, <span class="st">"count"</span>: v}</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> k, v <span class="kw">in</span> sentence_sentiment_counter.items()</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>display(sentence_sentiment_counts)</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>    ggplot(sentence_sentiment_counts, aes(x<span class="op">=</span><span class="st">"sentiment_category"</span>, y<span class="op">=</span><span class="st">"count"</span>, fill<span class="op">=</span><span class="st">"sentiment_category"</span>))</span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_col()</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Sentence Counts by Sentiment Category"</span>,</span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Sentiment Category"</span>,</span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Count of Sentences"</span></span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
+<span id="cb57-21"><a href="#cb57-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-2-q12-sentence-sentiment-by-product-data-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sentiment_category</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Positive</td>
+<td>350930</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Negative</td>
+<td>462462</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Neutral</td>
+<td>361384</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="70">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q12-sentence-sentiment-by-product-data-output-2.png" id="part-2-q12-sentence-sentiment-by-product-data-2" width="672" height="480" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-Part-2-Q12-Sentence-Sentiment-By-Product-Plot" class="cell" data-message="false" data-execution_count="35">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sentence sentiment composition by product category (top 10 products)</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>product_sentence_sentiment_counts <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"Product"</span>: k[<span class="dv">0</span>], <span class="st">"sentiment_category"</span>: k[<span class="dv">1</span>], <span class="st">"count"</span>: v}</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> k, v <span class="kw">in</span> product_sentence_sentiment_counter.items()</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>top_products_q12 <span class="op">=</span> cfpb_sentence_sentiment_df[<span class="st">"Product"</span>].value_counts().head(<span class="dv">10</span>).index.tolist()</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>product_sentence_sentiment_plot_df <span class="op">=</span> product_sentence_sentiment_counts[</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>    product_sentence_sentiment_counts[<span class="st">"Product"</span>].isin(top_products_q12)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>display(product_sentence_sentiment_plot_df.head(<span class="dv">20</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="part-2-q12-sentence-sentiment-by-product-plot" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Product</th>
+<th data-quarto-table-cell-role="th">sentiment_category</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Credit card</td>
+<td>Positive</td>
+<td>27017</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Credit card</td>
+<td>Negative</td>
+<td>30331</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Positive</td>
+<td>232248</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Neutral</td>
+<td>214376</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Credit reporting or other personal consumer re...</td>
+<td>Negative</td>
+<td>297635</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Student loan</td>
+<td>Neutral</td>
+<td>4307</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Student loan</td>
+<td>Negative</td>
+<td>3589</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Student loan</td>
+<td>Positive</td>
+<td>3492</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Checking or savings account</td>
+<td>Neutral</td>
+<td>31166</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Checking or savings account</td>
+<td>Negative</td>
+<td>33018</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Debt collection</td>
+<td>Negative</td>
+<td>53682</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Credit card</td>
+<td>Neutral</td>
+<td>26449</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Vehicle loan or lease</td>
+<td>Negative</td>
+<td>9258</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Vehicle loan or lease</td>
+<td>Neutral</td>
+<td>9508</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Vehicle loan or lease</td>
+<td>Positive</td>
+<td>6897</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Debt collection</td>
+<td>Neutral</td>
+<td>40338</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>Debt collection</td>
+<td>Positive</td>
+<td>37868</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>Mortgage</td>
+<td>Positive</td>
+<td>10000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Mortgage</td>
+<td>Neutral</td>
+<td>15503</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Mortgage</td>
+<td>Negative</td>
+<td>14053</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-Part-2-Q12-Sentence-Sentiment-Category-Bar" class="cell" data-message="false" data-execution_count="36">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>    ggplot(</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>        product_sentence_sentiment_plot_df,</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>        aes(x<span class="op">=</span><span class="st">"Product"</span>, y<span class="op">=</span><span class="st">"count"</span>, fill<span class="op">=</span><span class="st">"sentiment_category"</span>)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_col(position<span class="op">=</span><span class="st">"fill"</span>)</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> coord_flip()</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Sentence Sentiment Composition by Product (Top 10 Products)"</span>,</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Product"</span>,</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Proportion"</span>,</span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>        fill<span class="op">=</span><span class="st">"Sentiment"</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(figure_size<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">7</span>), axis_text_y<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">8</span>))</span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="72">
+<div>
+<figure class="figure">
+<p><img src="hw3_files/figure-html/part-2-q12-sentence-sentiment-category-bar-output-1.png" id="part-2-q12-sentence-sentiment-category-bar" width="960" height="672" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li><strong>Sentiment Distribution:</strong> The histogram shows a trimodal distribution with spikes at 0.0 (neutral), and significant density around highly positive (+0.4 to +0.8) and highly negative (-0.4 to -0.8) scores. This indicates that sentences carry much stronger emotional signals than individual words.</li>
+<li><strong>Category Counts:</strong> Unlike the token-level analysis (Q10) where neutral tokens dominated, the sentence-level analysis shows that <strong>Negative</strong> sentences are actually the most frequent category, followed by <strong>Neutral</strong> and <strong>Positive</strong>. This is a major shift—complaint narratives are fundamentally negative stories, and sentence-level scoring correctly captures this tone where word-level scoring diluted it with neutral stopwords.</li>
+<li><strong>Product Sentiment:</strong> The stacked bar plot reveals that <strong>Debt collection</strong>, <strong>Credit reporting</strong>, and <strong>Vehicle loan or lease</strong> have the highest proportions of negative sentences. Conversely, <strong>Student loan</strong> and <strong>Prepaid card</strong> categories show comparatively higher proportions of positive sentences, though negative sentiment remains substantial across all categories.</li>
+<li><strong>Comparison with Q10:</strong>
+<ul>
+<li><strong>Q10 (Word-level):</strong> Dominated by neutral tokens, masking the complaint’s intent.</li>
+<li><strong>Q12 (Sentence-level):</strong> Dominated by negative sentences, accurately reflecting the “complaint” nature of the dataset.</li>
+<li><strong>Conclusion:</strong> Sentence-level analysis is far superior for understanding customer sentiment in this context because it captures the <em>meaning</em> of phrases rather than just counting isolated words.</li>
+</ul></li>
+</ul>
 <script type="ojs-module-contents">
 eyJjb250ZW50cyI6W119
 </script>
