@@ -19,3 +19,4 @@ This is my repository for the JSC370 course at the University of Toronto in Wint
 - [Lab 5](labs/lab05/lab05-api-scrape.qmd)
 - [Lab 6](labs/lab06/lab06-text-llm.qmd)
 - [Lab 8](labs/lab08/lab08-trees-boosting.qmd)
+- [Lab 9](labs/lab09/lab09-xgboost.ipynb)
