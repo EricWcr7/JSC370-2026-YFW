@@ -1,0 +1,84 @@
+---
+title: "JSC370 2026: Midterm Project"
+subtitle: "JSC370 (Winter 2026)"
+author: "Yi Fan (Eric) Wang"
+date: "March 13, 2026"
+format:
+  live-html:
+    toc: true
+    page-layout: full
+filters:
+  - r-wasm/live
+jupyter: python3
+execute:
+  enabled: true
+  echo: true
+  warning: false
+  message: false
+---
+
+# Environment Setup
+
+```{python}
+#| label: environment-setup
+#| warning: false
+#| message: false
+
+import contextily as cx
+import datetime
+import folium
+import geopandas as gpd
+import json
+import math
+import matplotlib.pyplot as plt
+import nltk
+import numpy as np
+import pandas as pd
+import re
+import requests
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import sys
+import time
+import urllib.request
+import warnings
+from IPython.display import display
+from bs4 import BeautifulSoup
+from collections import Counter
+from datetime import date, timedelta
+from folium.plugins import MarkerCluster
+from io import StringIO
+from nltk.corpus import stopwords
+from nltk.sentiment import SentimentIntensityAnalyzer
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.util import ngrams
+from plotnine import *
+from plotnine import ggplot, aes, geom_point, labs, theme_minimal
+from plotnine.data import penguins
+from pygam import LinearGAM, s
+from pygam import LinearGAM, s, l, f
+from scipy import stats
+from scipy.stats import chisquare, chi2_contingency
+from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (
+    confusion_matrix, ConfusionMatrixDisplay,
+    accuracy_score, precision_score, recall_score, f1_score,
+    roc_curve, roc_auc_score, mean_squared_error, r2_score
+)
+from sklearn.metrics import accuracy_score, mean_squared_error, r2_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor, plot_tree
+from wordcloud import WordCloud
+
+```
+
+# Introduction
+
+# Methods
+
+# Preliminary Results
+
+# Summary
