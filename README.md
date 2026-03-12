@@ -4,6 +4,8 @@ This is my repository for the JSC370 course at the University of Toronto in Wint
 
 ## Projects
 
+- [Midterm](Project/Midterm/Midterm.qmd)
+
 ## Homework
 
 - [Homework 1](Homework/hw1/hw1_final.qmd)
@@ -20,3 +22,4 @@ This is my repository for the JSC370 course at the University of Toronto in Wint
 - [Lab 6](labs/lab06/lab06-text-llm.qmd)
 - [Lab 8](labs/lab08/lab08-trees-boosting.qmd)
 - [Lab 9](labs/lab09/lab09-xgboost.ipynb)
+- [Lab 10](labs/lab10/lab10-pc.qmd)
