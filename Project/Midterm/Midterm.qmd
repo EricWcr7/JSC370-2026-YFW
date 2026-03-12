@@ -357,5 +357,7 @@ display(eda_df.describe())
 # References
 
 -IPCC PDF
+
 -https://essd.copernicus.org/articles/15/5301/2023/
--
+
+-https://edgar.jrc.ec.europa.eu/report_2023
