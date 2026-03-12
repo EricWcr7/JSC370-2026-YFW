@@ -24,61 +24,563 @@ execute:
 #| warning: false
 #| message: false
 
-import contextily as cx
-import datetime
-import folium
-import geopandas as gpd
 import json
-import math
 import matplotlib.pyplot as plt
-import nltk
 import numpy as np
 import pandas as pd
+import seaborn as sns
+from plotnine import *
 import re
 import requests
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
-import sys
 import time
-import urllib.request
 import warnings
 from IPython.display import display
-from bs4 import BeautifulSoup
-from collections import Counter
-from datetime import date, timedelta
-from folium.plugins import MarkerCluster
-from io import StringIO
-from nltk.corpus import stopwords
-from nltk.sentiment import SentimentIntensityAnalyzer
-from nltk.tokenize import word_tokenize, sent_tokenize
-from nltk.util import ngrams
-from plotnine import *
-from plotnine import ggplot, aes, geom_point, labs, theme_minimal
-from plotnine.data import penguins
-from pygam import LinearGAM, s
-from pygam import LinearGAM, s, l, f
-from scipy import stats
-from scipy.stats import chisquare, chi2_contingency
-from sklearn.decomposition import LatentDirichletAllocation
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (
-    confusion_matrix, ConfusionMatrixDisplay,
-    accuracy_score, precision_score, recall_score, f1_score,
-    roc_curve, roc_auc_score, mean_squared_error, r2_score
-)
-from sklearn.metrics import accuracy_score, mean_squared_error, r2_score, confusion_matrix, ConfusionMatrixDisplay
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor, plot_tree
-from wordcloud import WordCloud
+warnings.filterwarnings("ignore")
 
 ```
 
+# Research Question
+How have CO₂ emissions per capita evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences?
+
 # Introduction
+
+Climate change is one of the major global challenges and is largely driven by greenhouse gas emissions, particularly carbon dioxide (CO₂). Emissions from human activities have played a central role in global warming. According to "Climate Change 2023 Synthesis Report" from the Intergovernmental Panel on Climate Change (IPCC), global surface temperature during 2011–2020 was about 1.1 degrees Celsius higher than in 1850–1900 (IPCC, 2023). CO₂ emissions are also unevenly distributed across countries. Notably, the differences in CO₂ emissions per-capita are closely related to variations in energy systems, economic structures, and levels of development in terms of GDP. Understanding these differences is important for designing effective climate and energy policies.
+
+
+Despite the global importance of reducing greenhouse gas emissions, countries differ significantly in both their levels of CO₂ emissions per capita and how these emissions have changed over time. These differences may be related to economic development, energy consumption patterns, and land-use practices. For example, roughly half of global CO₂ emissions are absorbed by land and ocean carbon sinks, while land-use changes such as deforestation and reforestation remain important components of the global carbon budget (Friedlingstein et al., 2023). Research on global greenhouse gas emissions also shows that fossil fuel combustion is the primary source of emissions, accounting for about 71.6% of recent global greenhouse gas emissions. At the same time, emissions intensity relative to GDP has reached historically low levels, suggesting a relationship between economic development and carbon output. To better understand how economic, energy, and land-use factors relate to cross-country differences in emissions, systematic analysis using comparable and reliable international data is necessary.
+
+
+This project examines **how CO₂ emissions per capita have evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences**. To address this research question, this analysis uses data from the World Bank Open Data API, which provides a comprehensive set of development indicators covering economic, energy, and land-use factors. The dataset includes annual observations for nearly all countries around the world and contains variables such as CO₂ emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of land area, total population, and the share of population living in urban areas (Note: Share means the percentage of total value). These variables make it possible to explore how economic development, energy structure, and land-use conditions are related to differences in emissions across nearly all countries.
 
 # Methods
 
+## Data Acquisition (API)
+
+```{python}
+#| label: data-acquisition-worldbank-api
+#| warning: false
+#| message: false
+
+WB_BASE_URL = "https://api.worldbank.org/v2"
+
+# Indicator codes aligned with the research question
+INDICATORS = {
+    "co2_per_capita": "EN.GHG.CO2.PC.CE.AR5",
+    "gdp_per_capita": "NY.GDP.PCAP.KD",
+    "fossil_electricity_share": "EG.ELC.FOSL.ZS",
+    "renewable_energy_share": "EG.FEC.RNEW.ZS",
+    "forest_area_percent_land": "AG.LND.FRST.ZS",
+    "population_total": "SP.POP.TOTL",
+    "urban_share_percent": "SP.URB.TOTL.IN.ZS"
+}
+
+# Units of measurement
+# - CO2 per capita: metric tons per capita
+# - GDP per capita: constant 2015 US$ per person
+# - Fossil electricity share: percentage of electricity from fossil fuels
+# - Renewable energy share: percentage of total final energy consumption
+# - Forest area percent of land: percentage of land area
+# - Population total: count
+# - Urban share percent: percentage of population living in urban areas
+
+START_YEAR = 1990
+END_YEAR = 2023
+
+def fetch_world_bank_indicator(indicator_code, start_year=1990, end_year=2023, per_page=20000):
+    page = 1
+    all_rows = []
+
+    while True:
+        url = f"{WB_BASE_URL}/country/all/indicator/{indicator_code}"
+        params = {
+            "format": "json",
+            "date": f"{start_year}:{end_year}",
+            "per_page": per_page,
+            "page": page,
+        }
+
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        payload = response.json()
+
+        if len(payload) < 2 or payload[1] is None:
+            break
+
+        all_rows.extend(payload[1])
+
+        total_pages = int(payload[0]["pages"])
+        if page >= total_pages:
+            break
+        page += 1
+        time.sleep(0.1)
+
+    return pd.DataFrame(all_rows)
+
+# Pull raw records directly from the API for all required indicators
+frames = []
+for variable_name, indicator_code in INDICATORS.items():
+    df_i = fetch_world_bank_indicator(indicator_code, START_YEAR, END_YEAR)
+    df_i["variable_name"] = variable_name
+    frames.append(df_i)
+
+wb_raw = pd.concat(frames, ignore_index=True)
+
+# Keep only non-missing observed values for preview
+wb_raw = wb_raw[wb_raw["value"].notna()].copy()
+
+# Raw API preview dataframe (no local file saved)
+display(wb_raw.head(20))
+print("Shape:", wb_raw.shape)
+print("Indicators in preview:", wb_raw["indicator"].apply(lambda x: x.get("id") if isinstance(x, dict) else None).nunique())
+```
+```{python}
+#| label: wb-data-tidying
+#| warning: false
+#| message: false
+
+# Step 1: flatten nested columns
+wb_raw["indicator_code"] = wb_raw["indicator"].apply(lambda x: x["id"] if isinstance(x, dict) else None)
+wb_raw["indicator_name"] = wb_raw["indicator"].apply(lambda x: x["value"] if isinstance(x, dict) else None)
+wb_raw["country_name"] = wb_raw["country"].apply(lambda x: x["value"] if isinstance(x, dict) else None)
+
+# Step 2: convert date to numeric year and keep study period
+wb_raw["year"] = pd.to_numeric(wb_raw["date"], errors="coerce")
+wb_raw = wb_raw[(wb_raw["year"] >= 1990) & (wb_raw["year"] <= 2023)].copy()
+
+# Step 3: remove regional aggregates using the HW2 metadata logic
+def get_country_metadata():
+    page = 1
+    all_countries = []
+
+    while True:
+        params = {"format": "json", "per_page": 400, "page": page}
+        response = requests.get(f"{WB_BASE_URL}/country", params=params, timeout=30)
+        response.raise_for_status()
+        payload = response.json()
+
+        metadata = payload[0]
+        rows = payload[1]
+        all_countries.extend(rows)
+
+        if page >= int(metadata["pages"]):
+            break
+        page += 1
+
+    countries_df = pd.DataFrame(all_countries)
+    countries_df["region_name"] = countries_df["region"].apply(
+        lambda x: x.get("value") if isinstance(x, dict) else np.nan
+    )
+    return countries_df
+
+
+countries_df = get_country_metadata()
+valid_iso3 = set(countries_df.loc[countries_df["region_name"] != "Aggregates", "id"].dropna())
+
+# HW-style aggregate checks before filtering
+aggregate_rows = wb_raw[~wb_raw["countryiso3code"].isin(valid_iso3)].copy()
+aggregate_pairs = aggregate_rows[["countryiso3code", "country_name"]].drop_duplicates()
+print("Rows before removing aggregates:", wb_raw.shape[0])
+print("Unique aggregate (iso3, country) pairs:", aggregate_pairs.shape[0])
+display(aggregate_pairs.head(10))
+
+# Remove aggregates
+wb = wb_raw[wb_raw["countryiso3code"].isin(valid_iso3)].copy()
+print("Rows after removing aggregates:", wb.shape[0])
+
+# Step 4: keep only useful columns
+wb_clean = wb[
+    [
+        "countryiso3code",
+        "country_name",
+        "year",
+        "variable_name",
+        "indicator_code",
+        "value",
+    ]
+].copy()
+
+display(wb_clean.head(20))
+print("Clean panel shape:", wb_clean.shape)
+
+# Step 5: pivot to wide format (one row per country-year)
+wb_wide = wb_clean.pivot_table(
+    index=["countryiso3code", "country_name", "year"],
+    columns="variable_name",
+    values="value",
+).reset_index()
+
+wb_wide.columns.name = None
+
+# Step 6: apply lab-style plausibility checks and set implausible values to NaN
+# (following lab03/lab04 pattern of identifying suspicious values then recoding)
+plausibility_rules = {
+    "co2_per_capita": (0, None),
+    "gdp_per_capita": (0, None),
+    "fossil_electricity_share": (0, 100),
+    "renewable_energy_share": (0, 100),
+    "forest_area_percent_land": (0, 100),
+    "population_total": (0, None),
+    "urban_share_percent": (0, 100),
+}
+
+for col, (lower, upper) in plausibility_rules.items():
+    if col in wb_wide.columns:
+        if lower is not None:
+            wb_wide.loc[wb_wide[col] < lower, col] = np.nan
+        if upper is not None:
+            wb_wide.loc[wb_wide[col] > upper, col] = np.nan
+
+# Step 7: check for duplicate country-year rows
+duplicate_country_year = wb_wide.duplicated(["countryiso3code", "year"]).sum()
+print("Duplicate country-year rows:", duplicate_country_year)
+```
+
+
+```{python}
+#| label: wb-data-info
+#| warning: false
+#| message: false
+
+print(wb_wide.shape)
+print("Memory (MB):", round(wb_wide.memory_usage(deep=True).sum() / 1024**2, 2))
+display(wb_wide.head(10))
+
+print("\nNumeric summary:")
+display(wb_wide.describe())
+
+display(wb_wide.dtypes)
+```
+```{python}
+#| label: wb-missing-values
+#| warning: false
+#| message: false
+
+# Check for missing values
+missing_counts = wb_wide.isna().sum().sort_values(ascending=False)
+missing_share = (wb_wide.isna().mean() * 100).round(2)
+missing_tbl = pd.DataFrame({"missing_n": missing_counts, "missing_pct": missing_share})
+display(missing_tbl)
+```
+
+
+
 # Preliminary Results
 
+## Exploratory Data Analysis
+
+```{python}
+#| label: wb-eda-analysis-dataset
+#| warning: false
+#| message: false
+
+# Build one analysis-ready dataset for EDA
+eda_vars = [
+    "co2_per_capita",
+    "gdp_per_capita",
+    "fossil_electricity_share",
+    "renewable_energy_share",
+    "forest_area_percent_land",
+    "population_total",
+    "urban_share_percent",
+]
+
+eda_df = wb_wide[["countryiso3code", "country_name", "year"] + eda_vars].copy()
+
+print("shape:", eda_df.shape)
+print("n_rows:", eda_df.shape[0])
+print("n_cols:", eda_df.shape[1])
+print("Unique countries:", eda_df["countryiso3code"].nunique())
+print("Unique year counts per country:")
+print(eda_df.groupby("country_name")["year"].nunique().value_counts().sort_index())
+display(eda_df.head(10))
+```
+
+```{python}
+#| label: wb-eda-inspection
+#| warning: false
+#| message: false
+
+print("Missing values:\n")
+print(eda_df.isna().sum())
+
+print("\nMissing percentage (%):\n")
+print((eda_df.isna().mean() * 100).round(2))
+
+print("\nSummary statistics:\n")
+display(eda_df.describe())
+```
+
+```{python}
+#| label: wb-eda-row-level-missing
+#| warning: false
+#| message: false
+
+# Row-level missing-value handling, following the homework EDA workflow
+core_eda_vars = [
+    "co2_per_capita",
+    "gdp_per_capita",
+    "fossil_electricity_share",
+    "renewable_energy_share",
+    "forest_area_percent_land",
+]
+
+rows_before = eda_df.shape[0]
+countries_before = eda_df["countryiso3code"].nunique()
+
+eda_complete = eda_df.dropna(subset=core_eda_vars).copy()
+
+rows_after = eda_complete.shape[0]
+countries_after = eda_complete["countryiso3code"].nunique()
+
+print("Countries before filtering:", countries_before)
+print("Countries after filtering:", countries_after)
+print("Rows before row-level missing handling:", rows_before)
+print("Rows dropped (had missing in core variables):", rows_before - rows_after)
+print("Rows after row-level missing handling:", rows_after)
+print("Any missing left in core variables:", eda_complete[core_eda_vars].isna().any().any())
+print("\nUnique year counts per country after row-level filtering:")
+print(eda_complete.groupby("country_name")["year"].nunique().value_counts().sort_index())
+
+# GDP categories for grouped EDA, following the hw2/lab style
+q1 = eda_complete["gdp_per_capita"].quantile(0.25)
+q3 = eda_complete["gdp_per_capita"].quantile(0.75)
+eda_complete["gdp_level"] = pd.cut(
+    eda_complete["gdp_per_capita"],
+    bins=[0, q1, q3, np.inf],
+    labels=["low", "medium", "high"],
+    include_lowest=True,
+)
+
+display(eda_complete.head(10))
+```
+
+```{python}
+#| label: wb-eda-outlier-checks
+#| warning: false
+#| message: false
+
+def print_extremum_context(df, value_col, label):
+    min_idx = df[value_col].idxmin()
+    max_idx = df[value_col].idxmax()
+
+    min_row = df.loc[min_idx, ["country_name", "year", value_col]]
+    max_row = df.loc[max_idx, ["country_name", "year", value_col]]
+
+    print(f"\n{label} minimum at:")
+    print(min_row)
+    print(f"{label} maximum at:")
+    print(max_row)
+
+
+print_extremum_context(eda_complete, "co2_per_capita", "CO2 emissions per capita")
+print_extremum_context(eda_complete, "gdp_per_capita", "GDP per capita")
+print_extremum_context(eda_complete, "fossil_electricity_share", "Fossil electricity share")
+print_extremum_context(eda_complete, "renewable_energy_share", "Renewable energy share")
+print_extremum_context(eda_complete, "forest_area_percent_land", "Forest area percent of land")
+```
+
+```{python}
+#| label: wb-eda-summary-table
+#| warning: false
+#| message: false
+
+summary_table = (
+    eda_complete
+    .groupby("year")[
+        [
+            "co2_per_capita",
+            "gdp_per_capita",
+            "fossil_electricity_share",
+            "renewable_energy_share",
+            "forest_area_percent_land",
+            "urban_share_percent",
+        ]
+    ]
+    .agg(["mean", "std"])
+    .round(2)
+)
+
+summary_table.columns = [f"{var}_{stat}" for var, stat in summary_table.columns]
+summary_table = summary_table.reset_index()
+display(summary_table.head(10))
+```
+
+```{python}
+#| label: wb-eda-top-emitters
+#| warning: false
+#| message: false
+
+top_emitters = (
+    eda_complete
+    .groupby("country_name", as_index=False)["co2_per_capita"]
+    .mean()
+    .sort_values("co2_per_capita", ascending=False)
+    .head(15)
+)
+
+(
+    ggplot(top_emitters, aes(x="reorder(country_name, co2_per_capita)", y="co2_per_capita"))
+    + geom_col(fill="steelblue")
+    + coord_flip()
+    + labs(
+        title="Top 15 Countries by Average CO2 Emissions Per Capita",
+        x="Country",
+        y="Average CO2 emissions per capita",
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 6))
+)
+```
+
+```{python}
+#| label: wb-eda-mean-trends
+#| warning: false
+#| message: false
+
+trend_df = (
+    eda_complete
+    .groupby("year", as_index=False)[
+        [
+            "co2_per_capita",
+            "gdp_per_capita",
+            "fossil_electricity_share",
+            "renewable_energy_share",
+            "forest_area_percent_land",
+            "urban_share_percent",
+        ]
+    ]
+    .mean()
+)
+
+trend_long = trend_df.melt(
+    id_vars="year",
+    var_name="variable",
+    value_name="mean_value",
+)
+
+(
+    ggplot(trend_long, aes(x="year", y="mean_value"))
+    + geom_line(color="#2C7FB8", size=0.9)
+    + facet_wrap("~variable", scales="free_y", ncol=2)
+    + labs(
+        title="Average Country-Level Trends Over Time",
+        x="Year",
+        y="Mean value",
+    )
+    + theme_minimal()
+    + theme(figure_size=(12, 8))
+)
+```
+
+```{python}
+#| label: wb-eda-distributions
+#| warning: false
+#| message: false
+
+(
+    ggplot(eda_complete, aes(x="co2_per_capita"))
+    + geom_histogram(bins=30, fill="steelblue", color="white", alpha=0.8)
+    + labs(
+        title="Distribution of CO2 Emissions Per Capita",
+        x="CO2 emissions per capita",
+        y="Count",
+    )
+    + theme_minimal()
+    + theme(figure_size=(10, 5))
+)
+```
+
+```{python}
+#| label: wb-eda-boxplot-gdp-level
+#| warning: false
+#| message: false
+
+plot_years = [1990, 2005, 2023]
+eda_box = eda_complete[eda_complete["year"].isin(plot_years)].copy()
+eda_box["year"] = eda_box["year"].astype(str)
+
+(
+    ggplot(eda_box, aes(x="gdp_level", y="co2_per_capita", fill="gdp_level"))
+    + geom_boxplot(alpha=0.8)
+    + facet_wrap("~year", nrow=1)
+    + labs(
+        title="CO2 Emissions Per Capita by GDP Level",
+        x="GDP level",
+        y="CO2 emissions per capita",
+        fill="GDP level",
+    )
+    + theme_minimal()
+    + theme(figure_size=(12, 4.8))
+)
+```
+
+```{python}
+#| label: wb-eda-scatter-gdp
+#| warning: false
+#| message: false
+
+eda_scatter = eda_complete[eda_complete["year"].isin(plot_years)].copy()
+eda_scatter["year"] = eda_scatter["year"].astype(str)
+
+(
+    ggplot(eda_scatter, aes(x="gdp_per_capita", y="co2_per_capita"))
+    + geom_point(alpha=0.45, size=1.5, color="#4D4D4D")
+    + geom_smooth(aes(color='"Linear fit"'), method="lm", se=False, size=1.0)
+    + geom_smooth(aes(color='"Lowess fit"'), method="lowess", se=False, size=1.0)
+    + scale_color_manual(values={"Linear fit": "#D55E00", "Lowess fit": "#0072B2"})
+    + facet_wrap("~year", nrow=1, scales="free")
+    + labs(
+        title="CO2 Emissions vs GDP Per Capita",
+        x="GDP per capita",
+        y="CO2 emissions per capita",
+        color="Fit",
+    )
+    + theme_minimal()
+    + theme(figure_size=(12, 4.8))
+)
+```
+
+```{python}
+#| label: wb-eda-correlation-matrix
+#| warning: false
+#| message: false
+
+corr_vars = [
+    "co2_per_capita",
+    "gdp_per_capita",
+    "fossil_electricity_share",
+    "renewable_energy_share",
+    "forest_area_percent_land",
+    "urban_share_percent",
+]
+
+corr_df = eda_complete[corr_vars].copy()
+correlation_tbl = corr_df.corr().round(3)
+
+plt.figure(figsize=(9, 7))
+sns.heatmap(
+    correlation_tbl,
+    annot=True,
+    fmt=".2f",
+    cmap="RdBu_r",
+    vmin=-1,
+    vmax=1,
+    center=0,
+    square=True,
+    linewidths=0.5,
+    cbar_kws={"shrink": 0.8, "label": "Correlation"},
+)
+plt.title("Correlation Matrix of CO2 and Main Explanatory Variables")
+plt.xticks(rotation=45, ha="right")
+plt.yticks(rotation=0)
+plt.tight_layout()
+plt.show()
+```
+
 # Summary
+
+# References
+
+-IPCC PDF
+-https://essd.copernicus.org/articles/15/5301/2023/
+-
