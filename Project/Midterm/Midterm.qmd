@@ -74,9 +74,9 @@ Missing values were inspected for each variable before analysis. Following the l
 
 Finally, several validation checks were performed to verify the integrity of the dataset. These checks included identifying duplicate country–year observations, examining summary statistics, and inspecting the range of key variables. These steps help ensure that the dataset is suitable for subsequent exploratory and statistical analysis.
 
-## 2.4 Exploratory data analysis methods
+## 2.3 Exploratory data analysis methods
 
-# Preliminary Results
+# 3. Preliminary Results
 
 ```{python}
 #| label: data-acquisition-worldbank-api
@@ -280,6 +280,9 @@ duplicate_country_year = wb_wide.duplicated(["countryiso3code", "year"]).sum()
 print("Duplicate country-year rows:", duplicate_country_year)
 
 display(wb_wide.head(10))
+
+wb_wide.to_csv("wb_wide.csv", index=False)
+print("Saved wb_wide.csv:", wb_wide.shape)
 ```
 
 
@@ -352,7 +355,7 @@ print("\nSummary statistics:\n")
 display(eda_df.describe())
 ```
 
-# Summary
+# 4. Summary
 
 # References
 
