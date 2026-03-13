@@ -85,28 +85,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <body class="quarto-light">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#environment-setup" id="toc-environment-setup" class="nav-link active" data-scroll-target="#environment-setup">Environment Setup</a></li>
-  <li><a href="#research-question" id="toc-research-question" class="nav-link" data-scroll-target="#research-question">Research Question</a></li>
+  <li><a href="#research-question" id="toc-research-question" class="nav-link active" data-scroll-target="#research-question">Research Question</a></li>
   <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">1. Introduction</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">2. Methods</a>
   <ul class="collapse">
   <li><a href="#data-acquisition" id="toc-data-acquisition" class="nav-link" data-scroll-target="#data-acquisition">2.1 Data Acquisition</a></li>
   <li><a href="#data-wrangling-and-cleaning" id="toc-data-wrangling-and-cleaning" class="nav-link" data-scroll-target="#data-wrangling-and-cleaning">2.2 Data Wrangling and Cleaning</a></li>
   <li><a href="#exploratory-data-analysis-eda-and-regression-analysis" id="toc-exploratory-data-analysis-eda-and-regression-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda-and-regression-analysis">2.3 Exploratory Data Analysis (EDA) and Regression Analysis</a></li>
+  <li><a href="#feature-engineering" id="toc-feature-engineering" class="nav-link" data-scroll-target="#feature-engineering">2.4 Feature Engineering</a></li>
+  <li><a href="#regression-analysis" id="toc-regression-analysis" class="nav-link" data-scroll-target="#regression-analysis">2.5 Regression Analysis</a></li>
   </ul></li>
-  <li><a href="#preliminary-results" id="toc-preliminary-results" class="nav-link" data-scroll-target="#preliminary-results">3. Preliminary Results</a></li>
+  <li><a href="#preliminary-results" id="toc-preliminary-results" class="nav-link" data-scroll-target="#preliminary-results">3. Preliminary Results</a>
+  <ul class="collapse">
+  <li><a href="#data-acquisition-wrangling-and-cleaning" id="toc-data-acquisition-wrangling-and-cleaning" class="nav-link" data-scroll-target="#data-acquisition-wrangling-and-cleaning">3.1 Data Acquisition, Wrangling and Cleaning</a></li>
+  <li><a href="#exploratory-data-analysis-eda-results" id="toc-exploratory-data-analysis-eda-results" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda-results">3.2 Exploratory Data Analysis (EDA) Results</a></li>
+  </ul></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">4. Summary</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
 </div>
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -116,7 +121,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="quarto-title-meta column-page-left">
+<div class="quarto-title-meta">
 
     <div>
     <div class="quarto-title-meta-heading">Author</div>
@@ -140,9 +145,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="environment-setup" class="level1">
-<h1>Environment Setup</h1>
 <div id="environment-setup" class="cell" data-message="false" data-execution_count="1">
+<details class="code-fold">
+<summary>Package Imports</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -155,8 +160,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-</section>
 <section id="research-question" class="level1">
 <h1>Research Question</h1>
 <p>How have carbon dioxide emissions per capita evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences?</p>
@@ -171,22 +176,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>2. Methods</h1>
 <section id="data-acquisition" class="level2">
 <h2 class="anchored" data-anchor-id="data-acquisition">2.1 Data Acquisition</h2>
-<p>The data for this project were obtained from World Bank Open Data platform through the World Bank Open Data API. The API provides access to the World Development Indicators (WDI) database, which contains standardized economic, energy, and land-use indicators for all countries and regions around the world. The analysis focuses on the period from 1990 to 2023, which ensures sufficient data availability for most countries. Several relevant indicators were retrieved from the API, including carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of total land area, total population, and the share of the population living in urban areas. The API responses were in JSON format and converted into <code>pandas</code> DataFrames for further analysis by using the <code>requests</code> library in Python. All data were retrieved programmatically through the API to ensure reproducibility of the data acquisition process.</p>
+<p>The data for this project were obtained from World Bank Open Data platform through the World Bank Open Data API. The API provides access to the World Development Indicators (WDI) database, which contains standardized economic, energy, and land-use indicators for all countries and regions around the world. The analysis focuses on the period from 1990 to 2023, which ensures sufficient data availability for most countries. Several relevant indicators were retrieved from the API by a loop, including carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of total land area, total population, and the share of the population living in urban areas. The API responses were in JSON format and converted into <code>pandas</code> DataFrames for further analysis by using the <code>requests</code> library in Python. All data were retrieved programmatically through the API to ensure reproducibility of the data acquisition process.</p>
 </section>
 <section id="data-wrangling-and-cleaning" class="level2">
 <h2 class="anchored" data-anchor-id="data-wrangling-and-cleaning">2.2 Data Wrangling and Cleaning</h2>
 <p>After retrieving the indicators from the API, several steps were taken to prepare the data for analysis. The raw API responses contain individual datasets for each indicator, so the first step was to organize these datasets into a consistent structure. The goal was to construct a dataset in which each row represents a country–year observation and each column represents a variable.</p>
 <p>The datasets were merged using ISO3 country codes, i.e.&nbsp;three-letter country codes, and year identifiers. These variables provide consistent keys across World Bank indicators and allow observations from different datasets to be combined into a single table. The reason that not using the country name is because the country name might not be consistent across the different datasets although the data comes from the same source.</p>
-<p>The separately retrieved indicator datasets were initially combined into a long-format dataset. If there were nested API fields, they were then flattened to extract the nested values into separate columns. As the World Bank dataset contains data for regions/aggregates as well as countries, such as Africa Eastern and Southern region, these regional aggregates were removed from the dataset to avoid misinterpretation.</p>
-<p>To facilitate the analysis, the long dataset was reshaped into a wide country-year dataset, where each indicator becomes a column instead of a value in a single column which stored all the indicator names/codes. This process produced a unified dataset containing economic, energy, land-use, and demographic indicators for each country and year.</p>
-<p>Data types were then standardized to ensure consistency across datasets. All the indicator variables were converted to float, as they are either percentages or metric tons or dollars, which are all numerical float values. Country identifiers and year variables were also checked to ensure consistent formatting across the merged datasets.</p>
-<p>Missing values were inspected for each variable before analysis. Missing or implausible values were coded as <code>NaN</code> and their frequency was summarized across variables. For the main analysis, missing values were handled at the row level by dropping observations with missing values in the core analysis variables, while keeping all other available observations in the dataset until that stage. This approach keeps the missing-value treatment transparent and avoids introducing additional assumptions through imputation.</p>
-<p>Finally, several validation checks were performed to verify the integrity of the dataset. These checks included identifying duplicate country–year observations, examining summary statistics, and inspecting the range of key variables. These steps help ensure that the dataset is suitable for subsequent exploratory and statistical analysis.</p>
+<p>The separately retrieved indicator datasets were initially combined into a long-format dataset. If there were nested API fields, they were then flattened to extract the nested values into separate columns. As the World Bank dataset contains data for regions/aggregates as well as countries, such as Africa Eastern and Southern region, these regional aggregates were removed from the dataset to avoid misinterpretation. Therefore, it would be necessary to query the World Bank country metadata endpoint to collect all the country metadata in World Bank Open Data API. As the metadata contains a field called <code>region_name</code> for each country/region, when its value is “Aggregates”, it means the row is a regional/grop aggregate data rather than a country data. After collecting all the aggregate codes (name may also be fine, but codes are safer due to natural uniqueness), the dataset was filtered to retain only rows whose <code>countryiso3code</code> belongs to the valid country set. In effect, this step ensures that the final panel is composed only of individual countries, rather than regional summaries such as Africa Eastern and Southern or other World Bank aggregate groups. This is important because the project aims to compare country-level patterns, and aggregate units would distort those comparisons.</p>
+<p>To facilitate the analysis, the long dataset was reshaped into a wide country-year dataset, where each indicator becomes a column instead of a value in a single column which stored all the indicator names/codes. This process produced a unified dataset containing economic, energy, land-use, and demographic indicators for each country and year. Data types were then standardized to ensure consistency across datasets. All the indicator variables were converted to float, as they are either percentages or metric tons or dollars, which are all numerical float values. Country identifiers and year variables were also checked to ensure consistent formatting across the merged datasets. Missing values were inspected for each variable before analysis. They were coded to <code>NaN</code> from all possible missing-value placeholders to ensure the consistency of later missing-value handling. Finally, several validation checks were performed to verify the integrity of the dataset. These checks included identifying duplicate country–year observations, formating of the country ISO3 codes, year range, and inspecting the range of indicator variables. These steps help ensure that the dataset is suitable for subsequent exploratory and statistical analysis.</p>
+<p>For the main analysis, missing values were handled at the row level by dropping observations with missing values in the core analysis variables, while keeping all other available observations in the dataset until that stage. This approach keeps the missing-value treatment transparent and avoids introducing additional assumptions through imputation.</p>
 </section>
 <section id="exploratory-data-analysis-eda-and-regression-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis-eda-and-regression-analysis">2.3 Exploratory Data Analysis (EDA) and Regression Analysis</h2>
-<p>EDA was conducted to examine the structure of the dataset and to identify patterns related to the research question. First, descriptive statistics were computed for all numerical variables included in the dataset. Counts, means, medians, standard deviation, minimum and maximum values, and quantiles were calculated to summarize the distribution of each numerical variable and not including country codes and names. These measures provide an overview of the variables’ distributions, which can help identify potential extreme values or outliers.</p>
+<p>EDA was conducted to examine the structure of the dataset and to identify patterns related to the research question. First, descriptive statistics were computed for all numerical variables included in the dataset. Counts, means, medians, standard deviation, minimum &amp; maximum values, and percentiles were calculated to summarize the distribution of each numerical variable and not including country codes and names. These measures provide an overview of the variables’ distributions, which can help identify potential extreme values or outliers.</p>
 <p>Visual exploration was then performed to examine patterns in the data. Several graphical methods were used to explore relationships between variables and to identify potential trends. Line plots were used to examine how carbon dioxide emissions per capita change over time. Histograms were used to inspect the distribution of individual variables and to identify skewness or potential outliers. Scatter plots were used to examine the relationship between carbon dioxide emissions per capita and explanatory variables. In some cases, faceted plots were used to compare patterns across groups of countries.</p>
+</section>
+<section id="feature-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineering">2.4 Feature Engineering</h2>
+</section>
+<section id="regression-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="regression-analysis">2.5 Regression Analysis</h2>
 <p>In order to discover the association between carbon dioxide emissions per capita and potential explanatory factors, regression analysis was conducted. Linear regression models were used to evaluate how economic development, energy structure, and land-use indicators are related to differences in carbon dioxide emissions per capita across countries in terms of linear relationships. carbon dioxide emissions per capita were treated as the dependent variable, while GDP per capita, energy indicators, and land-use variables were treated as independent variables.</p>
 <p>Using linear regression only may not be sufficient to capture the complex relationship between carbon dioxide emissions per capita and potential explanatory factors in real life scenarios in general. In addition, generalized additive models (GAMs) were used to explore potential nonlinear relationships between variables. GAM models allow smooth functions of predictors to be estimated, which can capture nonlinear patterns that may not be adequately represented by a linear model. This approach is particularly useful when examining the relationship between economic development and emissions, which may change at different stages of economic growth.</p>
 <p>All analyses were conducted using Python. Data manipulation and preparation were performed using the <code>pandas</code> library. Visualizations were created using <code>plotnine</code>, <code>matplotlib</code>, and <code>seaborn</code>. Linear regression models were estimated using the <code>statsmodels</code> package, and smooth regression models like GAMs were estimated using the <code>pygam</code> library.</p>
@@ -194,7 +203,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="preliminary-results" class="level1">
 <h1>3. Preliminary Results</h1>
-<div id="cell-data-acquisition-worldbank-api" class="cell" data-message="false" data-execution_count="2">
+<section id="data-acquisition-wrangling-and-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-acquisition-wrangling-and-cleaning">3.1 Data Acquisition, Wrangling and Cleaning</h2>
+<div id="data-acquisition" class="cell" data-message="false" data-execution_count="2">
+<details class="code-fold">
+<summary>Show code for data acquisition</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>WB_BASE_URL <span class="op">=</span> <span class="st">"https://api.worldbank.org/v2"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Indicator codes aligned with the research question</span></span>
@@ -255,1219 +268,364 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw API preview dataframe (no local file saved)</span></span>
 <span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>display(wb_raw.head(<span class="dv">20</span>))</span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shape:"</span>, wb_raw.shape)</span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Indicators in preview:"</span>, wb_raw[<span class="st">"indicator"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.get(<span class="st">"id"</span>) <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> <span class="va">None</span>).nunique())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="data-acquisition-worldbank-api" class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">indicator</th>
-<th data-quarto-table-cell-role="th">country</th>
-<th data-quarto-table-cell-role="th">countryiso3code</th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">value</th>
-<th data-quarto-table-cell-role="th">unit</th>
-<th data-quarto-table-cell-role="th">obs_status</th>
-<th data-quarto-table-cell-role="th">decimal</th>
-<th data-quarto-table-cell-role="th">variable_name</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">0</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2023</td>
-<td>0.838104</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2022</td>
-<td>0.858132</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">2</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2021</td>
-<td>0.899170</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">3</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2020</td>
-<td>0.897581</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">4</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2019</td>
-<td>0.984697</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">5</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2018</td>
-<td>0.998509</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">6</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2017</td>
-<td>1.013008</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">7</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2016</td>
-<td>1.025492</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">8</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2015</td>
-<td>1.046291</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">9</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2014</td>
-<td>1.096735</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">10</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2013</td>
-<td>1.087644</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">11</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2012</td>
-<td>1.073351</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">12</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2011</td>
-<td>1.065235</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">13</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2010</td>
-<td>1.107383</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">14</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2009</td>
-<td>1.108703</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">15</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2008</td>
-<td>1.192889</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">16</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2007</td>
-<td>1.160497</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">17</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2006</td>
-<td>1.142393</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">18</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2005</td>
-<td>1.152525</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">19</th>
-<td>{'id': 'EN.GHG.CO2.PC.CE.AR5', 'value': 'Carbo...</td>
-<td>{'id': 'ZH', 'value': 'Africa Eastern and Sout...</td>
-<td>AFE</td>
-<td>2004</td>
-<td>1.150530</td>
-<td></td>
-<td></td>
-<td>1</td>
-<td>co2_per_capita</td>
-</tr>
-</tbody>
-</table>
-
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shape:"</span>, wb_raw.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
+<div id="wb-data-flattening" class="cell" data-message="false" data-execution_count="3">
+<details class="code-fold">
+<summary>Show code for data flattening</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten nested JSON fields</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The World Bank API returns 'indicator' and 'country' as dicts inside each</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># row. Extract the id/value fields into plain columns so the data can be</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># filtered and merged as a regular flat table.</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>wb_raw[<span class="st">"indicator_code"</span>] <span class="op">=</span> wb_raw[<span class="st">"indicator"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="st">"id"</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> <span class="va">None</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>wb_raw[<span class="st">"indicator_name"</span>] <span class="op">=</span> wb_raw[<span class="st">"indicator"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="st">"value"</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> <span class="va">None</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>wb_raw[<span class="st">"country_name"</span>] <span class="op">=</span> wb_raw[<span class="st">"country"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="st">"value"</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> <span class="va">None</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>flat_wb_raw_shape <span class="op">=</span> wb_raw.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Shape: (59734, 9)
-Indicators in preview: 7</code></pre>
-</div>
-</div>
-<div id="wb-data-tidying" class="cell" data-message="false" data-execution_count="3">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: flatten nested columns</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>wb_raw[<span class="st">"indicator_code"</span>] <span class="op">=</span> wb_raw[<span class="st">"indicator"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="st">"id"</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> <span class="va">None</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>wb_raw[<span class="st">"indicator_name"</span>] <span class="op">=</span> wb_raw[<span class="st">"indicator"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="st">"value"</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> <span class="va">None</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>wb_raw[<span class="st">"country_name"</span>] <span class="op">=</span> wb_raw[<span class="st">"country"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="st">"value"</span>] <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> <span class="va">None</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: convert date to numeric year and keep study period</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>wb_raw[<span class="st">"year"</span>] <span class="op">=</span> pd.to_numeric(wb_raw[<span class="st">"date"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>wb_raw <span class="op">=</span> wb_raw[(wb_raw[<span class="st">"year"</span>] <span class="op">&gt;=</span> <span class="dv">1990</span>) <span class="op">&amp;</span> (wb_raw[<span class="st">"year"</span>] <span class="op">&lt;=</span> <span class="dv">2023</span>)].copy()</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: remove regional aggregates using the HW2 metadata logic</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_country_metadata():</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    page <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    all_countries <span class="op">=</span> []</span>
+<p>Data were retrieved sucessfully from the World Bank Open Data API by using JSON format within a for loop of the indiators specified in advance for this project. Then merged each indicator-specific dataset into a single raw, long format dataset by using <code>countryiso3code</code> (3-letter country codes) and <code>year</code> as the keys. However, in the initial dataset, the values of the coloumns <code>indicator</code> and <code>country</code> were nested dictionaries, which were not suitable for further analysis. Therefore, the nested columns were flattened into plain columns so the data can be filtered and merged as a regular flat table by picking out the attributes to form new columns. The dictionaries in <code>indicator</code> column had the indicator codes, whcih were mapped to <code>indicator_code</code> in the flattened dataset, and their official names, which were mapped to <code>variable_name</code> in the flattened dataset, and the ones in <code>country</code> column had the country ids and their official names, which are mapped to <code>country_name</code> int the flattened dataset. After that, the flattened dataset had 59734 rows and 12 columns.</p>
+<div id="wb-data-aggregates-removal" class="cell" data-message="false" data-execution_count="4">
+<details class="code-fold">
+<summary>Show code for aggregates data removal</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove regional/income-group aggregates</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The World Bank API mixes true country records with regional and income-group</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># aggregates (e.g. "Africa Eastern and Southern"). Fetch the country metadata</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint and retain only rows whose region_name is not "Aggregates".</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_country_metadata():</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    page <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    all_countries <span class="op">=</span> []</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        params <span class="op">=</span> {<span class="st">"format"</span>: <span class="st">"json"</span>, <span class="st">"per_page"</span>: <span class="dv">400</span>, <span class="st">"page"</span>: page}</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> requests.get(<span class="ss">f"</span><span class="sc">{</span>WB_BASE_URL<span class="sc">}</span><span class="ss">/country"</span>, params<span class="op">=</span>params, timeout<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        response.raise_for_status()</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        payload <span class="op">=</span> response.json()</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        params <span class="op">=</span> {<span class="st">"format"</span>: <span class="st">"json"</span>, <span class="st">"per_page"</span>: <span class="dv">400</span>, <span class="st">"page"</span>: page}</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> requests.get(<span class="ss">f"</span><span class="sc">{</span>WB_BASE_URL<span class="sc">}</span><span class="ss">/country"</span>, params<span class="op">=</span>params, timeout<span class="op">=</span><span class="dv">30</span>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        response.raise_for_status()</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        payload <span class="op">=</span> response.json()</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        metadata <span class="op">=</span> payload[<span class="dv">0</span>]</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        rows <span class="op">=</span> payload[<span class="dv">1</span>]</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        all_countries.extend(rows)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> page <span class="op">&gt;=</span> <span class="bu">int</span>(metadata[<span class="st">"pages"</span>]):</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        page <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        metadata <span class="op">=</span> payload[<span class="dv">0</span>]</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        rows <span class="op">=</span> payload[<span class="dv">1</span>]</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        all_countries.extend(rows)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> page <span class="op">&gt;=</span> <span class="bu">int</span>(metadata[<span class="st">"pages"</span>]):</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        page <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    countries_df <span class="op">=</span> pd.DataFrame(all_countries)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    countries_df[<span class="st">"region_name"</span>] <span class="op">=</span> countries_df[<span class="st">"region"</span>].<span class="bu">apply</span>(</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="kw">lambda</span> x: x.get(<span class="st">"value"</span>) <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> np.nan</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> countries_df</span>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    countries_df <span class="op">=</span> pd.DataFrame(all_countries)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    countries_df[<span class="st">"region_name"</span>] <span class="op">=</span> countries_df[<span class="st">"region"</span>].<span class="bu">apply</span>(</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        <span class="kw">lambda</span> x: x.get(<span class="st">"value"</span>) <span class="cf">if</span> <span class="bu">isinstance</span>(x, <span class="bu">dict</span>) <span class="cf">else</span> np.nan</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> countries_df</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>countries_df <span class="op">=</span> get_country_metadata()</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>valid_iso3 <span class="op">=</span> <span class="bu">set</span>(countries_df.loc[countries_df[<span class="st">"region_name"</span>] <span class="op">!=</span> <span class="st">"Aggregates"</span>, <span class="st">"id"</span>].dropna())</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>countries_df <span class="op">=</span> get_country_metadata()</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>valid_iso3 <span class="op">=</span> <span class="bu">set</span>(countries_df.loc[countries_df[<span class="st">"region_name"</span>] <span class="op">!=</span> <span class="st">"Aggregates"</span>, <span class="st">"id"</span>].dropna())</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>aggregate_rows <span class="op">=</span> wb_raw[<span class="op">~</span>wb_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3)].copy()</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>aggregate_pairs <span class="op">=</span> aggregate_rows[[<span class="st">"countryiso3code"</span>, <span class="st">"country_name"</span>]].drop_duplicates()</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows before removing aggregates:"</span>, wb_raw.shape[<span class="dv">0</span>])</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique aggregate (iso3, country) pairs removed:"</span>, aggregate_pairs.shape[<span class="dv">0</span>])</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>display(aggregate_pairs.head(<span class="dv">10</span>))</span>
 <span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># HW-style aggregate checks before filtering</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>aggregate_rows <span class="op">=</span> wb_raw[<span class="op">~</span>wb_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3)].copy()</span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>aggregate_pairs <span class="op">=</span> aggregate_rows[[<span class="st">"countryiso3code"</span>, <span class="st">"country_name"</span>]].drop_duplicates()</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows before removing aggregates:"</span>, wb_raw.shape[<span class="dv">0</span>])</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique aggregate (iso3, country) pairs:"</span>, aggregate_pairs.shape[<span class="dv">0</span>])</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>display(aggregate_pairs.head(<span class="dv">10</span>))</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove aggregates</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>wb <span class="op">=</span> wb_raw[wb_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3)].copy()</span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after removing aggregates:"</span>, wb.shape[<span class="dv">0</span>])</span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: keep only useful columns</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>wb_clean <span class="op">=</span> wb[</span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>    [</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>        <span class="st">"countryiso3code"</span>,</span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>        <span class="st">"country_name"</span>,</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>        <span class="st">"year"</span>,</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>        <span class="st">"variable_name"</span>,</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>        <span class="st">"indicator_code"</span>,</span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>        <span class="st">"value"</span>,</span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>].copy()</span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>display(wb_clean.head(<span class="dv">20</span>))</span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Clean panel shape:"</span>, wb_clean.shape)</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 5: pivot to wide format using ISO3 code and year as merge keys</span></span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>wb_wide <span class="op">=</span> wb_clean.pivot_table(</span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>],</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span><span class="st">"variable_name"</span>,</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>    values<span class="op">=</span><span class="st">"value"</span>,</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>).reset_index()</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep country names as descriptive labels after merging indicators</span></span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>country_year_labels <span class="op">=</span> (</span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>    wb_clean[[<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>, <span class="st">"country_name"</span>]]</span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>    .drop_duplicates(subset<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>])</span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>wb_wide <span class="op">=</span> wb_wide.merge(</span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>    country_year_labels,</span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>    on<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>],</span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"left"</span>,</span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>wb_wide <span class="op">=</span> wb_wide[</span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"countryiso3code"</span>, <span class="st">"country_name"</span>, <span class="st">"year"</span>]</span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> [col <span class="cf">for</span> col <span class="kw">in</span> wb_wide.columns <span class="cf">if</span> col <span class="kw">not</span> <span class="kw">in</span> [<span class="st">"countryiso3code"</span>, <span class="st">"country_name"</span>, <span class="st">"year"</span>]]</span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>wb_wide.columns.name <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 6: standardize data types — convert indicator columns to float</span></span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>indicator_cols <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> INDICATORS <span class="cf">if</span> col <span class="kw">in</span> wb_wide.columns]</span>
-<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>wb_wide[indicator_cols] <span class="op">=</span> (</span>
-<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>    wb_wide[indicator_cols]</span>
-<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(pd.to_numeric, errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
-<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>    .astype(<span class="bu">float</span>)</span>
-<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 7: check country identifier and year formatting consistency</span></span>
-<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>wb_wide[<span class="st">"year"</span>] <span class="op">=</span> wb_wide[<span class="st">"year"</span>].astype(<span class="bu">int</span>)</span>
-<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>invalid_iso3 <span class="op">=</span> wb_wide[<span class="op">~</span>wb_wide[<span class="st">"countryiso3code"</span>].<span class="bu">str</span>.match(<span class="vs">r"</span><span class="dv">^</span><span class="pp">[A-Z]</span><span class="op">{3}</span><span class="dv">$</span><span class="vs">"</span>, na<span class="op">=</span><span class="va">False</span>)]</span>
-<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows with non-standard ISO3 codes:"</span>, invalid_iso3.shape[<span class="dv">0</span>])</span>
-<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Year dtype:"</span>, wb_wide[<span class="st">"year"</span>].dtype)</span>
-<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 8: standardize missing-value placeholders to NaN</span></span>
-<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>missing_markers <span class="op">=</span> [<span class="st">""</span>, <span class="st">" "</span>, <span class="st">"N/A"</span>, <span class="st">"NA"</span>, <span class="st">"na"</span>, <span class="st">"null"</span>, <span class="st">"Null"</span>, <span class="st">"NULL"</span>, <span class="st">"-"</span>, <span class="st">"--"</span>, <span class="st">".."</span>]</span>
-<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>wb_wide <span class="op">=</span> wb_wide.replace(missing_markers, np.nan)</span>
-<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 9: apply plausibility checks and set implausible values to NaN</span></span>
-<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>plausibility_rules <span class="op">=</span> {</span>
-<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>    <span class="st">"co2_per_capita"</span>: (<span class="dv">0</span>, <span class="va">None</span>),</span>
-<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gdp_per_capita"</span>: (<span class="dv">0</span>, <span class="va">None</span>),</span>
-<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fossil_electricity_share"</span>: (<span class="dv">0</span>, <span class="dv">100</span>),</span>
-<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>    <span class="st">"renewable_energy_share"</span>: (<span class="dv">0</span>, <span class="dv">100</span>),</span>
-<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forest_area_percent_land"</span>: (<span class="dv">0</span>, <span class="dv">100</span>),</span>
-<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population_total"</span>: (<span class="dv">0</span>, <span class="va">None</span>),</span>
-<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>    <span class="st">"urban_share_percent"</span>: (<span class="dv">0</span>, <span class="dv">100</span>),</span>
-<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col, (lower, upper) <span class="kw">in</span> plausibility_rules.items():</span>
-<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> col <span class="kw">in</span> wb_wide.columns:</span>
-<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> lower <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>            wb_wide.loc[wb_wide[col] <span class="op">&lt;</span> lower, col] <span class="op">=</span> np.nan</span>
-<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> upper <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>            wb_wide.loc[wb_wide[col] <span class="op">&gt;</span> upper, col] <span class="op">=</span> np.nan</span>
-<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 10: check for duplicate country-year rows</span></span>
-<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>duplicate_country_year <span class="op">=</span> wb_wide.duplicated([<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>]).<span class="bu">sum</span>()</span>
-<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Duplicate country-year rows:"</span>, duplicate_country_year)</span>
-<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>display(wb_wide.head(<span class="dv">10</span>))</span>
-<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>wb_wide.to_csv(<span class="st">"wb_wide.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Saved wb_wide.csv:"</span>, wb_wide.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows before removing aggregates: 59734
-Unique aggregate (iso3, country) pairs: 48</code></pre>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>wb <span class="op">=</span> wb_raw[wb_raw[<span class="st">"countryiso3code"</span>].isin(valid_iso3)].copy()</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>wb_shape <span class="op">=</span> wb.shape</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after removing aggregates:"</span>, wb.shape[<span class="dv">0</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<div id="wb-data-tidying-1" class="cell-output cell-output-display">
+<p>With previewing some rows of the flattened dataset, some aggregates/regions data were found, rows with a <code>country_name</code> like “Africa Eastern and Southern” were removed to avoid misinterpretation by using the country metadata endpoint. After the removal of aggregates data, the dataset had 48548 rows left.</p>
+<div id="wb-data-reshaping" class="cell" data-message="false" data-execution_count="5">
+<details class="code-fold">
+<summary>Show code for reshaping dataset</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the year identifier</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the API 'date' field to a numeric year column before selecting</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># country-year keys for the reshape step below.</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>wb[<span class="st">"year"</span>] <span class="op">=</span> pd.to_numeric(wb[<span class="st">"date"</span>], errors<span class="op">=</span><span class="st">"coerce"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Retain only columns needed for the analysis</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop auxiliary API fields and keep the five columns required for reshaping.</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>wb_clean <span class="op">=</span> wb[</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"countryiso3code"</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"country_name"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"year"</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"variable_name"</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"indicator_code"</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"value"</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>].copy()</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>display(wb_clean.head(<span class="dv">20</span>))</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Clean panel shape:"</span>, wb_clean.shape)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape long to wide (one row per country-year)</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># pivot_table spreads each variable_name into its own column, using ISO3 code</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># and year as the row keys. country_name is added back as a label column via a</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co"># left join, then moved to the front for readability.</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>wb_wide <span class="op">=</span> wb_clean.pivot_table(</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>],</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span><span class="st">"variable_name"</span>,</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    values<span class="op">=</span><span class="st">"value"</span>,</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>).reset_index()</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>country_year_labels <span class="op">=</span> (</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    wb_clean[[<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>, <span class="st">"country_name"</span>]]</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    .drop_duplicates(subset<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>])</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>wb_wide <span class="op">=</span> wb_wide.merge(</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    country_year_labels,</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    on<span class="op">=</span>[<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>],</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    how<span class="op">=</span><span class="st">"left"</span>,</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>wb_wide <span class="op">=</span> wb_wide[</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"countryiso3code"</span>, <span class="st">"country_name"</span>, <span class="st">"year"</span>]</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> [col <span class="cf">for</span> col <span class="kw">in</span> wb_wide.columns <span class="cf">if</span> col <span class="kw">not</span> <span class="kw">in</span> [<span class="st">"countryiso3code"</span>, <span class="st">"country_name"</span>, <span class="st">"year"</span>]]</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>wb_wide_shape <span class="op">=</span> wb_wide.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Next, since the project aims to analyze based on a country-year dataset, the long dataset was reshaped into a wide dataset, where each indicator becomes a column instead of a value in a single column which stored all the indicator names/codes. To ensure safety during the reshaping process, the year identifier was created by converting the API <code>date</code> field into a numeric year so the dataset can be indexed by country-year in the reshape step. After reshaping, the dataset became wide format containing <code>co2_per_capita</code>, <code>gdp_per_capita</code>, <code>fossil_electricity_share</code>, <code>renewable_energy_share</code>, <code>forest_area_percent_land</code>, <code>population_total</code>, and <code>urban_share_percent</code> data for each country that represents in <code>countryiso3code</code> and <code>country_name</code>, and <code>year</code> only without other redundant columns and information. At this stage, the dataset had 7378 rows and 10 columns.</p>
+<div class="cell" data-message="false" data-tbl-cap="Data Type Inspection Table" data-execution_count="6">
+<details class="code-fold">
+<summary>Show code for data type standardization</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize data types (If needed after checking initial data types)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># All indicator columns are numeric (percentages, USD, metric tons). Coerce to</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># float so downstream arithmetic and comparisons behave consistently. And year is stored as integer.</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>display(wb_wide.dtypes.rename(<span class="st">"dtype"</span>).reset_index().rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"Columns"</span>}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="wb-data-type-standardization" class="cell-output cell-output-display">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Data Type Inspection Table</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">countryiso3code</th>
-<th data-quarto-table-cell-role="th">country_name</th>
+<th data-quarto-table-cell-role="th">Columns</th>
+<th data-quarto-table-cell-role="th">dtype</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
-<td>AFE</td>
-<td>Africa Eastern and Southern</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">34</th>
-<td>AFW</td>
-<td>Africa Western and Central</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">68</th>
-<td>ARB</td>
-<td>Arab World</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">102</th>
-<td>CSS</td>
-<td>Caribbean small states</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">136</th>
-<td>CEB</td>
-<td>Central Europe and the Baltics</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">170</th>
-<td>EAR</td>
-<td>Early-demographic dividend</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">204</th>
-<td>EAS</td>
-<td>East Asia &amp; Pacific</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">238</th>
-<td>EAP</td>
-<td>East Asia &amp; Pacific (excluding high income)</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">272</th>
-<td>TEA</td>
-<td>East Asia &amp; Pacific (IDA &amp; IBRD countries)</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">306</th>
-<td>EMU</td>
-<td>Euro area</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Rows after removing aggregates: 48548</code></pre>
-</div>
-<div id="wb-data-tidying-2" class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">countryiso3code</th>
-<th data-quarto-table-cell-role="th">country_name</th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">variable_name</th>
-<th data-quarto-table-cell-role="th">indicator_code</th>
-<th data-quarto-table-cell-role="th">value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1666</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2023</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.280995</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1667</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2022</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.278421</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1668</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2021</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.312157</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1669</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2020</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.310825</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1670</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2019</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.319753</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1671</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2018</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.321419</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1672</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2017</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.291328</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1673</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2016</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.219353</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1674</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2015</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.249091</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1675</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2014</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.242702</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1676</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2013</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.266540</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1677</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2012</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.323442</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1678</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2011</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.392641</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1679</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2010</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.278192</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1680</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2009</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.224491</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1681</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2008</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.147376</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1682</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2007</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.079669</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1683</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2006</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.055794</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">1684</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2005</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.052298</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1685</th>
-<td>AFG</td>
-<td>Afghanistan</td>
-<td>2004</td>
-<td>co2_per_capita</td>
-<td>EN.GHG.CO2.PC.CE.AR5</td>
-<td>0.038301</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Clean panel shape: (48548, 6)
-Rows with non-standard ISO3 codes: 0
-Year dtype: int64
-Duplicate country-year rows: 0</code></pre>
-</div>
-<div id="wb-data-tidying-3" class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">countryiso3code</th>
-<th data-quarto-table-cell-role="th">country_name</th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">co2_per_capita</th>
-<th data-quarto-table-cell-role="th">forest_area_percent_land</th>
-<th data-quarto-table-cell-role="th">fossil_electricity_share</th>
-<th data-quarto-table-cell-role="th">gdp_per_capita</th>
-<th data-quarto-table-cell-role="th">population_total</th>
-<th data-quarto-table-cell-role="th">renewable_energy_share</th>
-<th data-quarto-table-cell-role="th">urban_share_percent</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">0</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1990</td>
-<td>3.203034</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>24763.653810</td>
-<td>62753.0</td>
-<td>0.3</td>
-<td>65.432816</td>
+<td>countryiso3code</td>
+<td>object</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1991</td>
-<td>3.435717</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>25460.363027</td>
-<td>65896.0</td>
-<td>0.2</td>
-<td>65.400922</td>
+<td>country_name</td>
+<td>object</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1992</td>
-<td>3.634519</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>25743.445501</td>
-<td>69005.0</td>
-<td>0.2</td>
-<td>65.390589</td>
+<td>year</td>
+<td>int64</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1993</td>
-<td>3.414535</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>25870.153396</td>
-<td>73685.0</td>
-<td>0.2</td>
-<td>65.384467</td>
+<td>co2_per_capita</td>
+<td>float64</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1994</td>
-<td>3.683227</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26581.976749</td>
-<td>77595.0</td>
-<td>0.2</td>
-<td>65.380048</td>
+<td>forest_area_percent_land</td>
+<td>float64</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">5</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1995</td>
-<td>3.939603</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26504.186418</td>
-<td>79805.0</td>
-<td>0.2</td>
-<td>65.376703</td>
+<td>fossil_electricity_share</td>
+<td>float64</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1996</td>
-<td>2.490936</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>25779.597928</td>
-<td>83021.0</td>
-<td>0.2</td>
-<td>65.373804</td>
+<td>gdp_per_capita</td>
+<td>float64</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">7</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1997</td>
-<td>3.974461</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26547.416608</td>
-<td>86301.0</td>
-<td>0.2</td>
-<td>65.370721</td>
+<td>population_total</td>
+<td>float64</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">8</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1998</td>
-<td>3.970560</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26418.088330</td>
-<td>88451.0</td>
-<td>0.2</td>
-<td>65.366825</td>
+<td>renewable_energy_share</td>
+<td>float64</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">9</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1999</td>
-<td>3.969484</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26384.810594</td>
-<td>89659.0</td>
-<td>0.2</td>
-<td>65.361486</td>
+<td>urban_share_percent</td>
+<td>float64</td>
 </tr>
 </tbody>
 </table>
 
 </div>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Saved wb_wide.csv: (7378, 10)</code></pre>
 </div>
+<div id="wb-data-missing-value-standardization" class="cell" data-message="fals" data-execution_count="7">
+<details class="code-fold">
+<summary>Show code for missing value placeholder standardization</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize missing-value placeholders</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace common string sentinels with NaN so that all missing-value checks</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># operate on a single representation.</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>missing_markers <span class="op">=</span> [<span class="st">""</span>, <span class="st">" "</span>, <span class="st">"N/A"</span>, <span class="st">"NA"</span>, <span class="st">"na"</span>, <span class="st">"null"</span>, <span class="st">"Null"</span>, <span class="st">"NULL"</span>, <span class="st">"-"</span>, <span class="st">"--"</span>, <span class="st">".."</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>wb_wide <span class="op">=</span> wb_wide.replace(missing_markers, np.nan)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<div id="wb-data-info" class="cell" data-message="false" data-execution_count="4">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(wb_wide.shape)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Memory (MB):"</span>, <span class="bu">round</span>(wb_wide.memory_usage(deep<span class="op">=</span><span class="va">True</span>).<span class="bu">sum</span>() <span class="op">/</span> <span class="dv">1024</span><span class="op">**</span><span class="dv">2</span>, <span class="dv">2</span>))</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>display(wb_wide.head(<span class="dv">10</span>))</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Numeric summary:"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>display(wb_wide.describe())</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>display(wb_wide.dtypes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>(7378, 10)
-Memory (MB): 1.23</code></pre>
+<p>According to Data Type Inspection Table, all the indicator columns were float, which were accurate as they were either percentages or metric tons or dollars. The <code>year</code> column was treated as integer, and the country metadata columns were object, i.e.&nbsp;strings. Therefore, it was not necessary to standardize the data types further. In addition, to ensure the consistency of the missing-value inspection, replace all the possible missing-value placeholders, such as empty strings, spaces, <code>N/A</code>, <code>NA</code>, <code>na</code>, <code>null</code>, <code>Null</code>, <code>NULL</code>, <code>-</code>, <code>--</code>, <code>..</code>, etc., to <code>NaN</code> strictly in the dataset.</p>
+<div id="wb-data-plausibility-checks" class="cell" data-message="false" data-execution_count="8">
+<details class="code-fold">
+<summary>Show code for plausibility checks and saving the dataset</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for out-of-range values based on each variable's units and save counts</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>plausibility_bounds <span class="op">=</span> {</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"co2_per_capita"</span>:          (<span class="dv">0</span>, <span class="va">None</span>),   <span class="co"># metric tons per capita</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gdp_per_capita"</span>:          (<span class="dv">0</span>, <span class="va">None</span>),   <span class="co"># constant 2015 USD per person</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fossil_electricity_share"</span>:(<span class="dv">0</span>, <span class="dv">100</span>),    <span class="co"># % of electricity from fossil fuels</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"renewable_energy_share"</span>:  (<span class="dv">0</span>, <span class="dv">100</span>),    <span class="co"># % of total final energy consumption</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forest_area_percent_land"</span>:(<span class="dv">0</span>, <span class="dv">100</span>),    <span class="co"># % of land area</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population_total"</span>:        (<span class="dv">0</span>, <span class="va">None</span>),   <span class="co"># count</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"urban_share_percent"</span>:     (<span class="dv">0</span>, <span class="dv">100</span>),    <span class="co"># % of population</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>oob_co2    <span class="op">=</span> <span class="bu">int</span>((wb_wide[<span class="st">"co2_per_capita"</span>]           <span class="op">&lt;</span> <span class="dv">0</span>).<span class="bu">sum</span>())</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>oob_gdp    <span class="op">=</span> <span class="bu">int</span>((wb_wide[<span class="st">"gdp_per_capita"</span>]           <span class="op">&lt;</span> <span class="dv">0</span>).<span class="bu">sum</span>())</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>oob_fossil <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"fossil_electricity_share"</span>] <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (wb_wide[<span class="st">"fossil_electricity_share"</span>] <span class="op">&gt;</span> <span class="dv">100</span>)).<span class="bu">sum</span>())</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>oob_renew  <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"renewable_energy_share"</span>]   <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (wb_wide[<span class="st">"renewable_energy_share"</span>]   <span class="op">&gt;</span> <span class="dv">100</span>)).<span class="bu">sum</span>())</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>oob_forest <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"forest_area_percent_land"</span>] <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (wb_wide[<span class="st">"forest_area_percent_land"</span>] <span class="op">&gt;</span> <span class="dv">100</span>)).<span class="bu">sum</span>())</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>oob_pop    <span class="op">=</span> <span class="bu">int</span>((wb_wide[<span class="st">"population_total"</span>]          <span class="op">&lt;</span> <span class="dv">0</span>).<span class="bu">sum</span>())</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>oob_urban  <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"urban_share_percent"</span>]      <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (wb_wide[<span class="st">"urban_share_percent"</span>]      <span class="op">&gt;</span> <span class="dv">100</span>)).<span class="bu">sum</span>())</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirm ISO3 codes follow the 3-capital-letter standard, no duplicate</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co"># country-year rows exist, year is within study period, and year dtype is correct before saving.</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>invalid_iso3 <span class="op">=</span> wb_wide[<span class="op">~</span>wb_wide[<span class="st">"countryiso3code"</span>].<span class="bu">str</span>.match(<span class="vs">r"</span><span class="dv">^</span><span class="pp">[A-Z]</span><span class="op">{3}</span><span class="dv">$</span><span class="vs">"</span>, na<span class="op">=</span><span class="va">False</span>)]</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>oob_iso3 <span class="op">=</span> invalid_iso3.shape[<span class="dv">0</span>]</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>duplicate_country_year <span class="op">=</span> wb_wide.duplicated([<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>]).<span class="bu">sum</span>()</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>oob_year <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"year"</span>] <span class="op">&lt;</span> START_YEAR) <span class="op">|</span> (wb_wide[<span class="st">"year"</span>] <span class="op">&gt;</span> END_YEAR)).<span class="bu">sum</span>())</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows with non-standard ISO3 codes:"</span>, oob_iso3)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Duplicate country-year rows:"</span>, duplicate_country_year)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rows outside study period (</span><span class="sc">{</span>START_YEAR<span class="sc">}</span><span class="ss">–</span><span class="sc">{</span>END_YEAR<span class="sc">}</span><span class="ss">):"</span>, oob_year)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Save cleaned wide dataset</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>wb_wide.to_csv(<span class="st">"wb_wide.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Saved wb_wide.csv:"</span>, wb_wide.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
-<div id="wb-data-info-1" class="cell-output cell-output-display">
+<p>Before performing the plausibility checks, it would be necessary to recall the units of each indicator and the possible formats/ranges of values for each variable. Here are the units of each indicator:</p>
+<ul>
+<li><code>co2_per_capita</code>: metric tons per capita, so the range should be non-negative.</li>
+<li><code>gdp_per_capita</code>: constant 2015 USD per person, so the range should be non-negative.</li>
+<li><code>fossil_electricity_share</code>: percentage of electricity from fossil fuels, so the range should be between 0 and 100 inclusive.</li>
+<li><code>renewable_energy_share</code>: percentage of total final energy consumption, so the range should be between 0 and 100 inclusive.</li>
+<li><code>forest_area_percent_land</code>: percentage of land area, so the range should be between 0 and 100 inclusive.</li>
+<li><code>population_total</code>: count, so the range should be non-negative.</li>
+<li><code>urban_share_percent</code>: percentage of population, so the range should be between 0 and 100 inclusive.</li>
+</ul>
+<p>Therefore, applying the reasonable range for each indicator to check for the entire dataset. Here are the results:</p>
+<ul>
+<li><code>co2_per_capita</code>: 0 out of bounds rows</li>
+<li><code>gdp_per_capita</code>: 0 out of bounds rows</li>
+<li><code>fossil_electricity_share</code>: 0 out of bounds rows</li>
+<li><code>renewable_energy_share</code>: 0 out of bounds rows</li>
+<li><code>forest_area_percent_land</code>: 0 out of bounds rows</li>
+<li><code>population_total</code>: 0 out of bounds rows</li>
+<li><code>urban_share_percent</code>: 0 out of bounds rows</li>
+</ul>
+<p>Hence, there were no out of bounds values in the dataset, while each row had a standard ISO3 country code with no duplicate country-year rows existed. In addition, the year was within the study period.</p>
+<div class="cell" data-message="false" data-tbl-cap="Missing Values Inspection Table" data-execution_count="9">
+<details class="code-fold">
+<summary>Show code for missing value inspection</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count and compute the share of missing values for every column in the wide</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset. Sorting by count (descending) puts the most problematic variables</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># at the top so patterns are immediately visible.</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>missing_counts <span class="op">=</span> wb_wide.isna().<span class="bu">sum</span>()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>missing_pct    <span class="op">=</span> (wb_wide.isna().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>missing_tbl <span class="op">=</span> (</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({<span class="st">"Missing (count)"</span>: missing_counts, <span class="st">"Missing (%)"</span>: missing_pct})</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"Variable"</span>})</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">"Missing (count)"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>display(missing_tbl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="wb-missing-values-inspection" class="cell-output cell-output-display">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Missing Values Inspection Table</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">countryiso3code</th>
-<th data-quarto-table-cell-role="th">country_name</th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">co2_per_capita</th>
-<th data-quarto-table-cell-role="th">forest_area_percent_land</th>
-<th data-quarto-table-cell-role="th">fossil_electricity_share</th>
-<th data-quarto-table-cell-role="th">gdp_per_capita</th>
-<th data-quarto-table-cell-role="th">population_total</th>
-<th data-quarto-table-cell-role="th">renewable_energy_share</th>
-<th data-quarto-table-cell-role="th">urban_share_percent</th>
+<th data-quarto-table-cell-role="th">Variable</th>
+<th data-quarto-table-cell-role="th">Missing (count)</th>
+<th data-quarto-table-cell-role="th">Missing (%)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1990</td>
-<td>3.203034</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>24763.653810</td>
-<td>62753.0</td>
-<td>0.3</td>
-<td>65.432816</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1991</td>
-<td>3.435717</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>25460.363027</td>
-<td>65896.0</td>
-<td>0.2</td>
-<td>65.400922</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">2</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1992</td>
-<td>3.634519</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>25743.445501</td>
-<td>69005.0</td>
-<td>0.2</td>
-<td>65.390589</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">3</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1993</td>
-<td>3.414535</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>25870.153396</td>
-<td>73685.0</td>
-<td>0.2</td>
-<td>65.384467</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">4</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1994</td>
-<td>3.683227</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26581.976749</td>
-<td>77595.0</td>
-<td>0.2</td>
-<td>65.380048</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">5</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1995</td>
-<td>3.939603</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26504.186418</td>
-<td>79805.0</td>
-<td>0.2</td>
-<td>65.376703</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">6</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1996</td>
-<td>2.490936</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>25779.597928</td>
-<td>83021.0</td>
-<td>0.2</td>
-<td>65.373804</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">7</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1997</td>
-<td>3.974461</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26547.416608</td>
-<td>86301.0</td>
-<td>0.2</td>
-<td>65.370721</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">8</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1998</td>
-<td>3.970560</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26418.088330</td>
-<td>88451.0</td>
-<td>0.2</td>
-<td>65.366825</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">9</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1999</td>
-<td>3.969484</td>
-<td>2.333333</td>
-<td>NaN</td>
-<td>26384.810594</td>
-<td>89659.0</td>
-<td>0.2</td>
-<td>65.361486</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Numeric summary:</code></pre>
-</div>
-<div id="wb-data-info-2" class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">co2_per_capita</th>
-<th data-quarto-table-cell-role="th">forest_area_percent_land</th>
-<th data-quarto-table-cell-role="th">fossil_electricity_share</th>
-<th data-quarto-table-cell-role="th">gdp_per_capita</th>
-<th data-quarto-table-cell-role="th">population_total</th>
-<th data-quarto-table-cell-role="th">renewable_energy_share</th>
-<th data-quarto-table-cell-role="th">urban_share_percent</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">count</th>
-<td>7378.000000</td>
-<td>6902.000000</td>
-<td>7061.000000</td>
-<td>6179.000000</td>
-<td>6904.000000</td>
-<td>7.378000e+03</td>
-<td>6746.000000</td>
-<td>7378.000000</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">mean</th>
-<td>2006.500000</td>
-<td>4.874354</td>
-<td>32.605790</td>
-<td>62.826615</td>
-<td>14290.739994</td>
-<td>3.080694e+07</td>
-<td>30.726712</td>
-<td>57.766502</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">std</th>
-<td>9.811373</td>
-<td>9.566943</td>
-<td>24.816012</td>
-<td>34.577817</td>
-<td>21339.986751</td>
-<td>1.238318e+08</td>
-<td>30.521632</td>
-<td>24.408991</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">min</th>
-<td>1990.000000</td>
-<td>0.000000</td>
-<td>0.000000</td>
-<td>0.000000</td>
-<td>166.710440</td>
-<td>8.798000e+03</td>
-<td>0.000000</td>
-<td>5.274941</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">25%</th>
-<td>1998.000000</td>
-<td>0.492873</td>
-<td>10.938566</td>
-<td>34.844036</td>
-<td>1592.270481</td>
-<td>6.305872e+05</td>
-<td>3.600000</td>
-<td>37.242296</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">50%</th>
-<td>2006.500000</td>
-<td>2.154123</td>
-<td>31.002896</td>
-<td>70.920098</td>
-<td>4835.189262</td>
-<td>5.386676e+06</td>
-<td>19.500000</td>
-<td>58.346914</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">75%</th>
-<td>2015.000000</td>
-<td>6.228472</td>
-<td>51.851852</td>
-<td>96.661783</td>
-<td>19027.653217</td>
-<td>1.919320e+07</td>
-<td>53.300000</td>
-<td>77.427772</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">max</th>
-<td>2023.000000</td>
-<td>202.865184</td>
-<td>96.226381</td>
-<td>100.000000</td>
-<td>225884.183304</td>
-<td>1.438070e+09</td>
-<td>98.300000</td>
-<td>100.000000</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-<div id="wb-data-info-3" class="cell-output cell-output-display">
-<pre><code>countryiso3code              object
-country_name                 object
-year                          int64
-co2_per_capita              float64
-forest_area_percent_land    float64
-fossil_electricity_share    float64
-gdp_per_capita              float64
-population_total            float64
-renewable_energy_share      float64
-urban_share_percent         float64
-dtype: object</code></pre>
-</div>
-</div>
-<div id="cell-wb-missing-values" class="cell" data-message="false" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for missing values</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>missing_counts <span class="op">=</span> wb_wide.isna().<span class="bu">sum</span>().sort_values(ascending<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>missing_share <span class="op">=</span> (wb_wide.isna().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>missing_tbl <span class="op">=</span> pd.DataFrame({<span class="st">"missing_n"</span>: missing_counts, <span class="st">"missing_pct"</span>: missing_share})</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>display(missing_tbl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div id="wb-missing-values" class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">missing_n</th>
-<th data-quarto-table-cell-role="th">missing_pct</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">co2_per_capita</th>
-<td>476</td>
-<td>6.45</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">country_name</th>
-<td>0</td>
-<td>0.00</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">countryiso3code</th>
-<td>0</td>
-<td>0.00</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">forest_area_percent_land</th>
-<td>317</td>
-<td>4.30</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">fossil_electricity_share</th>
+<td>fossil_electricity_share</td>
 <td>1199</td>
 <td>16.25</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">gdp_per_capita</th>
-<td>474</td>
-<td>6.42</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">population_total</th>
-<td>0</td>
-<td>0.00</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">renewable_energy_share</th>
+<th data-quarto-table-cell-role="th">1</th>
+<td>renewable_energy_share</td>
 <td>632</td>
 <td>8.57</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">urban_share_percent</th>
+<th data-quarto-table-cell-role="th">2</th>
+<td>co2_per_capita</td>
+<td>476</td>
+<td>6.45</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>gdp_per_capita</td>
+<td>474</td>
+<td>6.42</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>forest_area_percent_land</td>
+<td>317</td>
+<td>4.30</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>countryiso3code</td>
+<td>0</td>
+<td>0.00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>country_name</td>
 <td>0</td>
 <td>0.00</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">7</th>
+<td>year</td>
+<td>0</td>
+<td>0.00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>population_total</td>
+<td>0</td>
+<td>0.00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>urban_share_percent</td>
 <td>0</td>
 <td>0.00</td>
 </tr>
@@ -1477,187 +635,144 @@ dtype: object</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-wb-eda-analysis-dataset" class="cell" data-message="false" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build one analysis-ready dataset for EDA</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>eda_vars <span class="op">=</span> [</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"co2_per_capita"</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gdp_per_capita"</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fossil_electricity_share"</span>,</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"renewable_energy_share"</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forest_area_percent_land"</span>,</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population_total"</span>,</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"urban_share_percent"</span>,</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>eda_df <span class="op">=</span> wb_wide[[<span class="st">"countryiso3code"</span>, <span class="st">"country_name"</span>, <span class="st">"year"</span>] <span class="op">+</span> eda_vars].copy()</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape:"</span>, eda_df.shape)</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_rows:"</span>, eda_df.shape[<span class="dv">0</span>])</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"n_cols:"</span>, eda_df.shape[<span class="dv">1</span>])</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique countries:"</span>, eda_df[<span class="st">"countryiso3code"</span>].nunique())</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unique year counts per country:"</span>)</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(eda_df.groupby(<span class="st">"country_name"</span>)[<span class="st">"year"</span>].nunique().value_counts().sort_index())</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>display(eda_df.head(<span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>shape: (7378, 10)
-n_rows: 7378
-n_cols: 10
-Unique countries: 217
-Unique year counts per country:
-year
-34    217
-Name: count, dtype: int64</code></pre>
-</div>
-<div id="wb-eda-analysis-dataset" class="cell-output cell-output-display">
+<p>Then proceed to inspect the missing values in the dataset. According to Missing Values Inspection Table, (ignore <code>countryiso3code</code> and <code>country_name</code> columns, and <code>year</code> column as left-join were performed while merging the dataset in the early steps) <code>population_total</code> and <code>urban_share_percent</code> had no missing values. While <code>co2_per_capita</code>, <code>gdp_per_capita</code>, <code>fossil_electricity_share</code>, <code>renewable_energy_share</code>, and <code>forest_area_percent_land</code> had low missing percentage (less than 10%). However, <code>fossil_electricity_share</code> had a moderate (10-20%) missing percentage 16.25%. The dataset still contains a large number of useful observations in other variables, so the missingness was retained during EDA so that the available observations could be used for the analysis. Later, during the regression analysis, observations with missing values in the explanatory variables would be dropped at row level to aviod introducing additional assumptions through imputation while maintaing a sufficiently large sample size for the regression analysis.</p>
+</section>
+<section id="exploratory-data-analysis-eda-results" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis-eda-results">3.2 Exploratory Data Analysis (EDA) Results</h2>
+<div class="cell" data-message="false" data-tbl-cap="Descriptive Statistics Table (For all numeric variables)" data-execution_count="10">
+<details class="code-fold">
+<summary>Show code for summary statistics</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute descriptive statistics for all numeric indicator columns.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Transposing puts variables as rows and statistics as columns, which is</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># easier to read in a wide document layout.</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Rounding to 2 decimal places keeps the table compact.</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>summary_stats <span class="op">=</span> (</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    wb_wide</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    .describe()</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    .T</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"Variable"</span>})</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>display(summary_stats)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="wb-eda-summary-statistics" class="cell-output cell-output-display">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Descriptive Statistics Table (For all numeric variables)</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">countryiso3code</th>
-<th data-quarto-table-cell-role="th">country_name</th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">co2_per_capita</th>
-<th data-quarto-table-cell-role="th">gdp_per_capita</th>
-<th data-quarto-table-cell-role="th">fossil_electricity_share</th>
-<th data-quarto-table-cell-role="th">renewable_energy_share</th>
-<th data-quarto-table-cell-role="th">forest_area_percent_land</th>
-<th data-quarto-table-cell-role="th">population_total</th>
-<th data-quarto-table-cell-role="th">urban_share_percent</th>
+<th data-quarto-table-cell-role="th">Variable</th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">std</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">25%</th>
+<th data-quarto-table-cell-role="th">50%</th>
+<th data-quarto-table-cell-role="th">75%</th>
+<th data-quarto-table-cell-role="th">max</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1990</td>
-<td>3.203034</td>
-<td>24763.653810</td>
-<td>NaN</td>
-<td>0.3</td>
-<td>2.333333</td>
-<td>62753.0</td>
-<td>65.432816</td>
+<td>year</td>
+<td>7378.0</td>
+<td>2006.50</td>
+<td>9.810000e+00</td>
+<td>1990.00</td>
+<td>1998.00</td>
+<td>2006.50</td>
+<td>2015.00</td>
+<td>2.023000e+03</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1991</td>
-<td>3.435717</td>
-<td>25460.363027</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>65896.0</td>
-<td>65.400922</td>
+<td>co2_per_capita</td>
+<td>6902.0</td>
+<td>4.87</td>
+<td>9.570000e+00</td>
+<td>0.00</td>
+<td>0.49</td>
+<td>2.15</td>
+<td>6.23</td>
+<td>2.028700e+02</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1992</td>
-<td>3.634519</td>
-<td>25743.445501</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>69005.0</td>
-<td>65.390589</td>
+<td>forest_area_percent_land</td>
+<td>7061.0</td>
+<td>32.61</td>
+<td>2.482000e+01</td>
+<td>0.00</td>
+<td>10.94</td>
+<td>31.00</td>
+<td>51.85</td>
+<td>9.623000e+01</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1993</td>
-<td>3.414535</td>
-<td>25870.153396</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>73685.0</td>
-<td>65.384467</td>
+<td>fossil_electricity_share</td>
+<td>6179.0</td>
+<td>62.83</td>
+<td>3.458000e+01</td>
+<td>0.00</td>
+<td>34.84</td>
+<td>70.92</td>
+<td>96.66</td>
+<td>1.000000e+02</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1994</td>
-<td>3.683227</td>
-<td>26581.976749</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>77595.0</td>
-<td>65.380048</td>
+<td>gdp_per_capita</td>
+<td>6904.0</td>
+<td>14290.74</td>
+<td>2.133999e+04</td>
+<td>166.71</td>
+<td>1592.27</td>
+<td>4835.19</td>
+<td>19027.65</td>
+<td>2.258842e+05</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">5</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1995</td>
-<td>3.939603</td>
-<td>26504.186418</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>79805.0</td>
-<td>65.376703</td>
+<td>population_total</td>
+<td>7378.0</td>
+<td>30806944.54</td>
+<td>1.238318e+08</td>
+<td>8798.00</td>
+<td>630587.25</td>
+<td>5386675.50</td>
+<td>19193197.75</td>
+<td>1.438070e+09</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">6</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1996</td>
-<td>2.490936</td>
-<td>25779.597928</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>83021.0</td>
-<td>65.373804</td>
+<td>renewable_energy_share</td>
+<td>6746.0</td>
+<td>30.73</td>
+<td>3.052000e+01</td>
+<td>0.00</td>
+<td>3.60</td>
+<td>19.50</td>
+<td>53.30</td>
+<td>9.830000e+01</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">7</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1997</td>
-<td>3.974461</td>
-<td>26547.416608</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>86301.0</td>
-<td>65.370721</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">8</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1998</td>
-<td>3.970560</td>
-<td>26418.088330</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>88451.0</td>
-<td>65.366825</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">9</th>
-<td>ABW</td>
-<td>Aruba</td>
-<td>1999</td>
-<td>3.969484</td>
-<td>26384.810594</td>
-<td>NaN</td>
-<td>0.2</td>
-<td>2.333333</td>
-<td>89659.0</td>
-<td>65.361486</td>
+<td>urban_share_percent</td>
+<td>7378.0</td>
+<td>57.77</td>
+<td>2.441000e+01</td>
+<td>5.27</td>
+<td>37.24</td>
+<td>58.35</td>
+<td>77.43</td>
+<td>1.000000e+02</td>
 </tr>
 </tbody>
 </table>
@@ -1665,160 +780,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-wb-eda-inspection" class="cell" data-message="false" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Missing values:</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(eda_df.isna().<span class="bu">sum</span>())</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing percentage (%):</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((eda_df.isna().mean() <span class="op">*</span> <span class="dv">100</span>).<span class="bu">round</span>(<span class="dv">2</span>))</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Summary statistics:</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>display(eda_df.describe())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Missing values:
-
-countryiso3code                0
-country_name                   0
-year                           0
-co2_per_capita               476
-gdp_per_capita               474
-fossil_electricity_share    1199
-renewable_energy_share       632
-forest_area_percent_land     317
-population_total               0
-urban_share_percent            0
-dtype: int64
-
-Missing percentage (%):
-
-countryiso3code              0.00
-country_name                 0.00
-year                         0.00
-co2_per_capita               6.45
-gdp_per_capita               6.42
-fossil_electricity_share    16.25
-renewable_energy_share       8.57
-forest_area_percent_land     4.30
-population_total             0.00
-urban_share_percent          0.00
-dtype: float64
-
-Summary statistics:
-</code></pre>
-</div>
-<div id="wb-eda-inspection" class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">year</th>
-<th data-quarto-table-cell-role="th">co2_per_capita</th>
-<th data-quarto-table-cell-role="th">gdp_per_capita</th>
-<th data-quarto-table-cell-role="th">fossil_electricity_share</th>
-<th data-quarto-table-cell-role="th">renewable_energy_share</th>
-<th data-quarto-table-cell-role="th">forest_area_percent_land</th>
-<th data-quarto-table-cell-role="th">population_total</th>
-<th data-quarto-table-cell-role="th">urban_share_percent</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">count</th>
-<td>7378.000000</td>
-<td>6902.000000</td>
-<td>6904.000000</td>
-<td>6179.000000</td>
-<td>6746.000000</td>
-<td>7061.000000</td>
-<td>7.378000e+03</td>
-<td>7378.000000</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">mean</th>
-<td>2006.500000</td>
-<td>4.874354</td>
-<td>14290.739994</td>
-<td>62.826615</td>
-<td>30.726712</td>
-<td>32.605790</td>
-<td>3.080694e+07</td>
-<td>57.766502</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">std</th>
-<td>9.811373</td>
-<td>9.566943</td>
-<td>21339.986751</td>
-<td>34.577817</td>
-<td>30.521632</td>
-<td>24.816012</td>
-<td>1.238318e+08</td>
-<td>24.408991</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">min</th>
-<td>1990.000000</td>
-<td>0.000000</td>
-<td>166.710440</td>
-<td>0.000000</td>
-<td>0.000000</td>
-<td>0.000000</td>
-<td>8.798000e+03</td>
-<td>5.274941</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">25%</th>
-<td>1998.000000</td>
-<td>0.492873</td>
-<td>1592.270481</td>
-<td>34.844036</td>
-<td>3.600000</td>
-<td>10.938566</td>
-<td>6.305872e+05</td>
-<td>37.242296</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">50%</th>
-<td>2006.500000</td>
-<td>2.154123</td>
-<td>4835.189262</td>
-<td>70.920098</td>
-<td>19.500000</td>
-<td>31.002896</td>
-<td>5.386676e+06</td>
-<td>58.346914</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">75%</th>
-<td>2015.000000</td>
-<td>6.228472</td>
-<td>19027.653217</td>
-<td>96.661783</td>
-<td>53.300000</td>
-<td>51.851852</td>
-<td>1.919320e+07</td>
-<td>77.427772</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">max</th>
-<td>2023.000000</td>
-<td>202.865184</td>
-<td>225884.183304</td>
-<td>100.000000</td>
-<td>98.300000</td>
-<td>96.226381</td>
-<td>1.438070e+09</td>
-<td>100.000000</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
+</section>
 </section>
 <section id="summary" class="level1">
 <h1>4. Summary</h1>
