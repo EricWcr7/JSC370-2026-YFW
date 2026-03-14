@@ -80,6 +80,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -104,7 +133,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#preliminary-results" id="toc-preliminary-results" class="nav-link" data-scroll-target="#preliminary-results">3. Preliminary Results</a>
   <ul class="collapse">
   <li><a href="#data-acquisition-wrangling-and-cleaning" id="toc-data-acquisition-wrangling-and-cleaning" class="nav-link" data-scroll-target="#data-acquisition-wrangling-and-cleaning">3.1 Data Acquisition, Wrangling and Cleaning</a></li>
-  <li><a href="#exploratory-data-analysis-eda-results" id="toc-exploratory-data-analysis-eda-results" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda-results">3.2 Exploratory Data Analysis (EDA) Results</a></li>
+  <li><a href="#exploratory-data-analysis-eda-results" id="toc-exploratory-data-analysis-eda-results" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda-results">3.2 Exploratory Data Analysis (EDA) Results</a>
+  <ul class="collapse">
+  <li><a href="#descriptive-statistics" id="toc-descriptive-statistics" class="nav-link" data-scroll-target="#descriptive-statistics">3.2.1 Descriptive Statistics</a></li>
+  <li><a href="#basic-eda-visualizations" id="toc-basic-eda-visualizations" class="nav-link" data-scroll-target="#basic-eda-visualizations">3.2.2 Basic EDA Visualizations</a></li>
+  <li><a href="#feature-engineering-in-log-transformation" id="toc-feature-engineering-in-log-transformation" class="nav-link" data-scroll-target="#feature-engineering-in-log-transformation">3.2.3 Feature Engineering in log-transformation</a></li>
+  <li><a href="#advanced-eda-visualizations" id="toc-advanced-eda-visualizations" class="nav-link" data-scroll-target="#advanced-eda-visualizations">3.2.4 Advanced EDA Visualizations</a></li>
+  </ul></li>
+  <li><a href="#regression-analysis-1" id="toc-regression-analysis-1" class="nav-link" data-scroll-target="#regression-analysis-1">3.3 Regression Analysis</a></li>
   </ul></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">4. Summary</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -156,10 +192,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pygam <span class="im">import</span> LinearGAM, s, l</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <section id="research-question" class="level1">
@@ -170,7 +208,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>1. Introduction</h1>
 <p>Climate change is one of the major global challenges and is largely driven by greenhouse gas emissions, particularly carbon dioxide. Emissions from human activities have played a central role in global warming. According to “Climate Change 2023 Synthesis Report” from the Intergovernmental Panel on Climate Change (IPCC), global surface temperature during 2011–2020 was about 1.1 degrees Celsius higher than in 1850–1900 (IPCC, 2023). Carbon dioxide emissions are also unevenly distributed across countries. Notably, the differences in carbon dioxide emissions per-capita are closely related to variations in energy systems, economic structures, and levels of development in terms of GDP. Understanding these differences is important for designing effective climate and energy policies.</p>
 <p>Despite the global importance of reducing greenhouse gas emissions, countries differ significantly in both their levels of carbon dioxide emissions per capita and how these emissions have changed over time. These differences may be related to economic development, energy consumption patterns, and land-use practices. For example, roughly half of global carbon dioxide emissions are absorbed by land and ocean carbon sinks, while land-use changes such as deforestation and reforestation remain important components of the global carbon budget (Friedlingstein et al., 2023). Research on global greenhouse gas emissions also shows that fossil fuel combustion is the primary source of emissions, accounting for about 71.6% of recent global greenhouse gas emissions. At the same time, emissions intensity relative to GDP has reached historically low levels, suggesting a relationship between economic development and carbon output. To better understand how economic, energy, and land-use factors relate to cross-country differences in emissions, systematic analysis using comparable and reliable international data is necessary.</p>
-<p>This project examines <strong>how carbon dioxide emissions per capita have evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences</strong>. To address this research question, this analysis uses data from the World Bank Open Data API, which provides a comprehensive set of development indicators covering economic, energy, and land-use factors. The dataset includes annual observations for nearly all countries around the world and contains variables such as carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of land area, total population, and the share of population living in urban areas. The main outcome variable is carbon dioxide emissions per capita, which measures the average amount of carbon dioxide emissions produced per person in metric tons in each country. Economic development is represented by GDP per capita in constant 2015 US dollars , which reflects the average level of economic output per person. Energy structure is captured by two indicators: renewable energy share, which measures the percentage of total energy consumption coming from renewable sources, and fossil-fuel electricity share, which represents the percentage of electricity generated from fossil fuels. Land-use conditions are represented by forest area as a percentage of total land area. In addition, demographic characteristics are included through total population and the share of the population living in urban areas. These variables allow for comparisons across countries and help examine how economic development, energy structure, and land-use patterns are associated with differences in carbon dioxide emissions.</p>
+<p>This project examines <strong>how carbon dioxide emissions per capita have evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences</strong>. To address this research question, this analysis uses data from the World Bank Open Data API, which provides a comprehensive set of development indicators covering economic, energy, and land-use factors. The dataset includes annual observations for nearly all countries around the world and contains variables such as carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of land area, total population, and the share of population living in urban areas. Furthermore, the year of observation is included as a key temporal indicator to account for global trends and technological shifts over time.</p>
+<p>The main outcome variable is carbon dioxide emissions per capita, which measures the average amount of carbon dioxide emissions produced per person in metric tons in each country. Economic development is represented by GDP per capita in constant 2015 US dollars , which reflects the average level of economic output per person. Energy structure is captured by two indicators: renewable energy share, which measures the percentage of total energy consumption coming from renewable sources, and fossil-fuel electricity share, which represents the percentage of electricity generated from fossil fuels. Land-use conditions are represented by forest area as a percentage of total land area. In addition, demographic characteristics are included through total population and the share of the population living in urban areas. Finally, the year variable serves as a time-based control, allowing the analysis to isolate structural effects from long-term temporal trends. These variables allow for comparisons across countries and help examine how economic development, energy structure, and land-use patterns are associated with differences in carbon dioxide emissions.</p>
 </section>
 <section id="methods" class="level1">
 <h1>2. Methods</h1>
@@ -189,16 +228,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="exploratory-data-analysis-eda-and-regression-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis-eda-and-regression-analysis">2.3 Exploratory Data Analysis (EDA) and Regression Analysis</h2>
 <p>EDA was conducted to examine the structure of the dataset and to identify patterns related to the research question. First, descriptive statistics were computed for all numerical variables included in the dataset. Counts, means, medians, standard deviation, minimum &amp; maximum values, and percentiles were calculated to summarize the distribution of each numerical variable and not including country codes and names. These measures provide an overview of the variables’ distributions, which can help identify potential extreme values or outliers.</p>
-<p>Visual exploration was then performed to examine patterns in the data. Several graphical methods were used to explore relationships between variables and to identify potential trends. Line plots were used to examine how carbon dioxide emissions per capita change over time. Histograms were used to inspect the distribution of individual variables and to identify skewness or potential outliers. Scatter plots were used to examine the relationship between carbon dioxide emissions per capita and explanatory variables. In some cases, faceted plots were used to compare patterns across groups of countries.</p>
+<p>Visual exploration was then performed to examine patterns in the data. Several graphical methods were used to explore relationships between variables and to identify potential trends. Line plots were used to examine how carbon dioxide emissions per capita change over time. Histograms were used to inspect the distribution of individual variables and to identify skewness or potential outliers. Scatter plots were used to examine the relationship between carbon dioxide emissions per capita and explanatory variables. Box plotss with the implementation of quantile binning were used to examine and confirm the relationship between carbon dioxide emissions per capita and explanatory variables that were identified in the scatter plots. So is the correlation matrixto examine the correlation between all the variables.</p>
 </section>
 <section id="feature-engineering" class="level2">
 <h2 class="anchored" data-anchor-id="feature-engineering">2.4 Feature Engineering</h2>
+<p>Based on the histograms performed in EDA, for some indicators, a log-scale transformation must be applied to compress the scale and reduce the influence of extreme values for non-percentage variables if the right-skewed distribution is observed. For percentage variables, the log-scale transformation is not necessary. For date vairable or year variable, it is necessary to center the variable by subtracting the start year (1990).</p>
 </section>
 <section id="regression-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="regression-analysis">2.5 Regression Analysis</h2>
-<p>In order to discover the association between carbon dioxide emissions per capita and potential explanatory factors, regression analysis was conducted. Linear regression models were used to evaluate how economic development, energy structure, and land-use indicators are related to differences in carbon dioxide emissions per capita across countries in terms of linear relationships. carbon dioxide emissions per capita were treated as the dependent variable, while GDP per capita, energy indicators, and land-use variables were treated as independent variables.</p>
-<p>Using linear regression only may not be sufficient to capture the complex relationship between carbon dioxide emissions per capita and potential explanatory factors in real life scenarios in general. In addition, generalized additive models (GAMs) were used to explore potential nonlinear relationships between variables. GAM models allow smooth functions of predictors to be estimated, which can capture nonlinear patterns that may not be adequately represented by a linear model. This approach is particularly useful when examining the relationship between economic development and emissions, which may change at different stages of economic growth.</p>
-<p>All analyses were conducted using Python. Data manipulation and preparation were performed using the <code>pandas</code> library. Visualizations were created using <code>plotnine</code>, <code>matplotlib</code>, and <code>seaborn</code>. Linear regression models were estimated using the <code>statsmodels</code> package, and smooth regression models like GAMs were estimated using the <code>pygam</code> library.</p>
+<p>In order to discover the association between carbon dioxide emissions per capita and potential explanatory factors with <code>year</code> variable as the time-varying effect, regression analysis was conducted. Linear regression models were used to evaluate how economic development, energy structure, and land-use indicators are related to differences in carbon dioxide emissions per capita across countries in terms of linear relationships. carbon dioxide emissions per capita were treated as the dependent variable, while GDP per capita, energy indicators, centered <code>year</code> variable, and land-use variables were treated as independent variables.</p>
+<p>Using linear regression only may not be sufficient to capture the complex relationship between carbon dioxide emissions per capita and potential explanatory factors in real life scenarios in general. In addition, generalized additive models (GAMs) were used to explore potential nonlinear relationships between variables. GAM models allow smooth functions of predictors to be estimated, which can capture nonlinear patterns that may not be adequately represented by a linear model. This approach is particularly useful when examining the relationship between economic development and emissions, which may change at different stages of economic growth. Note, the linear control term was added to the GAM model to capture the time-varying effect of centered <code>year</code> variable.</p>
+<p>All analyses were conducted using Python. Data acquisition was carried out using the <code>requests</code> library. Data manipulation and preparation were performed using <code>pandas</code> and <code>numpy</code>. Visualizations were created using <code>plotnine</code> and <code>matplotlib</code>. Linear regression models were estimated using the <code>statsmodels</code> package, and generalized additive models (GAMs) were estimated using the <code>pygam</code> library.</p>
 </section>
 </section>
 <section id="preliminary-results" class="level1">
@@ -534,7 +574,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>population_total</code>: 0 out of bounds rows</li>
 <li><code>urban_share_percent</code>: 0 out of bounds rows</li>
 </ul>
-<p>Hence, there were no out of bounds values in the dataset, while each row had a standard ISO3 country code with no duplicate country-year rows existed. In addition, the year was within the study period.</p>
+<p>Hence, there were no out of bounds values in the dataset, while each row had a standard ISO3 country code with no duplicate country-year rows existed. In addition, the <code>year</code> was within the study period.</p>
 <div class="cell" data-message="false" data-tbl-cap="Missing Values Inspection Table" data-execution_count="9">
 <details class="code-fold">
 <summary>Show code for missing value inspection</summary>
@@ -635,10 +675,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Then proceed to inspect the missing values in the dataset. According to Missing Values Inspection Table, (ignore <code>countryiso3code</code> and <code>country_name</code> columns, and <code>year</code> column as left-join were performed while merging the dataset in the early steps) <code>population_total</code> and <code>urban_share_percent</code> had no missing values. While <code>co2_per_capita</code>, <code>gdp_per_capita</code>, <code>fossil_electricity_share</code>, <code>renewable_energy_share</code>, and <code>forest_area_percent_land</code> had low missing percentage (less than 10%). However, <code>fossil_electricity_share</code> had a moderate (10-20%) missing percentage 16.25%. The dataset still contains a large number of useful observations in other variables, so the missingness was retained during EDA so that the available observations could be used for the analysis. Later, during the regression analysis, observations with missing values in the explanatory variables would be dropped at row level to aviod introducing additional assumptions through imputation while maintaing a sufficiently large sample size for the regression analysis.</p>
+<p>Then proceed to inspect the missing values in the dataset. According to Missing Values Inspection Table, (ignore <code>countryiso3code</code> and <code>country_name</code> columns, and <code>year</code> column as left-join were performed while merging the dataset in the early steps) <code>population_total</code> and <code>urban_share_percent</code> have no missing values. While <code>co2_per_capita</code>, <code>gdp_per_capita</code>, <code>fossil_electricity_share</code>, <code>renewable_energy_share</code>, and <code>forest_area_percent_land</code> have low missing percentage (less than 10%). However, <code>fossil_electricity_share</code> has a moderate (10-20%) missing percentage 16.25%. The dataset still contains a large number of useful observations in other variables, so the missingness was retained during EDA so that the available observations could be used for the analysis. Later, during the regression analysis, observations with missing values in the explanatory variables would be dropped at row level to aviod introducing additional assumptions through imputation while maintaing a sufficiently large sample size for the regression analysis.</p>
 </section>
 <section id="exploratory-data-analysis-eda-results" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis-eda-results">3.2 Exploratory Data Analysis (EDA) Results</h2>
+<section id="descriptive-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="descriptive-statistics">3.2.1 Descriptive Statistics</h3>
 <div class="cell" data-message="false" data-tbl-cap="Descriptive Statistics Table (For all numeric variables)" data-execution_count="10">
 <details class="code-fold">
 <summary>Show code for summary statistics</summary>
@@ -780,6 +822,1146 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>The Descriptive Statistics Table (For all numeric variables) table provids an overview of the main characteristics of the dataset. Carbon dioxide emissions per capita varies substantially across countries. The average value is approximately 4.87 metric tons per person, while the median is much lower at around 2.15, suggesting that the distribution is right skewed with a small number of countries having very high emissions levels.</p>
+<p>Economic development also varies widely across the sample. GDP per capita ranges from about 167 USD to more than 225,000 USD, with a median value of roughly 4,835 USD, reflecting large differences in income levels between countries.</p>
+<p>Energy structure indicators also show considerable variation. The average share of electricity generated from fossil fuels is approximately 62.8%, while renewable energy accounts for about 30.7% of total final energy consumption on average. Land-use patterns differ across countries as well, with forest area covering about 32.6% of land area on average. Demographic variables also display wide ranges. Total population varies from fewer than 10,000 people to more than 1.4 billion, while the share of population living in urban areas averages about 57.8%. Overall, these statistics indicate substantial cross-country heterogeneity in economic development, energy systems, and land-use characteristics, which may help explain differences in carbon dioxide emissions across countries.</p>
+<div class="cell" data-message="false" data-tbl-cap="Country with zero values in CO2 per capita, forest area, fossil electricity share, or renewable energy share" data-execution_count="11">
+<details class="code-fold">
+<summary>Show code for zero value inspection</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify rows where any of the four indicators of interest equals zero.</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Flag columns make it easy to see which variable(s) triggered the match.</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Rows are included if at least one of the four flags is True.</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>indicator_cols <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> INDICATORS <span class="cf">if</span> col <span class="kw">in</span> wb_wide.columns]</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>zero_flags <span class="op">=</span> wb_wide.copy()</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>zero_flags[<span class="st">"co2_zero"</span>]    <span class="op">=</span> zero_flags[<span class="st">"co2_per_capita"</span>]           <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>zero_flags[<span class="st">"forest_zero"</span>] <span class="op">=</span> zero_flags[<span class="st">"forest_area_percent_land"</span>] <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>zero_flags[<span class="st">"fossil_zero"</span>] <span class="op">=</span> zero_flags[<span class="st">"fossil_electricity_share"</span>] <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>zero_flags[<span class="st">"renew_zero"</span>]  <span class="op">=</span> zero_flags[<span class="st">"renewable_energy_share"</span>]   <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>zero_any <span class="op">=</span> (</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    zero_flags[</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        zero_flags[[<span class="st">"co2_zero"</span>, <span class="st">"forest_zero"</span>, <span class="st">"fossil_zero"</span>, <span class="st">"renew_zero"</span>]].<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">"countryiso3code"</span>, <span class="st">"country_name"</span>, <span class="st">"year"</span>]</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>     <span class="op">+</span> indicator_cols</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>     <span class="op">+</span> [<span class="st">"co2_zero"</span>, <span class="st">"forest_zero"</span>, <span class="st">"fossil_zero"</span>, <span class="st">"renew_zero"</span>]]</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    .sort_values([<span class="st">"country_name"</span>, <span class="st">"year"</span>])</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Build one table: each row is a country, columns show which zero conditions apply</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>zero_conditions <span class="op">=</span> {</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"co2_per_capita = 0"</span>:           <span class="st">"co2_zero"</span>,</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forest_area_percent_land = 0"</span>: <span class="st">"forest_zero"</span>,</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fossil_electricity_share = 0"</span>: <span class="st">"fossil_zero"</span>,</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"renewable_energy_share = 0"</span>:   <span class="st">"renew_zero"</span>,</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>all_countries <span class="op">=</span> <span class="bu">sorted</span>(zero_any[<span class="st">"country_name"</span>].dropna().unique().tolist())</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> country <span class="kw">in</span> all_countries:</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    country_rows <span class="op">=</span> zero_any[zero_any[<span class="st">"country_name"</span>] <span class="op">==</span> country]</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    rows.append({</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Country name"</span>: country,</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>{label: <span class="st">"Yes"</span> <span class="cf">if</span> country_rows[flag].<span class="bu">any</span>() <span class="cf">else</span> <span class="st">""</span> </span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>           <span class="cf">for</span> label, flag <span class="kw">in</span> zero_conditions.items()}</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(rows))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="wb-eda-co2-zero" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>Country with zero values in CO2 per capita, forest area, fossil electricity share, or renewable energy share</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Country name</th>
+<th data-quarto-table-cell-role="th">co2_per_capita = 0</th>
+<th data-quarto-table-cell-role="th">forest_area_percent_land = 0</th>
+<th data-quarto-table-cell-role="th">fossil_electricity_share = 0</th>
+<th data-quarto-table-cell-role="th">renewable_energy_share = 0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Albania</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>American Samoa</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Andorra</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Antigua and Barbuda</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Bahamas, The</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Bahrain</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Bermuda</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Bhutan</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Brunei Darussalam</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Burundi</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>Cayman Islands</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>Congo, Rep.</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>Curacao</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>Ethiopia</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>Ghana</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>Gibraltar</td>
+<td></td>
+<td>Yes</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>Hong Kong SAR, China</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>Kuwait</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>Lao PDR</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>Malta</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>Monaco</td>
+<td></td>
+<td>Yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>Nauru</td>
+<td>Yes</td>
+<td>Yes</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>Nepal</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">23</th>
+<td>Northern Mariana Islands</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>Oman</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>Palau</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>Qatar</td>
+<td></td>
+<td>Yes</td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>Saudi Arabia</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">28</th>
+<td>Sint Maarten (Dutch part)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>St. Kitts and Nevis</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>Turkmenistan</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">31</th>
+<td>Tuvalu</td>
+<td>Yes</td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">32</th>
+<td>United Arab Emirates</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>However, there were some suspicious observations in the dataset. According to the table above, it was suspicious that Nauru and Tuvalu had 0 carbon dioxide emissions per capita almost every year from 1990 to 2023. After validating the data, these two countries are very small and had no heavy industry (no hevay plants, mills, or factories) and a possible rounding in World Bank data for extreme low values. Therefore, these observations were retained because they likely represent the real life situation in Nauru and Tuvalu. For forest area percentage, zeros appear for highly urbanized microstates such as Monaco or Gibraltar. Zeros for fossil electricity share occur in countries where electricity generation relies primarily on hydropower, such as Bhutan or Nepal. Conversely, zero renewable energy shares appear in some fossil-fuel-dependent countries, such as Saudi Arabia or Qatar. Therefore, these suspicious observations were retained in the dataset because they represent the real life situation in these countries.</p>
+</section>
+<section id="basic-eda-visualizations" class="level3">
+<h3 class="anchored" data-anchor-id="basic-eda-visualizations">3.2.2 Basic EDA Visualizations</h3>
+<div id="cell-wb-eda-line-global" class="cell" data-message="false" data-execution_count="12">
+<details class="code-fold">
+<summary>Show code for global CO2 trend</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate to global average per year to reveal the overall emissions trend.</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Dropping NaN before groupby ensures only years with actual country data</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># contribute to the mean, avoiding artificially low averages.</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>co2_trend <span class="op">=</span> (</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    wb_wide</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"year"</span>, as_index<span class="op">=</span><span class="va">False</span>)[<span class="st">"co2_per_capita"</span>]</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    .mean()</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"co2_per_capita"</span>: <span class="st">"mean_co2"</span>})</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    ggplot(co2_trend, aes(x<span class="op">=</span><span class="st">"year"</span>, y<span class="op">=</span><span class="st">"mean_co2"</span>)) <span class="op">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    geom_line(color<span class="op">=</span><span class="st">"#2C7FB8"</span>, size<span class="op">=</span><span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    geom_point(color<span class="op">=</span><span class="st">"#2C7FB8"</span>, size<span class="op">=</span><span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Global Average Carbon Dioxide Emissions per Capita (1990–2023)"</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Year"</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Carbon Dioxide Emissions per Capita (metric tons)"</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    theme_minimal()</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div id="wb-eda-line-global" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-line-global-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 1: Global average CO2 emissions per capita over time (1990–2023)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 1 shows the trend of global average carbon dioxide emissions per capita from 1990 to 2023. Overall, emissions per capita remained relatively stable during the early 1990s, fluctuating from 4.7 to 5.2 metric tons per person approximately. Beginning in the early 2000s, emissions gradually increased, reaching a peak around 2012 at approximately 5.55 metric tons per capita. After this peak, emissions per capita declined noticeably. The decrease became more pronounced after 2013 and dropped sharply around 2020, reflecting the global economic downturn during the COVID-19 pandemic. Overall, the figure suggests that global per capita emissions increased during the 2000s but have generally declined later, so a decrease in general.</p>
+<div id="cell-wb-eda-line-countries" class="cell" data-message="false" data-execution_count="13">
+<details class="code-fold">
+<summary>Show code for country-level CO2 trends</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Six countries chosen to represent a range of income levels and world regions,</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># making the cross-country divergence in emission trajectories visible.</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>selected_iso3 <span class="op">=</span> [<span class="st">"USA"</span>, <span class="st">"CHN"</span>, <span class="st">"DEU"</span>, <span class="st">"IND"</span>, <span class="st">"BRA"</span>, <span class="st">"NGA"</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>co2_countries <span class="op">=</span> (</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    wb_wide[wb_wide[<span class="st">"countryiso3code"</span>].isin(selected_iso3)]</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    [[<span class="st">"country_name"</span>, <span class="st">"year"</span>, <span class="st">"co2_per_capita"</span>]]</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    .dropna()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    ggplot(co2_countries, aes(x<span class="op">=</span><span class="st">"year"</span>, y<span class="op">=</span><span class="st">"co2_per_capita"</span>, color<span class="op">=</span><span class="st">"country_name"</span>)) <span class="op">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    geom_line(size<span class="op">=</span><span class="fl">0.9</span>) <span class="op">+</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    geom_point(size<span class="op">=</span><span class="fl">1.5</span>, alpha<span class="op">=</span><span class="fl">0.7</span>) <span class="op">+</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"CO2 Emissions per Capita for Selected Countries (1990–2023)"</span>,</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Year"</span>,</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"CO2 per Capita (metric tons)"</span>,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span><span class="st">"Country"</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    theme_minimal() <span class="op">+</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    theme(legend_position<span class="op">=</span><span class="st">"right"</span>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div id="wb-eda-line-countries" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-line-countries-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 2: CO2 per capita trends for selected representative countries (1990–2023)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>United States and Germany represent developed countries, China and India represent large emerging economies, Brazil represents a middle-income country, and Nigeria represents a lower-income country. Therefore, these countries are comparable and chosen to represent a range of income levels and world regions, making the cross-country divergence in carbon dioxide emissions per capita trends overt time visible.</p>
+<p>Figure 2 illustrates the evolution of carbon dioxide emissions per capita for several representative countries from 1990 to 2023. The United States have the highest emissions levels druing the entire period but showed a gradual decline after 2000. Germany also exhibits a clear downward trend, reflecting reductions in carbon dioxide emissions over time. In contrast, China shows a rapid increase in carbon dioxide emissions per capita, particularly after 2000, corresponding with rapid industrial growth. India displays a steady upward trend, though emissions remain substantially lower than those developed countries. Brazil shows relatively stable carbon dioxide emissions trend, while Nigeria remains at very low carbon dioxide emissions levels (even a slight decline) throughout the period. These differences highlight substantial variation in carbon dioxide emissions per capita trends across countries at different stages of economic development.</p>
+<div id="cell-wb-eda-histograms-co2-gdp" class="cell" data-message="false" data-execution_count="14">
+<details class="code-fold">
+<summary>Show code for CO2 and GDP histograms</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CO2 and GDP are on their own panel because their units (metric tons, USD) differ</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># from the percentage variables below.</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>co2_gdp_vars <span class="op">=</span> [<span class="st">"co2_per_capita"</span>, <span class="st">"gdp_per_capita"</span>]</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>wb_long_co2_gdp <span class="op">=</span> wb_wide[co2_gdp_vars].melt(var_name<span class="op">=</span><span class="st">"Variable"</span>, value_name<span class="op">=</span><span class="st">"Value"</span>).dropna()</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    ggplot(wb_long_co2_gdp, aes(x<span class="op">=</span><span class="st">"Value"</span>)) <span class="op">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    geom_histogram(bins<span class="op">=</span><span class="dv">40</span>, fill<span class="op">=</span><span class="st">"#2C7FB8"</span>, color<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>) <span class="op">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    facet_wrap(<span class="st">"~Variable"</span>, scales<span class="op">=</span><span class="st">"free"</span>, ncol<span class="op">=</span><span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Distributions of Carbon Dioxide Emissions per Capita and GDP per Capita"</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Value"</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Count"</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    theme_minimal() <span class="op">+</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    theme(strip_text<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">9</span>), axis_text<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">8</span>))</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div id="wb-eda-histograms-co2-gdp" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-histograms-co2-gdp-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 3: Distributions of Carbon Dioxide Emissions per Capita and GDP per Capita</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 3 shows that both carbon dioxide emissions per capita and GDP per capita are highly right-skewed. For both variables, most observations are concentrated at relatively low values. Only a small number of observations appear at much higher levels, creating a right tail in the distribution. This indicates that while most countries have relatively low emissions per capita or/andGDP per capita, a few countries produce substantially higher emissions or/and GDP per capita. This suggests a log-scale transformation in feature engineering is necessary to better visualize the relationshps to carbon dioxide emissions per capita for later regression analysis.</p>
+<div id="cell-wb-eda-histograms-pct" class="cell" data-message="false" data-execution_count="15">
+<details class="code-fold">
+<summary>Show code for percentage variable histograms</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># All four variables share a 0–100 percentage scale, so a common x-axis range</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># makes it easy to compare spreads across indicators directly.</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>pct_vars <span class="op">=</span> [</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fossil_electricity_share"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"renewable_energy_share"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forest_area_percent_land"</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"urban_share_percent"</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>wb_long_pct <span class="op">=</span> wb_wide[pct_vars].melt(var_name<span class="op">=</span><span class="st">"Variable"</span>, value_name<span class="op">=</span><span class="st">"Value"</span>).dropna()</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    ggplot(wb_long_pct, aes(x<span class="op">=</span><span class="st">"Value"</span>)) <span class="op">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    geom_histogram(bins<span class="op">=</span><span class="dv">40</span>, fill<span class="op">=</span><span class="st">"#41AB5D"</span>, color<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>) <span class="op">+</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    facet_wrap(<span class="st">"~Variable"</span>, scales<span class="op">=</span><span class="st">"free_y"</span>, ncol<span class="op">=</span><span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Distributions of Percentage-Scaled Indicators (0–100%)"</span>,</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Value (%)"</span>,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Count"</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    theme_minimal() <span class="op">+</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    theme(strip_text<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">9</span>), axis_text<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">8</span>))</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div id="wb-eda-histograms-pct" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-histograms-pct-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 4: Distributions of percentage-scaled indicators</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 4 shows how the percentage-based indicators are distributed across countries. Forest area as a percentage of land varies widely, covering nearly the full range from 0 to 100%. Many observations fall below 80%, indicating substantial differences in land-use patterns across countries with a generally not too high forest area pattern. Fossil electricity share also span from 0 to 100%, with a noticeable concentration of observations near 100%. This suggests that many countries rely heavily on fossil fuels for electricity generation. Renewable energy share shows a similar pattern to forest area percentage, with a large number of observations appear at very low values close to 0%. This indicates that renewable energy contributes only a small portion of total energy consumption in many countries. Urban population share is more evenly distributed, with most observations between about 20% and 90%. Overall, these distributions suggest considerable variation across countries in energy structure, land use, and urbanization levels, which may help explain differences in carbon dioxide emissions per capita.</p>
+<div id="cell-wb-eda-histograms-pop" class="cell" data-message="false" data-execution_count="16">
+<details class="code-fold">
+<summary>Show code for population histogram</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>pop_df <span class="op">=</span> wb_wide[[<span class="st">"population_total"</span>]].dropna().copy()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    ggplot(pop_df, aes(x<span class="op">=</span><span class="st">"population_total"</span>)) <span class="op">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    geom_histogram(bins<span class="op">=</span><span class="dv">40</span>, fill<span class="op">=</span><span class="st">"#FE9929"</span>, color<span class="op">=</span><span class="st">"white"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>) <span class="op">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Distribution of Total Population"</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Population"</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Count"</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    theme_minimal()</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div id="wb-eda-histograms-pop" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-histograms-pop-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 5: Distribution of total population</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 5 shows that total population is extremely right-skewed as carbon dioxide emissions per capita and GDP per capita are. Most country–year observations correspond to relatively small populations, while only a few observations have very large population sizes. The majority of values are concentrated near the lower end of the distribution, indicating that most countries have far different and lower populations compared to a few highly populated countries like China and India. This also suggests that a log-scale transformation in feature engineering is necessary to better visualize the relationship between carbon dioxide emissions and population for later regression analysis.</p>
+</section>
+<section id="feature-engineering-in-log-transformation" class="level3">
+<h3 class="anchored" data-anchor-id="feature-engineering-in-log-transformation">3.2.3 Feature Engineering in log-transformation</h3>
+<div id="wb-eda-log-transform" class="cell" data-message="false" data-execution_count="17">
+<details class="code-fold">
+<summary>Show code for log transformation</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GDP per capita, CO2 per capita, and total population are all right-skewed with</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># values spanning several orders of magnitude. A natural-log transformation</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># compresses the scale, reduces the influence of extreme values, and often</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># linearises relationships with other variables in regression.</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># GDP per capita and population are strictly positive,</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># so the natural logarithm can be applied directly.</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>wb_wide[<span class="st">"log_gdp_per_capita"</span>]   <span class="op">=</span> np.log(wb_wide[<span class="st">"gdp_per_capita"</span>])</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>wb_wide[<span class="st">"log_population_total"</span>] <span class="op">=</span> np.log(wb_wide[<span class="st">"population_total"</span>])</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># CO2 per capita contains some zero values, so log(1 + x) is used</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co"># to avoid taking the logarithm of zero.</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>wb_wide[<span class="st">"log_co2_per_capita"</span>]   <span class="op">=</span> np.log1p(wb_wide[<span class="st">"co2_per_capita"</span>])</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Center year at 1990 so that the intercept in regression represents the</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co"># baseline year and coefficients are more interpretable on a human scale.</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>wb_wide[<span class="st">"year_centered"</span>] <span class="op">=</span> wb_wide[<span class="st">"year"</span>] <span class="op">-</span> START_YEAR</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Based on the histograms in Section 3.2.2, the log-transformation was applied to carbon dioxide emissions per capita, GDP per capita, and population to compress the scale and reduce the influence of extreme values. The year variable was centered at 1990 so that the intercept in regression represents the baseline year and coefficients are more interpretable on a human scale in regression analysis later on.</p>
+</section>
+<section id="advanced-eda-visualizations" class="level3">
+<h3 class="anchored" data-anchor-id="advanced-eda-visualizations">3.2.4 Advanced EDA Visualizations</h3>
+<div id="cell-wb-eda-scatter" class="cell" data-message="false" data-execution_count="18">
+<details class="code-fold">
+<summary>Show code for scatter plots</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the pre-computed log columns from the feature engineering step so that</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># all scatter plots are consistent with the transformed variables used in regression.</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>scatter_df <span class="op">=</span> wb_wide[</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"log_co2_per_capita"</span>, <span class="st">"log_gdp_per_capita"</span>, <span class="st">"log_population_total"</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"fossil_electricity_share"</span>, <span class="st">"renewable_energy_share"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>     <span class="st">"forest_area_percent_land"</span>, <span class="st">"urban_share_percent"</span>]</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>].dropna().copy()</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>pairs <span class="op">=</span> [</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"log_gdp_per_capita"</span>,      <span class="st">"Log GDP per Capita"</span>),</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"log_population_total"</span>,    <span class="st">"Log Total Population"</span>),</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"fossil_electricity_share"</span>,<span class="st">"Fossil Electricity Share (%)"</span>),</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"renewable_energy_share"</span>,  <span class="st">"Renewable Energy Share (%)"</span>),</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"forest_area_percent_land"</span>,<span class="st">"Forest Area (</span><span class="sc">% o</span><span class="st">f Land)"</span>),</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"urban_share_percent"</span>,     <span class="st">"Urban Population Share (%)"</span>),</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">8</span>))</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Log Carbon Dioxide Emissions per Capita vs Explanatory Variables"</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (xcol, xlabel) <span class="kw">in</span> <span class="bu">enumerate</span>(pairs):</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> axes[i <span class="op">//</span> <span class="dv">3</span>][i <span class="op">%</span> <span class="dv">3</span>]</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    ax.scatter(scatter_df[xcol], scatter_df[<span class="st">"log_co2_per_capita"</span>],</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>               alpha<span class="op">=</span><span class="fl">0.15</span>, s<span class="op">=</span><span class="dv">5</span>, color<span class="op">=</span><span class="st">"#2C7FB8"</span>)</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(xlabel, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">"Log Carbon Dioxide Emissions per Capita"</span> <span class="cf">if</span> i <span class="op">%</span> <span class="dv">3</span> <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="wb-eda-scatter" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-scatter-output-1.png" width="1333" height="756" class="figure-img"></p>
+<figcaption>Figure 6: Log Carbon Dioxide Emissions per Capita vs each explanatory variable (all country-year observations)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 6 shows the relationships between log carbon dioxide emissions per capita and 6 potential explanatory variables. A clear positive relationship appears between log GDP per capita and log carbon dioxide emissions per capita. Countries with higher income levels tend to have higher emissions per person, suggesting that economic development is associated with increased energy use and carbon output. In contrast, renewable energy share shows a negative association with carbon dioxide emissions per capita. Countries with higher shares of renewable energy tend to have lower carbon dioxide emissions. Fossil electricity share scatter plot is more scattered, suggesting that the association between fossil electricity share and carbon dioxide emissions per capita may not be very strong. Urban population share shows a strong positive relationship with emissions per capita, i.e.&nbsp;more urbanized countries may have higher energy consumption. Forest area percentage does not show a clear relationship with carbon dioxide emissions per capita with a scattered pattern, suggesting that land-use characteristics may not strongly explain differences in carbon dioxide emissions per capita. The relationship between log total population and emissions per capita appears weak and scattered.</p>
+<div id="cell-wb-eda-boxplot-income" class="cell" data-message="false" data-execution_count="19">
+<details class="code-fold">
+<summary>Show code for boxplot by income group</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reuse the income-quartile grouping from the faceted scatter above.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Each box shows the spread of log CO2 per capita within one income tier,</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># making it easy to compare medians and variability across development levels.</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>avg_gdp_box <span class="op">=</span> (</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    wb_wide.groupby(<span class="st">"countryiso3code"</span>)[<span class="st">"gdp_per_capita"</span>]</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    .mean()</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"gdp_per_capita"</span>: <span class="st">"avg_gdp"</span>})</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>avg_gdp_box[<span class="st">"income_group"</span>] <span class="op">=</span> pd.qcut(</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    avg_gdp_box[<span class="st">"avg_gdp"</span>],</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    q<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>[<span class="st">"Q1 (Low)"</span>, <span class="st">"Q2 (Low-Mid)"</span>, <span class="st">"Q3 (Mid-High)"</span>, <span class="st">"Q4 (High)"</span>]</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>box_income_df <span class="op">=</span> (</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    wb_wide[[<span class="st">"countryiso3code"</span>, <span class="st">"log_co2_per_capita"</span>]]</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    .merge(avg_gdp_box[[<span class="st">"countryiso3code"</span>, <span class="st">"income_group"</span>]], on<span class="op">=</span><span class="st">"countryiso3code"</span>)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    .dropna()</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    ggplot(box_income_df, aes(x<span class="op">=</span><span class="st">"income_group"</span>, y<span class="op">=</span><span class="st">"log_co2_per_capita"</span>, fill<span class="op">=</span><span class="st">"income_group"</span>)) <span class="op">+</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    geom_boxplot(alpha<span class="op">=</span><span class="fl">0.7</span>) <span class="op">+</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Log Carbon Dioxide Emissions per Capita by GDP Income Quartile"</span>,</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Income Group (GDP per Capita Quartile)"</span>,</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Log Carbon Dioxide Emissions per Capita"</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>    theme_minimal() <span class="op">+</span></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>    theme(legend_position<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<div id="wb-eda-boxplot-income" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-boxplot-income-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 7: Distribution of log carbon dioxide emissions per capita by GDP income quartile</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on the fining in Figure 6, there is a strong increasing relationship between log carbon dioxide emissions per capita and log GDP per capita. Hence, a box plot, Figure 7, was constructed. It compares log carbon dioxide emissions per capita across four GDP per capita quartiles. A clear upward pattern appears across the income groups, whcih proves the finding of the association between log carbon dioxide emissions per capita and log GDP per capita in Figure 6.</p>
+<p>Countries in income quartile 1 (Q1) have the lowest emissions per capita, with most observations concentrated near the bottom of the scale. As income increases, the distribution of emissions shifts upward. The median emissions level in Q2 is higher than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest income quartile (Q4) show the highest median emissions per capita and a wider spread of values. Higher-income countries therefore tend to produce more emissions per person. Although there are some outliers in all quartiles, the pattern is still clear and consistent. Note, the outliers should be remained because they reflected the real life situations.</p>
+<div id="cell-wb-eda-boxplot-renewable" class="cell" data-message="false" data-execution_count="20">
+<details class="code-fold">
+<summary>Show code for boxplot by renewable energy group</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The scatter plot showed a clearer negative pattern for renewable energy share</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># than for fossil electricity share, so renewable share is the better choice</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># for a grouped comparison with boxplots.</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>box_renew_df <span class="op">=</span> wb_wide[[<span class="st">"log_co2_per_capita"</span>, <span class="st">"renewable_energy_share"</span>]].dropna().copy()</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>box_renew_df[<span class="st">"renew_group"</span>] <span class="op">=</span> pd.qcut(</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    box_renew_df[<span class="st">"renewable_energy_share"</span>],</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    q<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>[<span class="st">"Q1 (Low)"</span>, <span class="st">"Q2 (Low-Mid)"</span>, <span class="st">"Q3 (Mid-High)"</span>, <span class="st">"Q4 (High)"</span>]</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    ggplot(box_renew_df, aes(x<span class="op">=</span><span class="st">"renew_group"</span>, y<span class="op">=</span><span class="st">"log_co2_per_capita"</span>, group<span class="op">=</span><span class="st">"renew_group"</span>, fill<span class="op">=</span><span class="st">"renew_group"</span>)) <span class="op">+</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    geom_boxplot(alpha<span class="op">=</span><span class="fl">0.7</span>) <span class="op">+</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Log Carbon Dioxide Emissions per Capita by Renewable Energy Share Quartile"</span>,</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Renewable Energy Share Group"</span>,</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Log Carbon Dioxide Emissions per Capita"</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    theme_minimal() <span class="op">+</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    theme(legend_position<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<div id="wb-eda-boxplot-renewable" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-boxplot-renewable-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 8: Distribution of log carbon dioxide emissions per capita by renewable energy share quartile</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on the fining in Figure 6, there is a strong negative association between log carbon dioxide emissions per capita and reneable energy share. Hence, a box plot, Figure 8, was constructed. It compares log carbon dioxide emissions per capita across four renewable energy share quartiles. A clear downward pattern appears across the quartiles, whcih proves the finding of the negative association between log carbon dioxide emissions per capita and renewable energy share in Figure 6.</p>
+<p>Countries in low renewable energy share group (Q1) have the lowest emissions per capita, with most observations concentrated near the middle of the scale. As renewable energy share increases, the distribution of emissions shifts downward, as expected intuitively. The median emissions level in Q2 is lower than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest renewable energy share quartile (Q4) show the lowest median emissions per capita. Countries with higher renewable energy share tend to produce less emissions per person. Although there are some outliers in most groups, the general pattern is still clear and consistent. Note, the outliers should be remained because they reflected the real life situations.</p>
+<div id="cell-wb-eda-boxplot-urban" class="cell" data-message="false" data-execution_count="21">
+<details class="code-fold">
+<summary>Show code for boxplot by urban share group</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Urban share showed a clear positive relationship with log CO2 in the scatter</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co"># plots, so binning into quartiles shows whether the step-up in emissions is</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># consistent and monotone across urbanisation levels.</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>box_urban_df <span class="op">=</span> wb_wide[[<span class="st">"log_co2_per_capita"</span>, <span class="st">"urban_share_percent"</span>]].dropna().copy()</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>box_urban_df[<span class="st">"urban_group"</span>] <span class="op">=</span> pd.qcut(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    box_urban_df[<span class="st">"urban_share_percent"</span>],</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    q<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>[<span class="st">"Q1 (Low)"</span>, <span class="st">"Q2 (Low-Mid)"</span>, <span class="st">"Q3 (Mid-High)"</span>, <span class="st">"Q4 (High)"</span>]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    ggplot(box_urban_df, aes(x<span class="op">=</span><span class="st">"urban_group"</span>, y<span class="op">=</span><span class="st">"log_co2_per_capita"</span>, group<span class="op">=</span><span class="st">"urban_group"</span>, fill<span class="op">=</span><span class="st">"urban_group"</span>)) <span class="op">+</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    geom_boxplot(alpha<span class="op">=</span><span class="fl">0.7</span>) <span class="op">+</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    labs(</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Log Carbon Dioxide Emissions per Capita by Urban Population Share Quartile"</span>,</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Urban Population Share Group"</span>,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Log Carbon Dioxide Emissions per Capita"</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">+</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    theme_minimal() <span class="op">+</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    theme(legend_position<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<div id="wb-eda-boxplot-urban" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-boxplot-urban-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 9: Distribution of log carbon dioxide emissions per capita by urban population share quartile</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on the fining in Figure 6, there is a strong increasing relationship between log carbon dioxide emissions per capita and Urban population share. Hence, a box plot, Figure 9, was constructed. It compares log carbon dioxide emissions per capita across four urban population share quartiles. A clear upward pattern appears across the groups, whcih proves the finding of the association between log carbon dioxide emissions per capita and urban population share in Figure 6.</p>
+<p>Countries in Q1 have the lowest emissions per capita, with most observations concentrated near the middle of the scale. As urban population share increases, the distribution of emissions shifts upward, as expected intuitively. The median emissions level in Q2 is higher than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest urban population share quartile (Q4) show the highest median emissions per capita. Countries with higher urban population share tend to produce more emissions per person. Note, the outliers should be remained because they reflected the real life situations.</p>
+<div id="cell-wb-eda-corr-heatmap" class="cell" data-message="false" data-execution_count="22">
+<details class="code-fold">
+<summary>Show code for correlation heatmap</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute pairwise Pearson correlations across all analysis variables.</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-transformed versions are used for the skewed variables (CO2, GDP,</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># population) to be consistent with the regression specification.</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The long-format reshape: melt the square matrix</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># so that ggplot can map each cell to a tile.</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>corr_vars <span class="op">=</span> [</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log_co2_per_capita"</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log_gdp_per_capita"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log_population_total"</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fossil_electricity_share"</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"renewable_energy_share"</span>,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forest_area_percent_land"</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"urban_share_percent"</span>,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>corr_matrix <span class="op">=</span> wb_wide[corr_vars].corr()</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>corr_long <span class="op">=</span> (</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    corr_matrix</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    .melt(id_vars<span class="op">=</span><span class="st">"index"</span>, var_name<span class="op">=</span><span class="st">"variable_2"</span>, value_name<span class="op">=</span><span class="st">"correlation"</span>)</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"index"</span>: <span class="st">"variable_1"</span>})</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>corr_long[<span class="st">"corr_label"</span>] <span class="op">=</span> corr_long[<span class="st">"correlation"</span>].<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>    ggplot(corr_long, aes(x<span class="op">=</span><span class="st">"variable_1"</span>, y<span class="op">=</span><span class="st">"variable_2"</span>, fill<span class="op">=</span><span class="st">"correlation"</span>))</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_tile()</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> geom_text(aes(label<span class="op">=</span><span class="st">"corr_label"</span>), size<span class="op">=</span><span class="dv">7</span>, color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> scale_fill_gradient2(low<span class="op">=</span><span class="st">"#2166ac"</span>, mid<span class="op">=</span><span class="st">"white"</span>, high<span class="op">=</span><span class="st">"#b2182b"</span>, midpoint<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> labs(</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Correlation Matrix of All Stakeholders Variables"</span>,</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">""</span>,</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">""</span>,</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>        fill<span class="op">=</span><span class="st">"Correlation"</span></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme_minimal()</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, ha<span class="op">=</span><span class="st">"right"</span>))</span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<div id="wb-eda-corr-heatmap" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-eda-corr-heatmap-output-1.png" width="672" height="480" class="figure-img"></p>
+<figcaption>Figure 10: Correlation Matrix of All Stakeholders variables</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 10 shows that log GDP per capita has a strong positive correlation with log carbon dioxide emissions per capita (0.74). Urban population share is also positively correlated with emissions (0.62). Renewable energy share has a moderately strong negative correlation with emissions (−0.63). These findings are consistent with the findings in previous sections.</p>
+<p>Fossil electricity share shows only a weak positive relationship with carbon dioxide emissions per capita (0.23). Log population and forest area percentage have very weak correlations with carbon dioxide emissions per capita, as expected.</p>
+</section>
+</section>
+<section id="regression-analysis-1" class="level2">
+<h2 class="anchored" data-anchor-id="regression-analysis-1">3.3 Regression Analysis</h2>
+<div id="wb-regression-data-missing-value-removal" class="cell" data-message="false" data-execution_count="23">
+<details class="code-fold">
+<summary>Show code for missing value removal</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop any row that has a missing value before fitting. This matches the row-level missing-value rule stated in the methods section and ensures that all models are estimated on an identical sample.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>core_analysis_vars <span class="op">=</span> [</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log_co2_per_capita"</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log_gdp_per_capita"</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log_population_total"</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fossil_electricity_share"</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"renewable_energy_share"</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forest_area_percent_land"</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"urban_share_percent"</span>,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"year_centered"</span>,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>rows_before <span class="op">=</span> wb_wide.shape[<span class="dv">0</span>]</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>analysis_df <span class="op">=</span> wb_wide.dropna(subset<span class="op">=</span>core_analysis_vars).copy()</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>rows_after  <span class="op">=</span> analysis_df.shape[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Before performing the regression analysis, the rows with missing values were dropped. Before missing data removal, the dataset had 7378 rows. After missing data removal, the dataset had 5499 rows.</p>
+<div id="wb-regression-ols" class="cell" data-message="false" data-tbl-cap="OLS regression: log carbon dioxide emissions per capita on all predictors" data-execution_count="24">
+<details class="code-fold">
+<summary>Show code for OLS regression</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predictor list matches the research question: economic development, energy structure, land use, and demographics. Log-transformed versions are used for the skewed variables to be consistent with the feature engineering step.</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>predictors <span class="op">=</span> [</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log_gdp_per_capita"</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"log_population_total"</span>,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fossil_electricity_share"</span>,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"renewable_energy_share"</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"forest_area_percent_land"</span>,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"urban_share_percent"</span>,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"year_centered"</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>predictor_labels <span class="op">=</span> [</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Log GDP per Capita"</span>,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Log Total Population"</span>,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Fossil Electricity Share (</span><span class="sc">% o</span><span class="st">f total electricity consumption)"</span>,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Renewable Energy Share (</span><span class="sc">% o</span><span class="st">f total final energy consumption)"</span>,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Forest Area (</span><span class="sc">% o</span><span class="st">f total land area)"</span>,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Urban Population Share (</span><span class="sc">% o</span><span class="st">f total population)"</span>,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Year (centered at 1990)"</span>,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> analysis_df[predictors].values</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> analysis_df[<span class="st">"log_co2_per_capita"</span>].values</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Add intercept constant</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>X_const <span class="op">=</span> sm.add_constant(X)</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>linear_mod <span class="op">=</span> sm.OLS(y, X_const).fit()</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Format the coefficient table for display — summary2().tables[1] returns a</span></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a><span class="co"># DataFrame; rename columns and replace numeric index with readable variable names.</span></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>coef_tbl <span class="op">=</span> (</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>    linear_mod.summary2().tables[<span class="dv">1</span>]</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{</span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">"index"</span>:    <span class="st">"Variable"</span>,</span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Coef."</span>:    <span class="st">"Coefficient"</span>,</span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Std.Err."</span>: <span class="st">"Std. Error"</span>,</span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>        <span class="st">"t"</span>:        <span class="st">"t-stat"</span>,</span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>        <span class="st">"P&gt;|t|"</span>:    <span class="st">"p-value"</span>,</span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>        <span class="st">"[0.025"</span>:   <span class="st">"CI 2.5%"</span>,</span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>        <span class="st">"0.975]"</span>:   <span class="st">"CI 97.5%"</span>,</span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>coef_tbl[<span class="st">"Variable"</span>] <span class="op">=</span> [<span class="st">"Intercept"</span>] <span class="op">+</span> predictor_labels</span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>display(coef_tbl.<span class="bu">round</span>(<span class="dv">4</span>))</span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>fit_tbl <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Metric"</span>: [<span class="st">"R²"</span>, <span class="st">"Adjusted R²"</span>, <span class="st">"F-statistic"</span>, <span class="st">"Observations"</span>],</span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Value"</span>: [</span>
+<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>        <span class="bu">round</span>(linear_mod.rsquared, <span class="dv">4</span>),</span>
+<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a>        <span class="bu">round</span>(linear_mod.rsquared_adj, <span class="dv">4</span>),</span>
+<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>        <span class="bu">round</span>(linear_mod.fvalue, <span class="dv">4</span>),</span>
+<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span>(linear_mod.nobs),</span>
+<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a>display(fit_tbl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="wb-regression-ols-1" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Variable</th>
+<th data-quarto-table-cell-role="th">Coefficient</th>
+<th data-quarto-table-cell-role="th">Std. Error</th>
+<th data-quarto-table-cell-role="th">t-stat</th>
+<th data-quarto-table-cell-role="th">p-value</th>
+<th data-quarto-table-cell-role="th">CI 2.5%</th>
+<th data-quarto-table-cell-role="th">CI 97.5%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Intercept</td>
+<td>-3.3561</td>
+<td>0.1023</td>
+<td>-32.8161</td>
+<td>0.0000</td>
+<td>-3.5566</td>
+<td>-3.1556</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Log GDP per Capita</td>
+<td>0.3885</td>
+<td>0.0086</td>
+<td>45.4133</td>
+<td>0.0000</td>
+<td>0.3718</td>
+<td>0.4053</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Log Total Population</td>
+<td>0.0930</td>
+<td>0.0035</td>
+<td>26.5727</td>
+<td>0.0000</td>
+<td>0.0861</td>
+<td>0.0998</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Fossil Electricity Share (% of total electrici...</td>
+<td>0.0016</td>
+<td>0.0002</td>
+<td>6.5241</td>
+<td>0.0000</td>
+<td>0.0011</td>
+<td>0.0021</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Renewable Energy Share (% of total final energ...</td>
+<td>-0.0069</td>
+<td>0.0004</td>
+<td>-18.1983</td>
+<td>0.0000</td>
+<td>-0.0077</td>
+<td>-0.0062</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Forest Area (% of total land area)</td>
+<td>-0.0004</td>
+<td>0.0003</td>
+<td>-1.3403</td>
+<td>0.1802</td>
+<td>-0.0010</td>
+<td>0.0002</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Urban Population Share (% of total population)</td>
+<td>0.0037</td>
+<td>0.0005</td>
+<td>7.8369</td>
+<td>0.0000</td>
+<td>0.0028</td>
+<td>0.0046</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Year (centered at 1990)</td>
+<td>-0.0108</td>
+<td>0.0008</td>
+<td>-13.6659</td>
+<td>0.0000</td>
+<td>-0.0124</td>
+<td>-0.0093</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="wb-regression-ols-2" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Metric</th>
+<th data-quarto-table-cell-role="th">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>R²</td>
+<td>0.6958</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Adjusted R²</td>
+<td>0.6955</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>F-statistic</td>
+<td>1794.6554</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Observations</td>
+<td>5499.0000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p>OLS regression: log carbon dioxide emissions per capita on all predictors</p>
+</div>
+<p>According to the OLS regression results, GDP per captia has a positive and statistically significant association (p-value &lt; 0.05) with carbon dioxide emissions per capita, i.e.&nbsp;an 1% increase in GDP per capita leads to an 0.3885% increase in carbon dioxide emissions per capita on average, while holding other variables constant.</p>
+<p>Total population also has a positive and statistically significant association with carbon dioxide emissions per capita, i.e.&nbsp;an 1% increase in total population leads to an 0.0930% increase in carbon dioxide emissions per capita on average, while holding other variables constant.</p>
+<p>Fossil electricity share has a positive and statistically significant association with carbon dioxide emissions per capita, i.e.&nbsp;an 1 percent point increase in fossil electricity share leads to an 0.16% increase in carbon dioxide emissions per capita on average, while holding other variables constant.</p>
+<p>Renewable energy share has a negative and statistically significant association with carbon dioxide emissions per capita, i.e.&nbsp;an 1 percent point increase in renewable energy share leads to an 0.69% decrease in carbon dioxide emissions per capita on average, while holding other variables constant.</p>
+<p>Forest area percentage does not have a statistically significant association with carbon dioxide emissions per capita since the p-value is <code>0.1802 &gt; 0.05</code>.</p>
+<p>Urban population share has a positive and statistically significant association with carbon dioxide emissions per capita, i.e.&nbsp;an 1 percent point increase in urban population share leads to an 0.37% increase in carbon dioxide emissions per capita on average, while holding other variables constant.</p>
+<p>Year (centered at 1990) has a negative and statistically significant association with carbon dioxide emissions per capita, i.e.&nbsp;Each passing year since 1990 leads to an 1.08% decrease in carbon dioxide emissions per capita on average, while holding other variables constant, which proves the finding in Figure 1.</p>
+<p>The Adjusted <span class="math inline">\(R^2\)</span> of 0.6955 indicates that approximately 69.55% of the variance in logged carbon dioxide emissions per capita is explained by the model’s independent variables.</p>
+<div class="cell" data-message="false" data-tbl-cap="GAM smooth-term summary" data-execution_count="25">
+<details class="code-fold">
+<summary>Show code for GAM regression</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a GAM with one smooth spline term per predictor. The column index i matches the order in X.</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>gam_mod <span class="op">=</span> LinearGAM(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">0</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>   <span class="co"># log_gdp_per_capita</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">1</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>   <span class="co"># log_population_total</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">2</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>   <span class="co"># fossil_electricity_share</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">3</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>   <span class="co"># renewable_energy_share</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">4</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>   <span class="co"># forest_area_percent_land</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    s(<span class="dv">5</span>, n_splines<span class="op">=</span><span class="dv">20</span>) <span class="op">+</span>   <span class="co"># urban_share_percent</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    l(<span class="dv">6</span>)                   <span class="co"># year_centered as linear control</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>).fit(X, y)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a term-level GAM summary table. pygam stores EDoF per coefficient, so</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="co"># sum across the coefficient block belonging to each term to align with the</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="co"># feature-level p-values.</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>term_labels <span class="op">=</span> predictor_labels <span class="op">+</span> [<span class="st">"Intercept"</span>]</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>edof_per_coef <span class="op">=</span> gam_mod.statistics_[<span class="st">"edof_per_coef"</span>]</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>p_values <span class="op">=</span> gam_mod.statistics_[<span class="st">"p_values"</span>]</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>term_edof <span class="op">=</span> []</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>coef_start <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> term <span class="kw">in</span> gam_mod.terms:</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    coef_stop <span class="op">=</span> coef_start <span class="op">+</span> term.n_coefs</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    term_edof.append(edof_per_coef[coef_start:coef_stop].<span class="bu">sum</span>())</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>    coef_start <span class="op">=</span> coef_stop</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>gam_tbl <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Term"</span>: term_labels,</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"EDoF"</span>: term_edof,</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"p-value"</span>: p_values,</span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>display(gam_tbl.<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="wb-regression-gam" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>GAM smooth-term summary</caption>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Term</th>
+<th data-quarto-table-cell-role="th">EDoF</th>
+<th data-quarto-table-cell-role="th">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Log GDP per Capita</td>
+<td>16.5064</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Log Total Population</td>
+<td>15.0628</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Fossil Electricity Share (% of total electrici...</td>
+<td>15.9505</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Renewable Energy Share (% of total final energ...</td>
+<td>15.7092</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Forest Area (% of total land area)</td>
+<td>15.1721</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Urban Population Share (% of total population)</td>
+<td>15.0097</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Year (centered at 1990)</td>
+<td>0.9709</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Intercept</td>
+<td>0.0000</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>According to the GAM smooth-term summary, Log GDP per capita, Log total population, and all the other indicator independent variables have statistically significant (all p-values &lt; 0.05) complex and nonlinear relationships with carbon dioxide emissions per capita since all their EDoFs way largr than 1, while the centered <code>Year</code> variable has a statistically significant (p-value &lt; 0.05) linear relationship with carbon dioxide emissions per capita since its EDoF is approximately 1, which confirms that this is a linear control term in the GAM model. The Pseudo <span class="math inline">\(R^2\)</span> of 0.8495 indicates that approximately 84.95% of the variance in logged carbon dioxide emissions per capita is explained by the model’s independent variables.</p>
+<div id="cell-wb-regression-gam-pdp" class="cell" data-message="false" data-execution_count="26">
+<details class="code-fold">
+<summary>Show code for GAM partial dependence plots</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot partial dependence curves for the 6 smooth terms following the lab04</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># spec-list pattern. year_centered uses l() and is excluded from the PDP.</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define variables and colors (term index, x-column index, x-label, color, panel title)</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>spec <span class="op">=</span> [</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">0</span>, <span class="st">"Log GDP per Capita"</span>,                                          <span class="st">"#2C7FB8"</span>, <span class="st">"Effect of Log GDP per Capita"</span>),</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span>, <span class="dv">1</span>, <span class="st">"Log Total Population"</span>,                                        <span class="st">"#41AB5D"</span>, <span class="st">"Effect of Log Total Population"</span>),</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">2</span>, <span class="dv">2</span>, <span class="st">"Fossil Electricity Share (%)"</span>,                                <span class="st">"#FE9929"</span>, <span class="st">"Effect of Fossil Electricity Share"</span>),</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">3</span>, <span class="st">"Renewable Energy Share (%)"</span>,                                  <span class="st">"#E84539"</span>, <span class="st">"Effect of Renewable Energy Share"</span>),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">4</span>, <span class="dv">4</span>, <span class="st">"Forest Area (</span><span class="sc">% o</span><span class="st">f Land)"</span>,                                     <span class="st">"#756BB1"</span>, <span class="st">"Effect of Forest Area"</span>),</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">5</span>, <span class="dv">5</span>, <span class="st">"Urban Population Share (%)"</span>,                                  <span class="st">"#636363"</span>, <span class="st">"Effect of Urban Population Share"</span>),</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">8</span>))</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"GAM Partial Dependence of Log CO2 Emissions per Capita"</span>, fontsize<span class="op">=</span><span class="dv">13</span>)</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="co"># loop over smooth variables following the lab04 pattern</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (term, xcol, xlabel, color, title) <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, spec):</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    XX <span class="op">=</span> gam_mod.generate_X_grid(term<span class="op">=</span>term)</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    x  <span class="op">=</span> XX[:, xcol]</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    pd_effect <span class="op">=</span> gam_mod.partial_dependence(term<span class="op">=</span>term, X<span class="op">=</span>XX)</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    _, ci     <span class="op">=</span> gam_mod.partial_dependence(term<span class="op">=</span>term, X<span class="op">=</span>XX, width<span class="op">=</span><span class="fl">0.95</span>)</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, pd_effect, color<span class="op">=</span>color, lw<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, ci, color<span class="op">=</span>color, ls<span class="op">=</span><span class="st">"--"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span>xlabel, ylabel<span class="op">=</span><span class="st">"Partial Effect on Log CO2"</span>, title<span class="op">=</span>title)</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="wb-regression-gam-pdp" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Midterm_files/figure-html/wb-regression-gam-pdp-output-1.png" width="1334" height="757" class="figure-img"></p>
+<figcaption>Figure 11: GAM partial dependence curves for each predictor</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>According to the GAM partial dependence plots, Figure 11, the Log GDP per capita smooth is somewhat nonlinear, with a general increase in long term of the partial effect on log carbon dioxide emissions per capita as the log GDP per capita increases. At higher log GDP per capita levels, it oscillates slightly and continue to increase.</p>
+<p>The log total population smooth is clearly nonlinear. THe partial effect on log carbon dioxide emissions per capita increases rapidly at low levels of total population, then immediately decrease at 22026 population in real world (by using <span class="math inline">\(e^{10}\)</span> to convert the log scale back to the original scale). Then as total population increases, it continues to increase in a more gentle and linear way.</p>
+<p>The fossil electricity share smooth is definitely nonlinear. The partial effect on log carbon dioxide emissions per capita oscillates rapidly as fossil electricity share increases.</p>
+<p>The renewable energy share smooth is somewhat nonlinear. The partial effect on log carbon dioxide emissions per capita decreases rapidly as renewable energy share increases. At higher renewable energy share levels, it oscillates slightly and continue to decrease.</p>
+<p>The forest area percentage smooth is clearly nonlinear. The partial effect on log carbon dioxide emissions per capita oscillates rapidly as forest area percentage increases.</p>
+<p>The urban population share smooth is clearly nonlinear. The partial effect on log carbon dioxide emissions per capita increases gently as urban population share increases. At higher urban population share levels (around 90%), it drops sharply and then continues to increase sharply as the share approaches 100%.</p>
 </section>
 </section>
 <section id="summary" class="level1">
