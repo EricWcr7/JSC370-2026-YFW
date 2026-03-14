@@ -304,12 +304,9 @@ window.Quarto = {
 <span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>wb_raw <span class="op">=</span> pd.concat(frames, ignore_index<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only non-missing observed values for preview</span></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>wb_raw <span class="op">=</span> wb_raw[wb_raw[<span class="st">"value"</span>].notna()].copy()</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw API preview dataframe</span></span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>display(wb_raw.head(<span class="dv">20</span>))</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shape:"</span>, wb_raw.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw API preview dataframe</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>display(wb_raw.head(<span class="dv">20</span>))</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shape:"</span>, wb_raw.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div id="wb-data-flattening" class="cell" data-message="false" data-execution_count="3">
@@ -324,7 +321,7 @@ window.Quarto = {
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>flat_wb_raw_shape <span class="op">=</span> wb_raw.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Data were retrieved sucessfully from the World Bank Open Data API by using JSON format within a for loop of the indiators specified in advance for this project. Then merged each indicator-specific dataset into a single raw, long format dataset by using <code>countryiso3code</code> (3-letter country codes) and <code>year</code> as the keys. However, in the initial dataset, the values of the coloumns <code>indicator</code> and <code>country</code> were nested dictionaries, which were not suitable for further analysis. Therefore, the nested columns were flattened into plain columns so the data can be filtered and merged as a regular flat table by picking out the attributes to form new columns. The dictionaries in <code>indicator</code> column had the indicator codes, whcih were mapped to <code>indicator_code</code> in the flattened dataset, and their official names, which were mapped to <code>variable_name</code> in the flattened dataset, and the ones in <code>country</code> column had the country ids and their official names, which are mapped to <code>country_name</code> int the flattened dataset. After that, the flattened dataset had 50724 rows and 12 columns.</p>
+<p>Data were retrieved sucessfully from the World Bank Open Data API by using JSON format within a for loop of the indiators specified in advance for this project. Then merged each indicator-specific dataset into a single raw, long format dataset by using <code>countryiso3code</code> (3-letter country codes) and <code>year</code> as the keys. However, in the initial dataset, the values of the coloumns <code>indicator</code> and <code>country</code> were nested dictionaries, which were not suitable for further analysis. Therefore, the nested columns were flattened into plain columns so the data can be filtered and merged as a regular flat table by picking out the attributes to form new columns. The dictionaries in <code>indicator</code> column had the indicator codes, whcih were mapped to <code>indicator_code</code> in the flattened dataset, and their official names, which were mapped to <code>variable_name</code> in the flattened dataset, and the ones in <code>country</code> column had the country ids and their official names, which are mapped to <code>country_name</code> int the flattened dataset. After that, the flattened dataset had 54264 rows and 12 columns.</p>
 <div id="wb-data-aggregates-removal" class="cell" data-message="false" data-execution_count="4">
 <details class="code-fold">
 <summary>Show code for aggregates data removal</summary>
@@ -371,7 +368,7 @@ window.Quarto = {
 <span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows after removing aggregates:"</span>, wb.shape[<span class="dv">0</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>With previewing some rows of the flattened dataset, some aggregates/regions data were found, rows with a <code>country_name</code> like “Africa Eastern and Southern” were removed to avoid misinterpretation by using the country metadata endpoint. After the removal of aggregates data, the dataset had 41170 rows left.</p>
+<p>With previewing some rows of the flattened dataset, some aggregates/regions data were found, rows with a <code>country_name</code> like “Africa Eastern and Southern” were removed to avoid misinterpretation by using the country metadata endpoint. After the removal of aggregates data, the dataset had 44268 rows left.</p>
 <div id="wb-data-reshaping" class="cell" data-message="false" data-execution_count="5">
 <details class="code-fold">
 <summary>Show code for reshaping dataset</summary>
@@ -524,19 +521,18 @@ window.Quarto = {
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>oob_forest <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"forest_area_percent_land"</span>] <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (wb_wide[<span class="st">"forest_area_percent_land"</span>] <span class="op">&gt;</span> <span class="dv">100</span>)).<span class="bu">sum</span>())</span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>oob_urban  <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"urban_share_percent"</span>]      <span class="op">&lt;</span> <span class="dv">0</span>) <span class="op">|</span> (wb_wide[<span class="st">"urban_share_percent"</span>]      <span class="op">&gt;</span> <span class="dv">100</span>)).<span class="bu">sum</span>())</span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirm ISO3 codes follow the 3-capital-letter standard, no duplicate</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># country-year rows exist, year is within study period, and year dtype is correct before saving.</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>invalid_iso3 <span class="op">=</span> wb_wide[<span class="op">~</span>wb_wide[<span class="st">"countryiso3code"</span>].<span class="bu">str</span>.match(<span class="vs">r"</span><span class="dv">^</span><span class="pp">[A-Z]</span><span class="op">{3}</span><span class="dv">$</span><span class="vs">"</span>, na<span class="op">=</span><span class="va">False</span>)]</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>oob_iso3 <span class="op">=</span> invalid_iso3.shape[<span class="dv">0</span>]</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>duplicate_country_year <span class="op">=</span> wb_wide.duplicated([<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>]).<span class="bu">sum</span>()</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>oob_year <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"year"</span>] <span class="op">&lt;</span> START_YEAR) <span class="op">|</span> (wb_wide[<span class="st">"year"</span>] <span class="op">&gt;</span> END_YEAR)).<span class="bu">sum</span>())</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows with non-standard ISO3 codes:"</span>, oob_iso3)</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Duplicate country-year rows:"</span>, duplicate_country_year)</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rows outside study period (</span><span class="sc">{</span>START_YEAR<span class="sc">}</span><span class="ss">–</span><span class="sc">{</span>END_YEAR<span class="sc">}</span><span class="ss">):"</span>, oob_year)</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Save cleaned wide dataset</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>wb_wide.to_csv(<span class="st">"wb_wide.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Saved wb_wide.csv:"</span>, wb_wide.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirm ISO3 codes follow the 3-capital-letter standard, no duplicate country-year rows exist, year is within study period, and year dtype is correct before saving.</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>invalid_iso3 <span class="op">=</span> wb_wide[<span class="op">~</span>wb_wide[<span class="st">"countryiso3code"</span>].<span class="bu">str</span>.match(<span class="vs">r"</span><span class="dv">^</span><span class="pp">[A-Z]</span><span class="op">{3}</span><span class="dv">$</span><span class="vs">"</span>, na<span class="op">=</span><span class="va">False</span>)]</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>oob_iso3 <span class="op">=</span> invalid_iso3.shape[<span class="dv">0</span>]</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>duplicate_country_year <span class="op">=</span> wb_wide.duplicated([<span class="st">"countryiso3code"</span>, <span class="st">"year"</span>]).<span class="bu">sum</span>()</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>oob_year <span class="op">=</span> <span class="bu">int</span>(((wb_wide[<span class="st">"year"</span>] <span class="op">&lt;</span> START_YEAR) <span class="op">|</span> (wb_wide[<span class="st">"year"</span>] <span class="op">&gt;</span> END_YEAR)).<span class="bu">sum</span>())</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rows with non-standard ISO3 codes:"</span>, oob_iso3)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Duplicate country-year rows:"</span>, duplicate_country_year)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Rows outside study period (</span><span class="sc">{</span>START_YEAR<span class="sc">}</span><span class="ss">–</span><span class="sc">{</span>END_YEAR<span class="sc">}</span><span class="ss">):"</span>, oob_year)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Save cleaned wide dataset</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>wb_wide.to_csv(<span class="st">"wb_wide.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Saved wb_wide.csv:"</span>, wb_wide.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>Before performing the plausibility checks, it would be necessary to recall the units of each indicator and the possible formats/ranges of values for each variable. Here are the units of each indicator:</p>
@@ -1150,7 +1146,7 @@ window.Quarto = {
 <span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    theme_minimal()</span>
 <span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="87">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div id="wb-eda-line-global" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Midterm_files/figure-html/wb-eda-line-global-output-1.png" width="672" height="480" class="figure-img"></p>
@@ -1186,7 +1182,7 @@ window.Quarto = {
 <span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    theme(legend_position<span class="op">=</span><span class="st">"right"</span>)</span>
 <span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="88">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div id="wb-eda-line-countries" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Midterm_files/figure-html/wb-eda-line-countries-output-1.png" width="672" height="480" class="figure-img"></p>
@@ -1217,7 +1213,7 @@ window.Quarto = {
 <span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    theme(strip_text<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">9</span>), axis_text<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">8</span>))</span>
 <span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="89">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div id="wb-eda-histograms-co2-gdp" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Midterm_files/figure-html/wb-eda-histograms-co2-gdp-output-1.png" width="672" height="480" class="figure-img"></p>
@@ -1252,7 +1248,7 @@ window.Quarto = {
 <span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    theme(strip_text<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">9</span>), axis_text<span class="op">=</span>element_text(size<span class="op">=</span><span class="dv">8</span>))</span>
 <span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="90">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <div id="wb-eda-histograms-pct" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Midterm_files/figure-html/wb-eda-histograms-pct-output-1.png" width="672" height="480" class="figure-img"></p>
@@ -1367,7 +1363,7 @@ window.Quarto = {
 <span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>    theme(legend_position<span class="op">=</span><span class="st">"none"</span>)</span>
 <span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="93">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div id="wb-eda-boxplot-income" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Midterm_files/figure-html/wb-eda-boxplot-income-output-1.png" width="672" height="480" class="figure-img"></p>
@@ -1401,7 +1397,7 @@ window.Quarto = {
 <span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    theme(legend_position<span class="op">=</span><span class="st">"none"</span>)</span>
 <span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="94">
+<div class="cell-output cell-output-display" data-execution_count="19">
 <div id="wb-eda-boxplot-renewable" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Midterm_files/figure-html/wb-eda-boxplot-renewable-output-1.png" width="672" height="480" class="figure-img"></p>
@@ -1435,7 +1431,7 @@ window.Quarto = {
 <span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    theme(legend_position<span class="op">=</span><span class="st">"none"</span>)</span>
 <span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="95">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div id="wb-eda-boxplot-urban" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Midterm_files/figure-html/wb-eda-boxplot-urban-output-1.png" width="672" height="480" class="figure-img"></p>
@@ -1486,7 +1482,7 @@ window.Quarto = {
 <span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> theme(axis_text_x<span class="op">=</span>element_text(angle<span class="op">=</span><span class="dv">45</span>, ha<span class="op">=</span><span class="st">"right"</span>))</span>
 <span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="96">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <div id="wb-eda-corr-heatmap" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Midterm_files/figure-html/wb-eda-corr-heatmap-output-1.png" width="672" height="480" class="figure-img"></p>
@@ -1772,34 +1768,33 @@ window.Quarto = {
 <details class="code-fold">
 <summary>Show code for GAM partial dependence plots</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot partial dependence curves for the 6 smooth terms. year_centered uses l() and is excluded from the PDP.</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># define variables and colors (term index, x-column index, x-label, color, panel title)</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>spec <span class="op">=</span> [</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">0</span>, <span class="st">"Log GDP per Capita"</span>,           <span class="st">"#2C7FB8"</span>, <span class="st">"Effect of Log GDP per Capita"</span>),</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span>, <span class="dv">1</span>, <span class="st">"Fossil Electricity Share (%)"</span>, <span class="st">"#FE9929"</span>, <span class="st">"Effect of Fossil Electricity Share"</span>),</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">2</span>, <span class="dv">2</span>, <span class="st">"Renewable Energy Share (%)"</span>,   <span class="st">"#E84539"</span>, <span class="st">"Effect of Renewable Energy Share"</span>),</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">3</span>, <span class="st">"Forest Area (</span><span class="sc">% o</span><span class="st">f Land)"</span>,      <span class="st">"#756BB1"</span>, <span class="st">"Effect of Forest Area"</span>),</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">4</span>, <span class="dv">4</span>, <span class="st">"Urban Population Share (%)"</span>,   <span class="st">"#636363"</span>, <span class="st">"Effect of Urban Population Share"</span>),</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">8</span>))</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"GAM Partial Dependence of Log CO2 Emissions per Capita"</span>, fontsize<span class="op">=</span><span class="dv">13</span>)</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="co"># loop over smooth variables</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (term, xcol, xlabel, color, title) <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, spec):</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    XX <span class="op">=</span> gam_mod.generate_X_grid(term<span class="op">=</span>term)</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    x  <span class="op">=</span> XX[:, xcol]</span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>    pd_effect <span class="op">=</span> gam_mod.partial_dependence(term<span class="op">=</span>term, X<span class="op">=</span>XX)</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>    _, ci     <span class="op">=</span> gam_mod.partial_dependence(term<span class="op">=</span>term, X<span class="op">=</span>XX, width<span class="op">=</span><span class="fl">0.95</span>)</span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, pd_effect, color<span class="op">=</span>color, lw<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, ci, color<span class="op">=</span>color, ls<span class="op">=</span><span class="st">"--"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span>xlabel, ylabel<span class="op">=</span><span class="st">"Partial Effect on Log CO2"</span>, title<span class="op">=</span>title)</span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>, <span class="dv">2</span>].set_visible(<span class="va">False</span>)</span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># define variables and colors (term index, x-column index, x-label, color, panel title)</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>spec <span class="op">=</span> [</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">0</span>, <span class="st">"Log GDP per Capita"</span>,           <span class="st">"#2C7FB8"</span>, <span class="st">"Effect of Log GDP per Capita"</span>),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">1</span>, <span class="dv">1</span>, <span class="st">"Fossil Electricity Share (%)"</span>, <span class="st">"#FE9929"</span>, <span class="st">"Effect of Fossil Electricity Share"</span>),</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">2</span>, <span class="dv">2</span>, <span class="st">"Renewable Energy Share (%)"</span>,   <span class="st">"#E84539"</span>, <span class="st">"Effect of Renewable Energy Share"</span>),</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">3</span>, <span class="dv">3</span>, <span class="st">"Forest Area (</span><span class="sc">% o</span><span class="st">f Land)"</span>,      <span class="st">"#756BB1"</span>, <span class="st">"Effect of Forest Area"</span>),</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">4</span>, <span class="dv">4</span>, <span class="st">"Urban Population Share (%)"</span>,   <span class="st">"#636363"</span>, <span class="st">"Effect of Urban Population Share"</span>),</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">8</span>))</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"GAM Partial Dependence of Log CO2 Emissions per Capita"</span>, fontsize<span class="op">=</span><span class="dv">13</span>)</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="co"># loop over smooth variables</span></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (term, xcol, xlabel, color, title) <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, spec):</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    XX <span class="op">=</span> gam_mod.generate_X_grid(term<span class="op">=</span>term)</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    x  <span class="op">=</span> XX[:, xcol]</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    pd_effect <span class="op">=</span> gam_mod.partial_dependence(term<span class="op">=</span>term, X<span class="op">=</span>XX)</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>    _, ci     <span class="op">=</span> gam_mod.partial_dependence(term<span class="op">=</span>term, X<span class="op">=</span>XX, width<span class="op">=</span><span class="fl">0.95</span>)</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, pd_effect, color<span class="op">=</span>color, lw<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, ci, color<span class="op">=</span>color, ls<span class="op">=</span><span class="st">"--"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span>xlabel, ylabel<span class="op">=</span><span class="st">"Partial Effect on Log CO2"</span>, title<span class="op">=</span>title)</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>, <span class="dv">2</span>].set_visible(<span class="va">False</span>)</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div id="wb-regression-gam-pdp" class="quarto-figure quarto-figure-center anchored">
@@ -1820,7 +1815,7 @@ window.Quarto = {
 <section id="summary" class="level1">
 <h1>4. Summary</h1>
 <p>The preliminary analysis shows that economic development, energy structure, and urbanization are important factors associated with carbon dioxide emissions per capita. EDA suggests that GDP per capita has a strong positive relationship with emissions, while renewable energy share is negatively associated with emissions. Urban population share also appears positively related to emissions, whereas forest area percentage shows little clear relationship.</p>
-<p>The OLS regression confirm several of these finding in EDA. GDP per capita, forest area percentage, renewable energy share, and urban population share are statistically significant predictors of carbon dioxide emissions per capita. Fossil electricity share is not statistically significant with a high p-value. The model explains 65.64% of the variation in log carbon dioxide emissions per capita.</p>
+<p>The OLS regression confirm several of these finding in EDA. log GDP per capita, forest area percentage, renewable energy share, centered year, and urban population share are statistically significant predictors of logcarbon dioxide emissions per capita. Fossil electricity share is not statistically significant with a high p-value. The model explains 65.64% of the variation in log carbon dioxide emissions per capita.</p>
 <p>The GAM analysis further suggests that many of these relationships are nonlinear. All predictor smooth terms have effective degrees of freedom greater than one and statistically significant p-values, indicating complex nonlinear effects. The GAM model explained 73.23% of the variation in log carbon dioxide emissions per capita. This suggests that the GAM model provides a better model fit than the OLS model when considering nonlinear relationships.</p>
 <p>The final project will extend this analysis using machine learning models and interactive visualizations:</p>
 <ul>

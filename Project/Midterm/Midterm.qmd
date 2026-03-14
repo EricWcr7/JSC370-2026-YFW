@@ -159,9 +159,6 @@ for variable_name, indicator_code in INDICATORS.items():
 
 wb_raw = pd.concat(frames, ignore_index=True)
 
-# Keep only non-missing observed values for preview
-wb_raw = wb_raw[wb_raw["value"].notna()].copy()
-
 # Raw API preview dataframe
 display(wb_raw.head(20))
 print("Shape:", wb_raw.shape)
@@ -347,8 +344,7 @@ oob_renew  = int(((wb_wide["renewable_energy_share"]   < 0) | (wb_wide["renewabl
 oob_forest = int(((wb_wide["forest_area_percent_land"] < 0) | (wb_wide["forest_area_percent_land"] > 100)).sum())
 oob_urban  = int(((wb_wide["urban_share_percent"]      < 0) | (wb_wide["urban_share_percent"]      > 100)).sum())
 
-# Confirm ISO3 codes follow the 3-capital-letter standard, no duplicate
-# country-year rows exist, year is within study period, and year dtype is correct before saving.
+# Confirm ISO3 codes follow the 3-capital-letter standard, no duplicate country-year rows exist, year is within study period, and year dtype is correct before saving.
 invalid_iso3 = wb_wide[~wb_wide["countryiso3code"].str.match(r"^[A-Z]{3}$", na=False)]
 oob_iso3 = invalid_iso3.shape[0]
 duplicate_country_year = wb_wide.duplicated(["countryiso3code", "year"]).sum()
@@ -1014,7 +1010,6 @@ According to the GAM smooth-term summary, log GDP per capita and all the other i
 #| message: false
 
 # Plot partial dependence curves for the 6 smooth terms. year_centered uses l() and is excluded from the PDP.
-
 # define variables and colors (term index, x-column index, x-label, color, panel title)
 spec = [
     (0, 0, "Log GDP per Capita",           "#2C7FB8", "Effect of Log GDP per Capita"),
@@ -1058,7 +1053,7 @@ The urban population share smooth is clearly nonlinear. The partial effect on lo
 
 The preliminary analysis shows that economic development, energy structure, and urbanization are important factors associated with carbon dioxide emissions per capita. EDA suggests that GDP per capita has a strong positive relationship with emissions, while renewable energy share is negatively associated with emissions. Urban population share also appears positively related to emissions, whereas forest area percentage shows little clear relationship.
 
-The OLS regression confirm several of these finding in EDA. GDP per capita, forest area percentage, renewable energy share, and urban population share are statistically significant predictors of carbon dioxide emissions per capita. Fossil electricity share is not statistically significant with a high p-value. The model explains `{python} float(round(linear_mod.rsquared_adj * 100, 2))`% of the variation in log carbon dioxide emissions per capita.
+The OLS regression confirm several of these finding in EDA. log GDP per capita, forest area percentage, renewable energy share, centered year, and urban population share are statistically significant predictors of logcarbon dioxide emissions per capita. Fossil electricity share is not statistically significant with a high p-value. The model explains `{python} float(round(linear_mod.rsquared_adj * 100, 2))`% of the variation in log carbon dioxide emissions per capita.
 
 The GAM analysis further suggests that many of these relationships are nonlinear. All predictor smooth terms have effective degrees of freedom greater than one and statistically significant p-values, indicating complex nonlinear effects. The GAM model explained `{python} float(round(gam_mod.statistics_["pseudo_r2"]["explained_deviance"] * 100, 2))`% of the variation in log carbon dioxide emissions per capita. This suggests that the GAM model provides a better model fit than the OLS model when considering nonlinear relationships.
 
