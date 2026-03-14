@@ -141,9 +141,10 @@ window.Quarto = {
   <li><a href="#advanced-eda-visualizations" id="toc-advanced-eda-visualizations" class="nav-link" data-scroll-target="#advanced-eda-visualizations">3.2.4 Advanced EDA Visualizations</a></li>
   </ul></li>
   <li><a href="#regression-analysis-1" id="toc-regression-analysis-1" class="nav-link" data-scroll-target="#regression-analysis-1">3.3 Regression Analysis</a></li>
+  <li><a href="#ols-regression-linear-regression" id="toc-ols-regression-linear-regression" class="nav-link" data-scroll-target="#ols-regression-linear-regression">3.3.1 OLS Regression (Linear Regression)</a></li>
   </ul></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">4. Summary</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">5. References</a></li>
   </ul>
 </nav>
 </div>
@@ -206,8 +207,8 @@ window.Quarto = {
 </section>
 <section id="introduction" class="level1">
 <h1>1. Introduction</h1>
-<p>Climate change is one of the major global challenges and is largely driven by greenhouse gas emissions, particularly carbon dioxide. Emissions from human activities have played a central role in global warming. According to “Climate Change 2023 Synthesis Report” from the Intergovernmental Panel on Climate Change (IPCC), global surface temperature during 2011–2020 was about 1.1 degrees Celsius higher than in 1850–1900 (IPCC, 2023). Carbon dioxide emissions are also unevenly distributed across countries. Notably, the differences in carbon dioxide emissions per-capita are closely related to variations in energy systems, economic structures, and levels of development in terms of GDP. Understanding these differences is important for designing effective climate and energy policies.</p>
-<p>Despite the global importance of reducing greenhouse gas emissions, countries differ significantly in both their levels of carbon dioxide emissions per capita and how these emissions have changed over time. These differences may be related to economic development, energy consumption patterns, and land-use practices. For example, roughly half of global carbon dioxide emissions are absorbed by land and ocean carbon sinks, while land-use changes such as deforestation and reforestation remain important components of the global carbon budget (Friedlingstein et al., 2023). Research on global greenhouse gas emissions also shows that fossil fuel combustion is the primary source of emissions, accounting for about 71.6% of recent global greenhouse gas emissions. At the same time, emissions intensity relative to GDP has reached historically low levels, suggesting a relationship between economic development and carbon output. To better understand how economic, energy, and land-use factors relate to cross-country differences in emissions, systematic analysis using comparable and reliable international data is necessary.</p>
+<p>Climate change is one of the major global challenges and is largely driven by greenhouse gas emissions, particularly carbon dioxide. Emissions from human activities have played a central role in global warming. According to “Climate Change 2023 Synthesis Report” from the Intergovernmental Panel on Climate Change (IPCC), global surface temperature during 2011–2020 was about 1.1 degrees Celsius higher than in 1850–1900 (IPCC, n.d.). Carbon dioxide emissions are also unevenly distributed across countries. Notably, the differences in carbon dioxide emissions per-capita are closely related to variations in energy systems, economic structures, and levels of development in terms of GDP. Understanding these differences is important for designing effective climate and energy policies.</p>
+<p>Despite the global importance of reducing greenhouse gas emissions, countries differ significantly in both their levels of carbon dioxide emissions per capita and how these emissions have changed over time. These differences may be related to economic development, energy consumption patterns, and land-use practices. For example, roughly half of global carbon dioxide emissions are absorbed by land and ocean carbon sinks, while land-use changes such as deforestation and reforestation remain important components of the global carbon budget (Friedlingstein et al., n.d.). Research on global greenhouse gas emissions also shows that fossil fuel combustion is the primary source of emissions, accounting for about 71.6% of recent global greenhouse gas emissions (Crippa et al., n.d.). At the same time, emissions intensity relative to GDP has reached historically low levels, suggesting a relationship between economic development and carbon output. To better understand how economic, energy, and land-use factors relate to cross-country differences in emissions, systematic analysis using comparable and reliable international data is necessary.</p>
 <p>This project examines <strong>how carbon dioxide emissions per capita have evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences</strong>. To address this research question, this analysis uses data from the World Bank Open Data API, which provides a comprehensive set of development indicators covering economic, energy, and land-use factors. The dataset includes annual observations for nearly all countries around the world and contains variables such as carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of land area, total population, and the share of population living in urban areas. Furthermore, the year of observation is included as a key temporal indicator to account for global trends and technological shifts over time.</p>
 <p>The main outcome variable is carbon dioxide emissions per capita, which measures the average amount of carbon dioxide emissions produced per person in metric tons in each country. Economic development is represented by GDP per capita in constant 2015 US dollars , which reflects the average level of economic output per person. Energy structure is captured by two indicators: renewable energy share, which measures the percentage of total energy consumption coming from renewable sources, and fossil-fuel electricity share, which represents the percentage of electricity generated from fossil fuels. Land-use conditions are represented by forest area as a percentage of total land area. In addition, demographic characteristics are included through total population and the share of the population living in urban areas. Finally, the year variable serves as a time-based control, allowing the analysis to isolate structural effects from long-term temporal trends. These variables allow for comparisons across countries and help examine how economic development, energy structure, and land-use patterns are associated with differences in carbon dioxide emissions.</p>
 </section>
@@ -221,14 +222,14 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="data-wrangling-and-cleaning">2.2 Data Wrangling and Cleaning</h2>
 <p>After retrieving the indicators from the API, several steps were taken to prepare the data for analysis. The raw API responses contain individual datasets for each indicator, so the first step was to organize these datasets into a consistent structure. The goal was to construct a dataset in which each row represents a country–year observation and each column represents a variable.</p>
 <p>The datasets were merged using ISO3 country codes, i.e.&nbsp;three-letter country codes, and year identifiers. These variables provide consistent keys across World Bank indicators and allow observations from different datasets to be combined into a single table. The reason that not using the country name is because the country name might not be consistent across the different datasets although the data comes from the same source.</p>
-<p>The separately retrieved indicator datasets were initially combined into a long-format dataset. If there were nested API fields, they were then flattened to extract the nested values into separate columns. As the World Bank dataset contains data for regions/aggregates as well as countries, such as Africa Eastern and Southern region, these regional aggregates were removed from the dataset to avoid misinterpretation. Therefore, it would be necessary to query the World Bank country metadata endpoint to collect all the country metadata in World Bank Open Data API. As the metadata contains a field called <code>region_name</code> for each country/region, when its value is “Aggregates”, it means the row is a regional/grop aggregate data rather than a country data. After collecting all the aggregate codes (name may also be fine, but codes are safer due to natural uniqueness), the dataset was filtered to retain only rows whose <code>countryiso3code</code> belongs to the valid country set. In effect, this step ensures that the final panel is composed only of individual countries, rather than regional summaries such as Africa Eastern and Southern or other World Bank aggregate groups. This is important because the project aims to compare country-level patterns, and aggregate units would distort those comparisons.</p>
+<p>The separately retrieved indicator datasets were initially combined into a long-format dataset. If there were nested API fields, they were then flattened to extract the nested values into separate columns. As the World Bank dataset contains data for regions/aggregates as well as countries, such as Africa Eastern and Southern region, these regional aggregates were removed from the dataset to avoid misinterpretation. Therefore, it would be necessary to query the World Bank country metadata endpoint to collect all the country metadata in World Bank Open Data API. As the metadata contains a field called <code>region_name</code> for each country/region, when its value is “Aggregates”, it means the row is a regional/group aggregate data rather than a country data. After collecting all the aggregate codes (name may also be fine, but codes are safer due to natural uniqueness), the dataset was filtered to retain only rows whose <code>countryiso3code</code> belongs to the valid country set. In effect, this step ensures that the final panel is composed only of individual countries, rather than regional summaries such as Africa Eastern and Southern or other World Bank aggregate groups. This is important because the project aims to compare country-level patterns, and aggregate units would distort those comparisons.</p>
 <p>To facilitate the analysis, the long dataset was reshaped into a wide country-year dataset, where each indicator becomes a column instead of a value in a single column which stored all the indicator names/codes. This process produced a unified dataset containing economic, energy, land-use, and demographic indicators for each country and year. Data types were then standardized to ensure consistency across datasets. All the indicator variables were converted to float, as they are either percentages or metric tons or dollars, which are all numerical float values. Country identifiers and year variables were also checked to ensure consistent formatting across the merged datasets. Missing values were inspected for each variable before analysis. They were coded to <code>NaN</code> from all possible missing-value placeholders to ensure the consistency of later missing-value handling. Finally, several validation checks were performed to verify the integrity of the dataset. These checks included identifying duplicate country–year observations, formating of the country ISO3 codes, year range, and inspecting the range of indicator variables. These steps help ensure that the dataset is suitable for subsequent exploratory and statistical analysis.</p>
 <p>For the main analysis, missing values were handled at the row level by dropping observations with missing values in the core analysis variables, while keeping all other available observations in the dataset until that stage. This approach keeps the missing-value treatment transparent and avoids introducing additional assumptions through imputation.</p>
 </section>
 <section id="exploratory-data-analysis-eda-and-regression-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis-eda-and-regression-analysis">2.3 Exploratory Data Analysis (EDA) and Regression Analysis</h2>
 <p>EDA was conducted to examine the structure of the dataset and to identify patterns related to the research question. First, descriptive statistics were computed for all numerical variables included in the dataset. Counts, means, medians, standard deviation, minimum &amp; maximum values, and percentiles were calculated to summarize the distribution of each numerical variable and not including country codes and names. These measures provide an overview of the variables’ distributions, which can help identify potential extreme values or outliers.</p>
-<p>Visual exploration was then performed to examine patterns in the data. Several graphical methods were used to explore relationships between variables and to identify potential trends. Line plots were used to examine how carbon dioxide emissions per capita change over time. Histograms were used to inspect the distribution of individual variables and to identify skewness or potential outliers. Scatter plots were used to examine the relationship between carbon dioxide emissions per capita and explanatory variables. Box plotss with the implementation of quantile binning were used to examine and confirm the relationship between carbon dioxide emissions per capita and explanatory variables that were identified in the scatter plots. So is the correlation matrixto examine the correlation between all the variables.</p>
+<p>Visual exploration was then performed to examine patterns in the data. Several graphical methods were used to explore relationships between variables and to identify potential trends. Line plots were used to examine how carbon dioxide emissions per capita change over time. Histograms were used to inspect the distribution of individual variables and to identify skewness or potential outliers. Scatter plots were used to examine the relationship between carbon dioxide emissions per capita and explanatory variables. Box plots with the implementation of quantile binning were used to examine and confirm the relationship between carbon dioxide emissions per capita and explanatory variables that were identified in the scatter plots. So is the correlation matrixto examine the correlation between all the variables.</p>
 </section>
 <section id="feature-engineering" class="level2">
 <h2 class="anchored" data-anchor-id="feature-engineering">2.4 Feature Engineering</h2>
@@ -1157,7 +1158,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>However, there were some suspicious observations in the dataset. According to the table above, it was suspicious that Nauru and Tuvalu had 0 carbon dioxide emissions per capita almost every year from 1990 to 2023. After validating the data, these two countries are very small and had no heavy industry (no hevay plants, mills, or factories) and a possible rounding in World Bank data for extreme low values. Therefore, these observations were retained because they likely represent the real life situation in Nauru and Tuvalu. For forest area percentage, zeros appear for highly urbanized microstates such as Monaco or Gibraltar. Zeros for fossil electricity share occur in countries where electricity generation relies primarily on hydropower, such as Bhutan or Nepal. Conversely, zero renewable energy shares appear in some fossil-fuel-dependent countries, such as Saudi Arabia or Qatar. Therefore, these suspicious observations were retained in the dataset because they represent the real life situation in these countries.</p>
+<p>However, there were some suspicious observations in the dataset. According to the table above, it was suspicious that Nauru and Tuvalu had 0 carbon dioxide emissions per capita almost every year from 1990 to 2023. After validating the data, these two countries are very small and had no heavy industry (no hevay plants, mills, or factories) and a possible rounding in World Bank data for extreme low values. Therefore, these observations were retained because they likely represent the real life situation in Nauru and Tuvalu. For forest area percentage, zeros appear for highly developed countries such as Monaco or Gibraltar. Zeros for fossil electricity share occur in countries where electricity generation relies primarily on hydropower, such as Bhutan or Nepal. Conversely, zero renewable energy shares appear in some fossil fuel dependent countries, such as Saudi Arabia or Qatar. Therefore, these suspicious observations were retained in the dataset because they represent the real life situation in these countries.</p>
 </section>
 <section id="basic-eda-visualizations" class="level3">
 <h3 class="anchored" data-anchor-id="basic-eda-visualizations">3.2.2 Basic EDA Visualizations</h3>
@@ -1195,7 +1196,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Figure 1 shows the trend of global average carbon dioxide emissions per capita from 1990 to 2023. Overall, emissions per capita remained relatively stable during the early 1990s, fluctuating from 4.7 to 5.2 metric tons per person approximately. Beginning in the early 2000s, emissions gradually increased, reaching a peak around 2012 at approximately 5.55 metric tons per capita. After this peak, emissions per capita declined noticeably. The decrease became more pronounced after 2013 and dropped sharply around 2020, reflecting the global economic downturn during the COVID-19 pandemic. Overall, the figure suggests that global per capita emissions increased during the 2000s but have generally declined later, so a decrease in general.</p>
+<p>Figure 1 shows the trend of global average carbon dioxide emissions per capita from 1990 to 2023. Overall, emissions per capita remained relatively stable during the early 1990s, fluctuating from 4.7 to 5.2 metric tons per person approximately. From 2000, carbon dioxide emissions per capita gradually increased, reaching a peak around 2012 at approximately 5.55 metric tons per capita. After this peak, emissions per capita declined sharply. The decrease became more gentle after 2013 and dropped sharply around again 2020, reflecting the global economic downturn during the COVID-19 pandemic. Overall, the figure suggests that global per capita emissions increased during the 2000s but have generally declined later, so a decrease compare to 1990.</p>
 <div id="cell-wb-eda-line-countries" class="cell" data-message="false" data-execution_count="13">
 <details class="code-fold">
 <summary>Show code for country-level CO2 trends</summary>
@@ -1232,7 +1233,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>United States and Germany represent developed countries, China and India represent large emerging economies, Brazil represents a middle-income country, and Nigeria represents a lower-income country. Therefore, these countries are comparable and chosen to represent a range of income levels and world regions, making the cross-country divergence in carbon dioxide emissions per capita trends overt time visible.</p>
+<p>United States and Germany represent developed countries, China and India represent large emerging economies, Brazil represents a middle-income country, and Nigeria represents a lower-income country. Therefore, these countries are comparable and chosen to represent a range of income levels and world regions, making the variation between countries in carbon dioxide emissions per capita trends over time visible.</p>
 <p>Figure 2 illustrates the evolution of carbon dioxide emissions per capita for several representative countries from 1990 to 2023. The United States have the highest emissions levels druing the entire period but showed a gradual decline after 2000. Germany also exhibits a clear downward trend, reflecting reductions in carbon dioxide emissions over time. In contrast, China shows a rapid increase in carbon dioxide emissions per capita, particularly after 2000, corresponding with rapid industrial growth. India displays a steady upward trend, though emissions remain substantially lower than those developed countries. Brazil shows relatively stable carbon dioxide emissions trend, while Nigeria remains at very low carbon dioxide emissions levels (even a slight decline) throughout the period. These differences highlight substantial variation in carbon dioxide emissions per capita trends across countries at different stages of economic development.</p>
 <div id="cell-wb-eda-histograms-co2-gdp" class="cell" data-message="false" data-execution_count="14">
 <details class="code-fold">
@@ -1264,7 +1265,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Figure 3 shows that both carbon dioxide emissions per capita and GDP per capita are highly right-skewed. For both variables, most observations are concentrated at relatively low values. Only a small number of observations appear at much higher levels, creating a right tail in the distribution. This indicates that while most countries have relatively low emissions per capita or/andGDP per capita, a few countries produce substantially higher emissions or/and GDP per capita. This suggests a log-scale transformation in feature engineering is necessary to better visualize the relationshps to carbon dioxide emissions per capita for later regression analysis.</p>
+<p>Figure 3 shows that both carbon dioxide emissions per capita and GDP per capita are highly right skewed. For both variables, most observations are concentrated at relatively low values. Only a small number of observations appear at much higher levels, creating a right tail in the distribution. This indicates that while most countries have relatively low emissions per capita or/and GDP per capita, a few countries produce substantially higher emissions or/and GDP per capita. This suggests a log-scale transformation in feature engineering is necessary to better visualize the relationshps to carbon dioxide emissions per capita for later regression analysis.</p>
 <div id="cell-wb-eda-histograms-pct" class="cell" data-message="false" data-execution_count="15">
 <details class="code-fold">
 <summary>Show code for percentage variable histograms</summary>
@@ -1300,7 +1301,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Figure 4 shows how the percentage-based indicators are distributed across countries. Forest area as a percentage of land varies widely, covering nearly the full range from 0 to 100%. Many observations fall below 80%, indicating substantial differences in land-use patterns across countries with a generally not too high forest area pattern. Fossil electricity share also span from 0 to 100%, with a noticeable concentration of observations near 100%. This suggests that many countries rely heavily on fossil fuels for electricity generation. Renewable energy share shows a similar pattern to forest area percentage, with a large number of observations appear at very low values close to 0%. This indicates that renewable energy contributes only a small portion of total energy consumption in many countries. Urban population share is more evenly distributed, with most observations between about 20% and 90%. Overall, these distributions suggest considerable variation across countries in energy structure, land use, and urbanization levels, which may help explain differences in carbon dioxide emissions per capita.</p>
+<p>Figure 4 shows how the percentage-based indicators are distributed across countries. Forest area as a percentage of land varies widely, covering nearly the full range from 0 to 100%. Many observations fall below 80%, indicating substantial differences in land-use patterns across countries with a generally not too high forest area pattern. Fossil electricity share also spans from 0 to 100%, with a noticeable concentration of observations near 100%. This suggests that many countries rely heavily on fossil fuels for electricity generation. Renewable energy share shows a similar pattern to forest area percentage, with a large number of observations appear at very low values close to 0%. This indicates that renewable energy contributes only a small portion of total energy consumption in many countries. Urban population share is more evenly distributed, with most observations between about 20% and 90%. Overall, these distributions suggest considerable variation across countries in energy structure, land use, and urbanization levels, which may help explain differences in carbon dioxide emissions per capita.</p>
 <div id="cell-wb-eda-histograms-pop" class="cell" data-message="false" data-execution_count="16">
 <details class="code-fold">
 <summary>Show code for population histogram</summary>
@@ -1326,7 +1327,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Figure 5 shows that total population is extremely right-skewed as carbon dioxide emissions per capita and GDP per capita are. Most country–year observations correspond to relatively small populations, while only a few observations have very large population sizes. The majority of values are concentrated near the lower end of the distribution, indicating that most countries have far different and lower populations compared to a few highly populated countries like China and India. This also suggests that a log-scale transformation in feature engineering is necessary to better visualize the relationship between carbon dioxide emissions and population for later regression analysis.</p>
+<p>Figure 5 shows that total population is also highly right skewed as carbon dioxide emissions per capita and GDP per capita are. Most country–year observations correspond to relatively small populations, while only a few observations have very large population sizes. The majority of values are concentrated near the lower end of the distribution, indicating that most countries have far different and lower populations compared to a few highly populated countries like China and India. This also suggests that a log-scale transformation in feature engineering is necessary to better visualize the relationship between carbon dioxide emissions and population for later regression analysis.</p>
 </section>
 <section id="feature-engineering-in-log-transformation" class="level3">
 <h3 class="anchored" data-anchor-id="feature-engineering-in-log-transformation">3.2.3 Feature Engineering in log-transformation</h3>
@@ -1352,7 +1353,7 @@ window.Quarto = {
 <span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>wb_wide[<span class="st">"year_centered"</span>] <span class="op">=</span> wb_wide[<span class="st">"year"</span>] <span class="op">-</span> START_YEAR</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Based on the histograms in Section 3.2.2, the log-transformation was applied to carbon dioxide emissions per capita, GDP per capita, and population to compress the scale and reduce the influence of extreme values. The year variable was centered at 1990 so that the intercept in regression represents the baseline year and coefficients are more interpretable on a human scale in regression analysis later on.</p>
+<p>Based on the histograms in Section 3.2.2, the log-transformation was applied to carbon dioxide emissions per capita, GDP per capita, and population to compress the scale and reduce the influence of extreme values. The year variable was centered at 1990 so that the intercept in regression represents the baseline year and coefficients are more interpretable on a human interpretable scale in regression analysis later on.</p>
 </section>
 <section id="advanced-eda-visualizations" class="level3">
 <h3 class="anchored" data-anchor-id="advanced-eda-visualizations">3.2.4 Advanced EDA Visualizations</h3>
@@ -1399,7 +1400,13 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Figure 6 shows the relationships between log carbon dioxide emissions per capita and 6 potential explanatory variables. A clear positive relationship appears between log GDP per capita and log carbon dioxide emissions per capita. Countries with higher income levels tend to have higher emissions per person, suggesting that economic development is associated with increased energy use and carbon output. In contrast, renewable energy share shows a negative association with carbon dioxide emissions per capita. Countries with higher shares of renewable energy tend to have lower carbon dioxide emissions. Fossil electricity share scatter plot is more scattered, suggesting that the association between fossil electricity share and carbon dioxide emissions per capita may not be very strong. Urban population share shows a strong positive relationship with emissions per capita, i.e.&nbsp;more urbanized countries may have higher energy consumption. Forest area percentage does not show a clear relationship with carbon dioxide emissions per capita with a scattered pattern, suggesting that land-use characteristics may not strongly explain differences in carbon dioxide emissions per capita. The relationship between log total population and emissions per capita appears weak and scattered.</p>
+<p>Figure 6 shows the relationships between log carbon dioxide emissions per capita and 6 potential explanatory variables.</p>
+<p>A clear positive relationship appears between log GDP per capita and log carbon dioxide emissions per capita. Countries with higher income levels tend to have higher emissions per person, suggesting that economic development is associated with increased energy use and carbon output.</p>
+<p>In contrast, renewable energy share shows a negative association with carbon dioxide emissions per capita. Countries with higher shares of renewable energy tend to have lower carbon dioxide emissions.</p>
+<p>Fossil electricity share scatter plot is more scattered, suggesting that the association between fossil electricity share and carbon dioxide emissions per capita may not be very strong.</p>
+<p>Urban population share shows a strong positive relationship with emissions per capita, i.e.&nbsp;more urbanized countries may have higher energy consumption.</p>
+<p>Forest area percentage does not show a clear relationship with carbon dioxide emissions per capita with a scattered pattern, suggesting that land-use characteristics may not strongly explain differences in carbon dioxide emissions per capita.</p>
+<p>The relationship between log total population and carbon dioxide emissions per capita appears weak and scattered.</p>
 <div id="cell-wb-eda-boxplot-income" class="cell" data-message="false" data-execution_count="19">
 <details class="code-fold">
 <summary>Show code for boxplot by income group</summary>
@@ -1446,7 +1453,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Based on the fining in Figure 6, there is a strong increasing relationship between log carbon dioxide emissions per capita and log GDP per capita. Hence, a box plot, Figure 7, was constructed. It compares log carbon dioxide emissions per capita across four GDP per capita quartiles. A clear upward pattern appears across the income groups, whcih proves the finding of the association between log carbon dioxide emissions per capita and log GDP per capita in Figure 6.</p>
-<p>Countries in income quartile 1 (Q1) have the lowest emissions per capita, with most observations concentrated near the bottom of the scale. As income increases, the distribution of emissions shifts upward. The median emissions level in Q2 is higher than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest income quartile (Q4) show the highest median emissions per capita and a wider spread of values. Higher-income countries therefore tend to produce more emissions per person. Although there are some outliers in all quartiles, the pattern is still clear and consistent. Note, the outliers should be remained because they reflected the real life situations.</p>
+<p>Countries in income quartile 1 (Q1) have the lowest emissions per capita, with most observations concentrated near the bottom of the scale. As income increases, the distribution of emissions shifts upward. The median emissions level in Q2 is higher than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest income quartile (Q4) show the highest median emissions per capita and a wider spread of values. Higher income countries therefore tend to produce more carbon dioxide emissions per person. Although there are some outliers in all quartiles, the pattern is still clear and consistent. Note, the outliers should be remained because they reflected the real life situations.</p>
 <div id="cell-wb-eda-boxplot-renewable" class="cell" data-message="false" data-execution_count="20">
 <details class="code-fold">
 <summary>Show code for boxplot by renewable energy group</summary>
@@ -1482,7 +1489,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Based on the fining in Figure 6, there is a strong negative association between log carbon dioxide emissions per capita and reneable energy share. Hence, a box plot, Figure 8, was constructed. It compares log carbon dioxide emissions per capita across four renewable energy share quartiles. A clear downward pattern appears across the quartiles, whcih proves the finding of the negative association between log carbon dioxide emissions per capita and renewable energy share in Figure 6.</p>
-<p>Countries in low renewable energy share group (Q1) have the lowest emissions per capita, with most observations concentrated near the middle of the scale. As renewable energy share increases, the distribution of emissions shifts downward, as expected intuitively. The median emissions level in Q2 is lower than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest renewable energy share quartile (Q4) show the lowest median emissions per capita. Countries with higher renewable energy share tend to produce less emissions per person. Although there are some outliers in most groups, the general pattern is still clear and consistent. Note, the outliers should be remained because they reflected the real life situations.</p>
+<p>Countries in low renewable energy share group (Q1) have the lowest emissions per capita, with most observations concentrated near the middle of the scale. As renewable energy share increases, the distribution of emissions shifts downward, as expected intuitively. The median emissions level in Q2 is lower than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest renewable energy share quartile (Q4) show the lowest median emissions per capita. Countries with higher renewable energy share tend to produce less carbon dioxide emissions per person. Although there are some outliers in most groups, the general pattern is still clear and consistent. Note, the outliers should be remained because they reflected the real life situations.</p>
 <div id="cell-wb-eda-boxplot-urban" class="cell" data-message="false" data-execution_count="21">
 <details class="code-fold">
 <summary>Show code for boxplot by urban share group</summary>
@@ -1518,7 +1525,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Based on the fining in Figure 6, there is a strong increasing relationship between log carbon dioxide emissions per capita and Urban population share. Hence, a box plot, Figure 9, was constructed. It compares log carbon dioxide emissions per capita across four urban population share quartiles. A clear upward pattern appears across the groups, whcih proves the finding of the association between log carbon dioxide emissions per capita and urban population share in Figure 6.</p>
-<p>Countries in Q1 have the lowest emissions per capita, with most observations concentrated near the middle of the scale. As urban population share increases, the distribution of emissions shifts upward, as expected intuitively. The median emissions level in Q2 is higher than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest urban population share quartile (Q4) show the highest median emissions per capita. Countries with higher urban population share tend to produce more emissions per person. Note, the outliers should be remained because they reflected the real life situations.</p>
+<p>Countries in Q1 have the lowest emissions per capita, with most observations concentrated near the middle of the scale. As urban population share increases, the distribution of emissions shifts upward, as expected intuitively. The median emissions level in Q2 is higher than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest urban population share quartile (Q4) show the highest median emissions per capita. Countries with higher urban population share tend to produce more carbon dioxide emissions per person. Note, the outliers should be remained because they reflected the real life situations and did not affect the overall pattern.</p>
 <div id="cell-wb-eda-corr-heatmap" class="cell" data-message="false" data-execution_count="22">
 <details class="code-fold">
 <summary>Show code for correlation heatmap</summary>
@@ -1598,7 +1605,10 @@ window.Quarto = {
 </details>
 </div>
 <p>Before performing the regression analysis, the rows with missing values were dropped. Before missing data removal, the dataset had 7378 rows. After missing data removal, the dataset had 5499 rows.</p>
-<div id="wb-regression-ols" class="cell" data-message="false" data-tbl-cap="OLS regression: log carbon dioxide emissions per capita on all predictors" data-execution_count="24">
+</section>
+<section id="ols-regression-linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="ols-regression-linear-regression">3.3.1 OLS Regression (Linear Regression)</h2>
+<div class="cell" data-message="false" data-tbl-cap="OLS regression: log carbon dioxide emissions per capita on all predictors" data-execution_count="24">
 <details class="code-fold">
 <summary>Show code for OLS regression</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predictor list matches the research question: economic development, energy structure, land use, and demographics. Log-transformed versions are used for the skewed variables to be consistent with the feature engineering step.</span></span>
@@ -1644,24 +1654,14 @@ window.Quarto = {
 <span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>coef_tbl[<span class="st">"Variable"</span>] <span class="op">=</span> [<span class="st">"Intercept"</span>] <span class="op">+</span> predictor_labels</span>
-<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>display(coef_tbl.<span class="bu">round</span>(<span class="dv">4</span>))</span>
-<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>fit_tbl <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Metric"</span>: [<span class="st">"R²"</span>, <span class="st">"Adjusted R²"</span>, <span class="st">"F-statistic"</span>, <span class="st">"Observations"</span>],</span>
-<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Value"</span>: [</span>
-<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>        <span class="bu">round</span>(linear_mod.rsquared, <span class="dv">4</span>),</span>
-<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a>        <span class="bu">round</span>(linear_mod.rsquared_adj, <span class="dv">4</span>),</span>
-<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>        <span class="bu">round</span>(linear_mod.fvalue, <span class="dv">4</span>),</span>
-<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a>        <span class="bu">int</span>(linear_mod.nobs),</span>
-<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>    ],</span>
-<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a>display(fit_tbl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>display(coef_tbl.<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div id="wb-regression-ols-1" class="cell-output cell-output-display">
+<div id="wb-regression-ols" class="cell-output cell-output-display">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<caption>OLS regression: log carbon dioxide emissions per capita on all predictors</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1760,45 +1760,6 @@ window.Quarto = {
 
 </div>
 </div>
-<div id="wb-regression-ols-2" class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Metric</th>
-<th data-quarto-table-cell-role="th">Value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">0</th>
-<td>R²</td>
-<td>0.6958</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">1</th>
-<td>Adjusted R²</td>
-<td>0.6955</td>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th">2</th>
-<td>F-statistic</td>
-<td>1794.6554</td>
-</tr>
-<tr class="even">
-<th data-quarto-table-cell-role="th">3</th>
-<td>Observations</td>
-<td>5499.0000</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-<p>OLS regression: log carbon dioxide emissions per capita on all predictors</p>
 </div>
 <p>According to the OLS regression results, GDP per captia has a positive and statistically significant association (p-value &lt; 0.05) with carbon dioxide emissions per capita, i.e.&nbsp;an 1% increase in GDP per capita leads to an 0.3885% increase in carbon dioxide emissions per capita on average, while holding other variables constant.</p>
 <p>Total population also has a positive and statistically significant association with carbon dioxide emissions per capita, i.e.&nbsp;an 1% increase in total population leads to an 0.0930% increase in carbon dioxide emissions per capita on average, while holding other variables constant.</p>
@@ -1808,6 +1769,7 @@ window.Quarto = {
 <p>Urban population share has a positive and statistically significant association with carbon dioxide emissions per capita, i.e.&nbsp;an 1 percent point increase in urban population share leads to an 0.37% increase in carbon dioxide emissions per capita on average, while holding other variables constant.</p>
 <p>Year (centered at 1990) has a negative and statistically significant association with carbon dioxide emissions per capita, i.e.&nbsp;Each passing year since 1990 leads to an 1.08% decrease in carbon dioxide emissions per capita on average, while holding other variables constant, which proves the finding in Figure 1.</p>
 <p>The Adjusted <span class="math inline">\(R^2\)</span> of 0.6955 indicates that approximately 69.55% of the variance in logged carbon dioxide emissions per capita is explained by the model’s independent variables.</p>
+<p>## 3.3.2 GAM</p>
 <div class="cell" data-message="false" data-tbl-cap="GAM smooth-term summary" data-execution_count="25">
 <details class="code-fold">
 <summary>Show code for GAM regression</summary>
@@ -1912,7 +1874,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>According to the GAM smooth-term summary, Log GDP per capita, Log total population, and all the other indicator independent variables have statistically significant (all p-values &lt; 0.05) complex and nonlinear relationships with carbon dioxide emissions per capita since all their EDoFs way largr than 1, while the centered <code>Year</code> variable has a statistically significant (p-value &lt; 0.05) linear relationship with carbon dioxide emissions per capita since its EDoF is approximately 1, which confirms that this is a linear control term in the GAM model. The Pseudo <span class="math inline">\(R^2\)</span> of 0.8495 indicates that approximately 84.95% of the variance in logged carbon dioxide emissions per capita is explained by the model’s independent variables.</p>
+<p>According to the GAM smooth-term summary, log GDP per capita, log total population, and all the other indicator independent variables have statistically significant (all p-values &lt; 0.05) complex and nonlinear relationships with carbon dioxide emissions per capita since all their EDoFs way largr than 1, while the centered <code>Year</code> variable has a statistically significant (p-value &lt; 0.05) linear relationship with carbon dioxide emissions per capita since its EDoF is approximately 1, which confirms that this is a linear control term in the GAM model. The Pseudo <span class="math inline">\(R^2\)</span> of 0.8495 indicates that approximately 84.95% of the variance in logged carbon dioxide emissions per capita is explained by the included predictors.</p>
 <div id="cell-wb-regression-gam-pdp" class="cell" data-message="false" data-execution_count="26">
 <details class="code-fold">
 <summary>Show code for GAM partial dependence plots</summary>
@@ -1966,12 +1928,25 @@ window.Quarto = {
 </section>
 <section id="summary" class="level1">
 <h1>4. Summary</h1>
+<p>The preliminary analysis shows that economic development, energy structure, and urbanization are important factors associated with carbon dioxide emissions per capita. EDA suggests that GDP per capita has a strong positive relationship with emissions, while renewable energy share is negatively associated with emissions. Urban population share also appears positively related to emissions, whereas forest area percentage shows little clear relationship.</p>
+<p>The OLS regression confirm several of these finding in EDA. GDP per capita, total population, fossil electricity share, renewable energy share, and urban population share are statistically significant predictors of carbon dioxide emissions per capita. Forest area percentage is not statistically significant with a high p-value. The model explains 69.55% of the variation in log carbon dioxide emissions per capita.</p>
+<p>The GAM analysis further suggests that many of these relationships are nonlinear. All predictor smooth terms have effective degrees of freedom greater than one and statistically significant p-values, indicating complex nonlinear effects. The GAM model explained 84.95% of the variation in log carbon dioxide emissions per capita. This suggests that the GAM model provides a better model fit than the OLS model when considering nonlinear relationships.</p>
+<p>The final project will extend this analysis using machine learning models and interactive visualizations:</p>
+<ul>
+<li>Applying (Regression) machine learning models (e.g., Random Forest or Gradient Boosting) to predict carbon dioxide emissions per capita.</li>
+<li>Evaluating model performance using cross-validation and prediction metrics.</li>
+<li>Investigating nonlinear relationships and feature importance among economic, energy, and demographic variables.</li>
+<li>Developing interactive visualizations to allow users to explore emissions trends across countries and over time.</li>
+<li>Publishing the analysis as an interactive website on GitHub Pages, improving accessibility and reproducibility.</li>
+</ul>
 </section>
 <section id="references" class="level1">
-<h1>References</h1>
-<p>-IPCC PDF</p>
-<p>-https://essd.copernicus.org/articles/15/5301/2023/</p>
-<p>-https://edgar.jrc.ec.europa.eu/report_2023</p>
+<h1>5. References</h1>
+<ul>
+<li><p>IPCC. A Report of the Intergovernmental Panel on Climate Change CLIMATE CHANGE 2023 Synthesis Report Summary for Policymakers. 2023.</p></li>
+<li><p>Friedlingstein, P., O’Sullivan, M., Jones, M. W., Andrew, R. M., Bakker, D. C. E., Hauck, J., Landschützer, P., Quéré, C. L., Luijkx, I. T., Peters, G. P., Peters, W., Pongratz, J., Schwingshackl, C., Sitch, S., Canadell, J. G., Ciais, P., Jackson, R. B., Alin, S. R., Anthoni, P., … Zheng, B. (n.d.). Global carbon budget 2023. Earth System Science Data, 15(12), 5301–5369. https://doi.org/https://doi.org/10.5194/essd-15-5301-2023</p></li>
+<li><p>Crippa, M., Guizzardi, D., Pagani, F., Banja, M., Muntean, M., Schaaf E., Becker, W., Monforti-Ferrario, F., Quadrelli, R., Risquez Martin, A., Taghavi-Moharamli, P., Köykkä, J., Grassi, G., Rossi, S., Brandao De Melo, J., Oom, D., Branco, A., San-Miguel, J., Vignati, E., GHG emissions of all world countries, Publications Office of the European Union, Luxembourg, 2023, doi:10.2760/953322, JRC134504.</p></li>
+</ul>
 <script type="ojs-module-contents">
 eyJjb250ZW50cyI6W119
 </script>
