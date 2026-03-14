@@ -53,15 +53,15 @@ Climate change is one of the major global challenges and is largely driven by gr
 
 Despite the global importance of reducing greenhouse gas emissions, countries differ significantly in both their levels of carbon dioxide emissions per capita and how these emissions have changed over time. These differences may be related to economic development, energy consumption patterns, and land-use practices. For example, roughly half of global carbon dioxide emissions are absorbed by land and ocean carbon sinks, while land-use changes such as deforestation and reforestation remain important components of the global carbon budget (Friedlingstein et al., n.d.). Research on global greenhouse gas emissions also shows that fossil fuel combustion is the primary source of emissions, accounting for about 71.6% of recent global greenhouse gas emissions (Crippa et al., n.d.). At the same time, emissions intensity relative to GDP has reached historically low levels, suggesting a relationship between economic development and carbon output. To better understand how economic, energy, and land-use factors relate to cross-country differences in emissions, systematic analysis using comparable and reliable international data is necessary.
 
-This project examines **how carbon dioxide emissions per capita have evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences**. To address this research question, this analysis uses data from the World Bank Open Data API, which provides a comprehensive set of development indicators covering economic, energy, and land-use factors. The dataset includes annual observations for nearly all countries around the world and contains variables such as carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of land area, total population, and the share of population living in urban areas. Furthermore, the year of observation is included as a key temporal indicator to account for global trends and technological shifts over time.
+This project examines **how carbon dioxide emissions per capita have evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences**. To address this research question, this analysis uses data from the World Bank Open Data API, which provides a comprehensive set of development indicators covering economic, energy, and land-use factors. The dataset includes annual observations for nearly all countries around the world and contains variables such as carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of land area, and the share of population living in urban areas. Furthermore, the year of observation is included as a key temporal indicator to account for global trends and technological shifts over time.
 
-The main outcome variable is carbon dioxide emissions per capita, which measures the average amount of carbon dioxide emissions produced per person in metric tons in each country. Economic development is represented by GDP per capita in constant 2015 US dollars , which reflects the average level of economic output per person. Energy structure is captured by two indicators: renewable energy share, which measures the percentage of total energy consumption coming from renewable sources, and fossil-fuel electricity share, which represents the percentage of electricity generated from fossil fuels. Land-use conditions are represented by forest area as a percentage of total land area. In addition, demographic characteristics are included through total population and the share of the population living in urban areas. Finally, the year variable serves as a time-based control, allowing the analysis to isolate structural effects from long-term temporal trends. These variables allow for comparisons across countries and help examine how economic development, energy structure, and land-use patterns are associated with differences in carbon dioxide emissions.
+The main outcome variable is carbon dioxide emissions per capita, which measures the average amount of carbon dioxide emissions produced per person in metric tons in each country. Economic development is represented by GDP per capita in constant 2015 US dollars , which reflects the average level of economic output per person. Energy structure is captured by two indicators: renewable energy share, which measures the percentage of total energy consumption coming from renewable sources, and fossil-fuel electricity share, which represents the percentage of electricity generated from fossil fuels. Land-use conditions are represented by forest area as a percentage of total land area. In addition, demographic characteristics are included through the share of the population living in urban areas. Finally, the year variable serves as a time-based control, allowing the analysis to isolate structural effects from long-term temporal trends. These variables allow for comparisons across countries and help examine how economic development, energy structure, and land-use patterns are associated with differences in carbon dioxide emissions.
 
 # 2. Methods
 
 ## 2.1 Data Acquisition
 
-The data for this project were obtained from World Bank Open Data platform through the World Bank Open Data API. The API provides access to the World Development Indicators (WDI) database, which contains standardized economic, energy, and land-use indicators for all countries and regions around the world. The analysis focuses on the period from 1990 to 2023, which ensures sufficient data availability for most countries. Several relevant indicators were retrieved from the API by a loop, including carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of total land area, total population, and the share of the population living in urban areas. The API responses were in JSON format and converted into `pandas` DataFrames for further analysis by using the `requests` library in Python. All data were retrieved programmatically through the API to ensure reproducibility of the data acquisition process.
+The data for this project were obtained from World Bank Open Data platform through the World Bank Open Data API. The API provides access to the World Development Indicators (WDI) database, which contains standardized economic, energy, and land-use indicators for all countries and regions around the world. The analysis focuses on the period from 1990 to 2023, which ensures sufficient data availability for most countries. Several relevant indicators were retrieved from the API by a loop, including carbon dioxide emissions per capita, GDP per capita, renewable energy share, fossil-fuel electricity share, forest area as a percentage of total land area, and the share of the population living in urban areas. The API responses were in JSON format and converted into `pandas` DataFrames for further analysis by using the `requests` library in Python. All data were retrieved programmatically through the API to ensure reproducibility of the data acquisition process.
 
 ## 2.2 Data Wrangling and Cleaning
 
@@ -107,14 +107,13 @@ All analyses were conducted using Python. Data acquisition was carried out using
 
 WB_BASE_URL = "https://api.worldbank.org/v2"
 
-# Indicator codes aligned with the research question
+# Indicator variables codes aligned with the research question
 INDICATORS = {
     "co2_per_capita": "EN.GHG.CO2.PC.CE.AR5",
     "gdp_per_capita": "NY.GDP.PCAP.KD",
     "fossil_electricity_share": "EG.ELC.FOSL.ZS",
     "renewable_energy_share": "EG.FEC.RNEW.ZS",
     "forest_area_percent_land": "AG.LND.FRST.ZS",
-    "population_total": "SP.POP.TOTL",
     "urban_share_percent": "SP.URB.TOTL.IN.ZS"
 }
 
@@ -163,7 +162,7 @@ wb_raw = pd.concat(frames, ignore_index=True)
 # Keep only non-missing observed values for preview
 wb_raw = wb_raw[wb_raw["value"].notna()].copy()
 
-# Raw API preview dataframe (no local file saved)
+# Raw API preview dataframe
 display(wb_raw.head(20))
 print("Shape:", wb_raw.shape)
 ```
@@ -176,9 +175,7 @@ print("Shape:", wb_raw.shape)
 #| message: false
 
 # Flatten nested JSON fields
-# The World Bank API returns 'indicator' and 'country' as dicts inside each
-# row. Extract the id/value fields into plain columns so the data can be
-# filtered and merged as a regular flat table.
+# The World Bank API returns 'indicator' and 'country' as dicts inside each row. Extract the id/value fields into plain columns so the data can be filtered and merged as a regular flat table.
 wb_raw["indicator_code"] = wb_raw["indicator"].apply(lambda x: x["id"] if isinstance(x, dict) else None)
 wb_raw["indicator_name"] = wb_raw["indicator"].apply(lambda x: x["value"] if isinstance(x, dict) else None)
 wb_raw["country_name"] = wb_raw["country"].apply(lambda x: x["value"] if isinstance(x, dict) else None)
@@ -197,9 +194,7 @@ Data were retrieved sucessfully from the World Bank Open Data API by using JSON 
 #| message: false
 
 # Remove regional/income-group aggregates
-# The World Bank API mixes true country records with regional and income-group
-# aggregates (e.g. "Africa Eastern and Southern"). Fetch the country metadata
-# endpoint and retain only rows whose region_name is not "Aggregates".
+# The World Bank API mixes true country records with regional and income-group aggregates (e.g. "Africa Eastern and Southern"). Fetch the country metadata endpoint and retain only rows whose region_name is not "Aggregates".
 def get_country_metadata():
     page = 1
     all_countries = []
@@ -252,8 +247,7 @@ With previewing some rows of the flattened dataset, some aggregates/regions data
 #| message: false
 
 # Create the year identifier
-# Convert the API 'date' field to a numeric year column before selecting
-# country-year keys for the reshape step below.
+# Convert the API 'date' field to a numeric year column before selecting country-year keys for the reshape step below.
 wb["year"] = pd.to_numeric(wb["date"], errors="coerce")
 
 # Retain only columns needed for the analysis
@@ -273,9 +267,7 @@ display(wb_clean.head(20))
 print("Clean panel shape:", wb_clean.shape)
 
 # Reshape long to wide (one row per country-year)
-# pivot_table spreads each variable_name into its own column, using ISO3 code
-# and year as the row keys. country_name is added back as a label column via a
-# left join, then moved to the front for readability.
+# pivot_table spreads each variable_name into its own column, using ISO3 code and year as the row keys. country_name is added back as a label column via a left join, then moved to the front for readability.
 wb_wide = wb_clean.pivot_table(
     index=["countryiso3code", "year"],
     columns="variable_name",
@@ -299,7 +291,7 @@ wb_wide = wb_wide[
 wb_wide_shape = wb_wide.shape
 ```
 
-Next, since the project aims to analyze based on a country-year dataset, the long dataset was reshaped into a wide dataset, where each indicator becomes a column instead of a value in a single column which stored all the indicator names/codes. To ensure safety during the reshaping process, the year identifier was created by converting the API `date` field into a numeric year so the dataset can be indexed by country-year in the reshape step. After reshaping, the dataset became wide format containing `co2_per_capita`, `gdp_per_capita`, `fossil_electricity_share`, `renewable_energy_share`, `forest_area_percent_land`, `population_total`, and `urban_share_percent` data for each country that represents in `countryiso3code` and `country_name`, and `year` only without other redundant columns and information. At this stage, the dataset had `{python} wb_wide_shape[0]` rows and `{python} wb_wide_shape[1]` columns.
+Next, since the project aims to analyze based on a country-year dataset, the long dataset was reshaped into a wide dataset, where each indicator becomes a column instead of a value in a single column which stored all the indicator names/codes. To ensure safety during the reshaping process, the year identifier was created by converting the API `date` field into a numeric year so the dataset can be indexed by country-year in the reshape step. After reshaping, the dataset became wide format containing `co2_per_capita`, `gdp_per_capita`, `fossil_electricity_share`, `renewable_energy_share`, `forest_area_percent_land`, and `urban_share_percent` data for each country that represents in `countryiso3code` and `country_name`, and `year` only without other redundant columns and information. At this stage, the dataset had `{python} wb_wide_shape[0]` rows and `{python} wb_wide_shape[1]` columns.
 
 ```{python}
 #| label: wb-data-type-standardization
@@ -310,8 +302,7 @@ Next, since the project aims to analyze based on a country-year dataset, the lon
 #| message: false
 
 # Standardize data types (If needed after checking initial data types)
-# All indicator columns are numeric (percentages, USD, metric tons). Coerce to
-# float so downstream arithmetic and comparisons behave consistently. And year is stored as integer.
+# All indicator columns are numeric (percentages, USD, metric tons). Coerce to float so downstream arithmetic and comparisons behave consistently. And year is stored as integer.
 
 display(wb_wide.dtypes.rename("dtype").reset_index().rename(columns={"index": "Columns"}))
 ```
@@ -324,8 +315,7 @@ display(wb_wide.dtypes.rename("dtype").reset_index().rename(columns={"index": "C
 #| message: fals
 
 # Standardize missing-value placeholders
-# Replace common string sentinels with NaN so that all missing-value checks
-# operate on a single representation.
+# Replace common string sentinels with NaN so that all missing-value checks operate on a single representation.
 missing_markers = ["", " ", "N/A", "NA", "na", "null", "Null", "NULL", "-", "--", ".."]
 wb_wide = wb_wide.replace(missing_markers, np.nan)
 ```
@@ -347,7 +337,6 @@ plausibility_bounds = {
     "fossil_electricity_share":(0, 100),    # % of electricity from fossil fuels
     "renewable_energy_share":  (0, 100),    # % of total final energy consumption
     "forest_area_percent_land":(0, 100),    # % of land area
-    "population_total":        (0, None),   # count
     "urban_share_percent":     (0, 100),    # % of population
 }
 
@@ -356,7 +345,6 @@ oob_gdp    = int((wb_wide["gdp_per_capita"]           < 0).sum())
 oob_fossil = int(((wb_wide["fossil_electricity_share"] < 0) | (wb_wide["fossil_electricity_share"] > 100)).sum())
 oob_renew  = int(((wb_wide["renewable_energy_share"]   < 0) | (wb_wide["renewable_energy_share"]   > 100)).sum())
 oob_forest = int(((wb_wide["forest_area_percent_land"] < 0) | (wb_wide["forest_area_percent_land"] > 100)).sum())
-oob_pop    = int((wb_wide["population_total"]          < 0).sum())
 oob_urban  = int(((wb_wide["urban_share_percent"]      < 0) | (wb_wide["urban_share_percent"]      > 100)).sum())
 
 # Confirm ISO3 codes follow the 3-capital-letter standard, no duplicate
@@ -381,7 +369,6 @@ Before performing the plausibility checks, it would be necessary to recall the u
 - `fossil_electricity_share`: percentage of electricity from fossil fuels, so the range should be between 0 and 100 inclusive.
 - `renewable_energy_share`: percentage of total final energy consumption, so the range should be between 0 and 100 inclusive.
 - `forest_area_percent_land`: percentage of land area, so the range should be between 0 and 100 inclusive.
-- `population_total`: count, so the range should be non-negative.
 - `urban_share_percent`: percentage of population, so the range should be between 0 and 100 inclusive.
 
 
@@ -392,7 +379,6 @@ Therefore, applying the reasonable range for each indicator to check for the ent
 - `fossil_electricity_share`: `{python} oob_fossil` out of bounds rows
 - `renewable_energy_share`: `{python} oob_renew` out of bounds rows
 - `forest_area_percent_land`: `{python} oob_forest` out of bounds rows
-- `population_total`: `{python} oob_pop` out of bounds rows
 - `urban_share_percent`: `{python} oob_urban` out of bounds rows
 
 Hence, there were no out of bounds values in the dataset, while each row had a standard ISO3 country code with no duplicate country-year rows existed. In addition, the `year` was within the study period.
@@ -405,9 +391,7 @@ Hence, there were no out of bounds values in the dataset, while each row had a s
 #| warning: false
 #| message: false
 
-# Count and compute the share of missing values for every column in the wide
-# dataset. Sorting by count (descending) puts the most problematic variables
-# at the top so patterns are immediately visible.
+# Count and compute the share of missing values for every column in the wide dataset. Sorting by count (descending) puts the most problematic variables at the top so patterns are immediately visible.
 missing_counts = wb_wide.isna().sum()
 missing_pct    = (wb_wide.isna().mean() * 100).round(2)
 
@@ -422,7 +406,7 @@ missing_tbl = (
 display(missing_tbl)
 ```
 
-Then proceed to inspect the missing values in the dataset. According to Missing Values Inspection Table, (ignore `countryiso3code` and `country_name` columns, and `year` column as left-join were performed while merging the dataset in the early steps) `population_total` and `urban_share_percent` have no missing values. While `co2_per_capita`, `gdp_per_capita`, `fossil_electricity_share`, `renewable_energy_share`, and `forest_area_percent_land` have low missing percentage (less than 10%). However, `fossil_electricity_share` has a moderate (10-20%) missing percentage 16.25%. The dataset still contains a large number of useful observations in other variables, so the missingness was retained during EDA so that the available observations could be used for the analysis. Later, during the regression analysis, observations with missing values in the explanatory variables would be dropped at row level to aviod introducing additional assumptions through imputation while maintaing a sufficiently large sample size for the regression analysis.
+Then proceed to inspect the missing values in the dataset. According to Missing Values Inspection Table, (ignore `countryiso3code` and `country_name` columns, and `year` column as left-join were performed while merging the dataset in the early steps) `urban_share_percent` has no missing values. While `co2_per_capita`, `gdp_per_capita`, `fossil_electricity_share`, `renewable_energy_share`, and `forest_area_percent_land` have low missing percentage (less than 10%). However, `fossil_electricity_share` has a moderate (10-20%) missing percentage 16.25%. The dataset still contains a large number of useful observations in other variables, so the missingness was retained during EDA so that the available observations could be used for the analysis. Later, during the regression analysis, observations with missing values in the explanatory variables would be dropped at row level to aviod introducing additional assumptions through imputation while maintaing a sufficiently large sample size for the regression analysis.
 
 ## 3.2 Exploratory Data Analysis (EDA) Results
 
@@ -437,8 +421,7 @@ Then proceed to inspect the missing values in the dataset. According to Missing 
 #| message: false
 
 # Compute descriptive statistics for all numeric indicator columns.
-# Transposing puts variables as rows and statistics as columns, which is
-# easier to read in a wide document layout.
+# Transposing puts variables as rows and statistics as columns, which is easier to read in a wide document layout.
 # Rounding to 2 decimal places keeps the table compact.
 summary_stats = (
     wb_wide
@@ -456,7 +439,11 @@ The Descriptive Statistics Table (For all numeric variables) table provids an ov
 
 Economic development also varies widely across the sample. GDP per capita ranges from about 167 USD to more than 225,000 USD, with a median value of roughly 4,835 USD, reflecting large differences in income levels between countries.
 
-Energy structure indicators also show considerable variation. The average share of electricity generated from fossil fuels is approximately 62.8%, while renewable energy accounts for about 30.7% of total final energy consumption on average. Land-use patterns differ across countries as well, with forest area covering about 32.6% of land area on average. Demographic variables also display wide ranges. Total population varies from fewer than 10,000 people to more than 1.4 billion, while the share of population living in urban areas averages about 57.8%. Overall, these statistics indicate substantial cross-country heterogeneity in economic development, energy systems, and land-use characteristics, which may help explain differences in carbon dioxide emissions across countries.
+Energy structure indicators also show considerable variation. The average share of electricity generated from fossil fuels is approximately 62.8%, while renewable energy accounts for about 30.7% of total final energy consumption on average.
+
+Land-use patterns differ across countries as well, with forest area covering about 32.6% of land area on average. The share of population living in urban areas averages about 57.8%.
+
+Overall, these statistics indicate the huge differences between countries in economic development, energy systems, and land-use characteristics, which may help explain differences in carbon dioxide emissions across countries.
 
 ```{python}
 #| label: wb-eda-co2-zero
@@ -554,8 +541,7 @@ Figure 1 shows the trend of global average carbon dioxide emissions per capita f
 #| warning: false
 #| message: false
 
-# Six countries chosen to represent a range of income levels and world regions,
-# making the cross-country divergence in emission trajectories visible.
+# Six countries chosen to represent a range of income levels and world regions, making the cross-country divergence in emission trajectories visible.
 selected_iso3 = ["USA", "CHN", "DEU", "IND", "BRA", "NGA"]
 
 co2_countries = (
@@ -591,8 +577,7 @@ Figure 2 illustrates the evolution of carbon dioxide emissions per capita for se
 #| warning: false
 #| message: false
 
-# CO2 and GDP are on their own panel because their units (metric tons, USD) differ
-# from the percentage variables below.
+# CO2 and GDP are on their own panel because their units (metric tons, USD) differ from the percentage variables below.
 co2_gdp_vars = ["co2_per_capita", "gdp_per_capita"]
 wb_long_co2_gdp = wb_wide[co2_gdp_vars].melt(var_name="Variable", value_name="Value").dropna()
 
@@ -620,8 +605,7 @@ Figure 3 shows that both carbon dioxide emissions per capita and GDP per capita 
 #| warning: false
 #| message: false
 
-# All four variables share a 0–100 percentage scale, so a common x-axis range
-# makes it easy to compare spreads across indicators directly.
+# All four variables share a 0–100 percentage scale, so a common x-axis range makes it easy to compare spreads across indicators directly.
 pct_vars = [
     "fossil_electricity_share",
     "renewable_energy_share",
@@ -646,30 +630,6 @@ wb_long_pct = wb_wide[pct_vars].melt(var_name="Variable", value_name="Value").dr
 
 Figure 4 shows how the percentage-based indicators are distributed across countries. Forest area as a percentage of land varies widely, covering nearly the full range from 0 to 100%. Many observations fall below 80%, indicating substantial differences in land-use patterns across countries with a generally not too high forest area pattern. Fossil electricity share also spans from 0 to 100%, with a noticeable concentration of observations near 100%. This suggests that many countries rely heavily on fossil fuels for electricity generation. Renewable energy share shows a similar pattern to forest area percentage, with a large number of observations appear at very low values close to 0%. This indicates that renewable energy contributes only a small portion of total energy consumption in many countries. Urban population share is more evenly distributed, with most observations between about 20% and 90%. Overall, these distributions suggest considerable variation across countries in energy structure, land use, and urbanization levels, which may help explain differences in carbon dioxide emissions per capita.
 
-```{python}
-#| label: wb-eda-histograms-pop
-#| fig-cap: "Figure 5: Distribution of total population"
-#| code-fold: true
-#| code-summary: "Show code for population histogram"
-#| warning: false
-#| message: false
-
-pop_df = wb_wide[["population_total"]].dropna().copy()
-
-(
-    ggplot(pop_df, aes(x="population_total")) +
-    geom_histogram(bins=40, fill="#FE9929", color="white", alpha=0.8) +
-    labs(
-        title="Distribution of Total Population",
-        x="Population",
-        y="Count"
-    ) +
-    theme_minimal()
-)
-```
-
-Figure 5 shows that total population is also highly right skewed as carbon dioxide emissions per capita and GDP per capita are. Most country–year observations correspond to relatively small populations, while only a few observations have very large population sizes. The majority of values are concentrated near the lower end of the distribution, indicating that most countries have far different and lower populations compared to a few highly populated countries like China and India. This also suggests that a log-scale transformation in feature engineering is necessary to better visualize the relationship between carbon dioxide emissions and population for later regression analysis.
-
 ### 3.2.3 Feature Engineering in log-transformation
 
 ```{python}
@@ -679,48 +639,39 @@ Figure 5 shows that total population is also highly right skewed as carbon dioxi
 #| warning: false
 #| message: false
 
-# GDP per capita, CO2 per capita, and total population are all right-skewed with
-# values spanning several orders of magnitude. A natural-log transformation
-# compresses the scale, reduces the influence of extreme values, and often
-# linearises relationships with other variables in regression.
+# GDP per capita and CO2 per capita are right skewed with values spanning several orders of magnitude. A natural-log transformation compresses the scale.
 
-# GDP per capita and population are strictly positive,
-# so the natural logarithm can be applied directly.
+# GDP per capita is strictly positive, so the natural logarithm can be applied directly.
 wb_wide["log_gdp_per_capita"]   = np.log(wb_wide["gdp_per_capita"])
-wb_wide["log_population_total"] = np.log(wb_wide["population_total"])
 
-# CO2 per capita contains some zero values, so log(1 + x) is used
-# to avoid taking the logarithm of zero.
+# CO2 per capita contains some zero values, so log(1 + x) is used to avoid taking the logarithm of zero.
 wb_wide["log_co2_per_capita"]   = np.log1p(wb_wide["co2_per_capita"])
 
-# Center year at 1990 so that the intercept in regression represents the
-# baseline year and coefficients are more interpretable on a human scale.
+# Center year at 1990 so that the intercept in regression represents the baseline year and coefficients are more interpretable on a human scale.
 wb_wide["year_centered"] = wb_wide["year"] - START_YEAR
 ```
 
-Based on the histograms in Section 3.2.2, the log-transformation was applied to carbon dioxide emissions per capita, GDP per capita, and population to compress the scale and reduce the influence of extreme values. The year variable was centered at 1990 so that the intercept in regression represents the baseline year and coefficients are more interpretable on a human interpretable scale in regression analysis later on.
+Based on the histograms in Section 3.2.2, the log-transformation was applied to carbon dioxide emissions per capita and GDP per capita to compress the scale and reduce the influence of extreme values. The year variable was centered at 1990 so that the intercept in regression represents the baseline year and coefficients are more interpretable on a human interpretable scale in regression analysis later on.
 
 ### 3.2.4 Advanced EDA Visualizations
 
 ```{python}
 #| label: wb-eda-scatter
-#| fig-cap: "Figure 6: Log Carbon Dioxide Emissions per Capita vs each explanatory variable (all country-year observations)"
+#| fig-cap: "Figure 5: Log Carbon Dioxide Emissions per Capita vs each explanatory variable (all country-year observations)"
 #| code-fold: true
 #| code-summary: "Show code for scatter plots"
 #| warning: false
 #| message: false
 
-# Use the pre-computed log columns from the feature engineering step so that
-# all scatter plots are consistent with the transformed variables used in regression.
+# Use the pre-computed log columns from the feature engineering step so that all scatter plots are consistent with the transformed variables used in regression.
 scatter_df = wb_wide[
-    ["log_co2_per_capita", "log_gdp_per_capita", "log_population_total",
+    ["log_co2_per_capita", "log_gdp_per_capita",
      "fossil_electricity_share", "renewable_energy_share",
      "forest_area_percent_land", "urban_share_percent"]
 ].dropna().copy()
 
 pairs = [
     ("log_gdp_per_capita",      "Log GDP per Capita"),
-    ("log_population_total",    "Log Total Population"),
     ("fossil_electricity_share","Fossil Electricity Share (%)"),
     ("renewable_energy_share",  "Renewable Energy Share (%)"),
     ("forest_area_percent_land","Forest Area (% of Land)"),
@@ -738,11 +689,12 @@ for i, (xcol, xlabel) in enumerate(pairs):
     ax.set_ylabel("Log Carbon Dioxide Emissions per Capita" if i % 3 == 0 else "", fontsize=9)
     ax.grid(True, alpha=0.3)
 
+axes[1, 2].set_visible(False)
 plt.tight_layout()
 plt.show()
 ```
 
-Figure 6 shows the relationships between log carbon dioxide emissions per capita and 6 potential explanatory variables.
+Figure 5 shows the relationships between log carbon dioxide emissions per capita and 5 potential explanatory variables.
 
 A clear positive relationship appears between log GDP per capita and log carbon dioxide emissions per capita. Countries with higher income levels tend to have higher emissions per person, suggesting that economic development is associated with increased energy use and carbon output.
 
@@ -754,19 +706,16 @@ Urban population share shows a strong positive relationship with emissions per c
 
 Forest area percentage does not show a clear relationship with carbon dioxide emissions per capita with a scattered pattern, suggesting that land-use characteristics may not strongly explain differences in carbon dioxide emissions per capita.
 
-The relationship between log total population and carbon dioxide emissions per capita appears weak and scattered.
-
 ```{python}
 #| label: wb-eda-boxplot-income
-#| fig-cap: "Figure 7: Distribution of log carbon dioxide emissions per capita by GDP income quartile"
+#| fig-cap: "Figure 6: Distribution of log carbon dioxide emissions per capita by GDP income quartile"
 #| code-fold: true
 #| code-summary: "Show code for boxplot by income group"
 #| warning: false
 #| message: false
 
 # Reuse the income-quartile grouping from the faceted scatter above.
-# Each box shows the spread of log CO2 per capita within one income tier,
-# making it easy to compare medians and variability across development levels.
+# Each box shows the spread of log CO2 per capita within one income tier, making it easy to compare medians and variability across development levels.
 avg_gdp_box = (
     wb_wide.groupby("countryiso3code")["gdp_per_capita"]
     .mean()
@@ -798,21 +747,19 @@ box_income_df = (
 )
 ```
 
-Based on the fining in Figure 6, there is a strong increasing relationship between log carbon dioxide emissions per capita and log GDP per capita. Hence, a box plot, Figure 7, was constructed. It compares log carbon dioxide emissions per capita across four GDP per capita quartiles. A clear upward pattern appears across the income groups, whcih proves the finding of the association between log carbon dioxide emissions per capita and log GDP per capita in Figure 6.
+Based on the fining in Figure 5, there is a strong increasing relationship between log carbon dioxide emissions per capita and log GDP per capita. Hence, a box plot, Figure 6, was constructed. It compares log carbon dioxide emissions per capita across four GDP per capita quartiles. A clear upward pattern appears across the income groups, whcih suggests the finding of the association between log carbon dioxide emissions per capita and log GDP per capita in Figure 5.
 
 Countries in income quartile 1 (Q1) have the lowest emissions per capita, with most observations concentrated near the bottom of the scale. As income increases, the distribution of emissions shifts upward. The median emissions level in Q2 is higher than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest income quartile (Q4) show the highest median emissions per capita and a wider spread of values. Higher income countries therefore tend to produce more carbon dioxide emissions per person. Although there are some outliers in all quartiles, the pattern is still clear and consistent. Note, the outliers should be remained because they reflected the real life situations.
 
 ```{python}
 #| label: wb-eda-boxplot-renewable
-#| fig-cap: "Figure 8: Distribution of log carbon dioxide emissions per capita by renewable energy share quartile"
+#| fig-cap: "Figure 7: Distribution of log carbon dioxide emissions per capita by renewable energy share quartile"
 #| code-fold: true
 #| code-summary: "Show code for boxplot by renewable energy group"
 #| warning: false
 #| message: false
 
-# The scatter plot showed a clearer negative pattern for renewable energy share
-# than for fossil electricity share, so renewable share is the better choice
-# for a grouped comparison with boxplots.
+# The scatter plot showed a clearer negative pattern for renewable energy share than for fossil electricity share, so renewable share is the better choice for a grouped comparison with boxplots.
 box_renew_df = wb_wide[["log_co2_per_capita", "renewable_energy_share"]].dropna().copy()
 box_renew_df["renew_group"] = pd.qcut(
     box_renew_df["renewable_energy_share"],
@@ -833,22 +780,20 @@ box_renew_df["renew_group"] = pd.qcut(
 )
 ```
 
-Based on the fining in Figure 6, there is a strong negative association between log carbon dioxide emissions per capita and reneable energy share. Hence, a box plot, Figure 8, was constructed. It compares log carbon dioxide emissions per capita across four renewable energy share quartiles. A clear downward pattern appears across the quartiles, whcih proves the finding of the negative association between log carbon dioxide emissions per capita and renewable energy share in Figure 6.
+Based on the fining in Figure 5, there is a strong negative association between log carbon dioxide emissions per capita and reneable energy share. Hence, a box plot, Figure 7, was constructed. It compares log carbon dioxide emissions per capita across four renewable energy share quartiles. A clear downward pattern appears across the quartiles, which suggests the finding of the negative association between log carbon dioxide emissions per capita and renewable energy share in Figure 5.
 
 Countries in low renewable energy share group (Q1) have the lowest emissions per capita, with most observations concentrated near the middle of the scale. As renewable energy share increases, the distribution of emissions shifts downward, as expected intuitively. The median emissions level in Q2 is lower than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest renewable energy share quartile (Q4) show the lowest median emissions per capita. Countries with higher renewable energy share tend to produce less carbon dioxide emissions per person. Although there are some outliers in most groups, the general pattern is still clear and consistent. Note, the outliers should be remained because they reflected the real life situations.
 
 
 ```{python}
 #| label: wb-eda-boxplot-urban
-#| fig-cap: "Figure 9: Distribution of log carbon dioxide emissions per capita by urban population share quartile"
+#| fig-cap: "Figure 8: Distribution of log carbon dioxide emissions per capita by urban population share quartile"
 #| code-fold: true
 #| code-summary: "Show code for boxplot by urban share group"
 #| warning: false
 #| message: false
 
-# Urban share showed a clear positive relationship with log CO2 in the scatter
-# plots, so binning into quartiles shows whether the step-up in emissions is
-# consistent and monotone across urbanisation levels.
+# Urban share showed a clear positive relationship with log CO2 in the scatter plots, so binning into quartiles shows whether the step-up in emissions is consistent and monotone across urbanisation levels.
 box_urban_df = wb_wide[["log_co2_per_capita", "urban_share_percent"]].dropna().copy()
 box_urban_df["urban_group"] = pd.qcut(
     box_urban_df["urban_share_percent"],
@@ -869,27 +814,24 @@ box_urban_df["urban_group"] = pd.qcut(
 )
 ```
 
-Based on the fining in Figure 6, there is a strong increasing relationship between log carbon dioxide emissions per capita and Urban population share. Hence, a box plot, Figure 9, was constructed. It compares log carbon dioxide emissions per capita across four urban population share quartiles. A clear upward pattern appears across the groups, whcih proves the finding of the association between log carbon dioxide emissions per capita and urban population share in Figure 6.
+Based on the fining in Figure 5, there is a strong increasing relationship between log carbon dioxide emissions per capita and Urban population share. Hence, a box plot, Figure 8, was constructed. It compares log carbon dioxide emissions per capita across four urban population share quartiles. A clear upward pattern appears across the groups, whcih suggests the finding of the association between log carbon dioxide emissions per capita and urban population share in Figure 5.
 
 Countries in Q1 have the lowest emissions per capita, with most observations concentrated near the middle of the scale. As urban population share increases, the distribution of emissions shifts upward, as expected intuitively. The median emissions level in Q2 is higher than in Q1, and this pattern continues for Q3 and Q4. Countries in the highest urban population share quartile (Q4) show the highest median emissions per capita. Countries with higher urban population share tend to produce more carbon dioxide emissions per person. Note, the outliers should be remained because they reflected the real life situations and did not affect the overall pattern.
 
 ```{python}
 #| label: wb-eda-corr-heatmap
-#| fig-cap: "Figure 10: Correlation Matrix of All Stakeholders variables"
+#| fig-cap: "Figure 9: Correlation Matrix of All Stakeholders variables"
 #| code-fold: true
 #| code-summary: "Show code for correlation heatmap"
 #| warning: false
 #| message: false
 
 # Compute pairwise Pearson correlations across all analysis variables.
-# Log-transformed versions are used for the skewed variables (CO2, GDP,
-# population) to be consistent with the regression specification.
-# The long-format reshape: melt the square matrix
-# so that ggplot can map each cell to a tile.
+# Log-transformed versions are used for the skewed variables (CO2, GDP) to be consistent with the regression specification.
+# The long-format reshape: melt the square matrix so that ggplot can map each cell to a tile.
 corr_vars = [
     "log_co2_per_capita",
     "log_gdp_per_capita",
-    "log_population_total",
     "fossil_electricity_share",
     "renewable_energy_share",
     "forest_area_percent_land",
@@ -922,9 +864,9 @@ corr_long["corr_label"] = corr_long["correlation"].round(2)
 )
 ```
 
-Figure 10 shows that log GDP per capita has a strong positive correlation with log carbon dioxide emissions per capita (0.74). Urban population share is also positively correlated with emissions (0.62). Renewable energy share has a moderately strong negative correlation with emissions (−0.63). These findings are consistent with the findings in previous sections.
+Figure 9 shows that log GDP per capita has a strong positive correlation with log carbon dioxide emissions per capita (0.74). Urban population share is also positively correlated with emissions (0.62). Renewable energy share has a moderately strong negative correlation with emissions (−0.63). These findings are consistent with the findings in previous sections.
 
-Fossil electricity share shows only a weak positive relationship with carbon dioxide emissions per capita (0.23). Log population and forest area percentage have very weak correlations with carbon dioxide emissions per capita, as expected.
+Fossil electricity share shows only a weak positive relationship with carbon dioxide emissions per capita (0.23). Forest area percentage has a very weak correlation with carbon dioxide emissions per capita, as expected.
 
 ## 3.3 Regression Analysis
 
@@ -940,7 +882,6 @@ Fossil electricity share shows only a weak positive relationship with carbon dio
 core_analysis_vars = [
     "log_co2_per_capita",
     "log_gdp_per_capita",
-    "log_population_total",
     "fossil_electricity_share",
     "renewable_energy_share",
     "forest_area_percent_land",
@@ -968,7 +909,6 @@ Before performing the regression analysis, the rows with missing values were dro
 # Predictor list matches the research question: economic development, energy structure, land use, and demographics. Log-transformed versions are used for the skewed variables to be consistent with the feature engineering step.
 predictors = [
     "log_gdp_per_capita",
-    "log_population_total",
     "fossil_electricity_share",
     "renewable_energy_share",
     "forest_area_percent_land",
@@ -977,7 +917,6 @@ predictors = [
 ]
 predictor_labels = [
     "Log GDP per Capita",
-    "Log Total Population",
     "Fossil Electricity Share (% of total electricity consumption)",
     "Renewable Energy Share (% of total final energy consumption)",
     "Forest Area (% of total land area)",
@@ -992,8 +931,7 @@ y = analysis_df["log_co2_per_capita"].values
 X_const = sm.add_constant(X)
 linear_mod = sm.OLS(y, X_const).fit()
 
-# Format the coefficient table for display — summary2().tables[1] returns a
-# DataFrame; rename columns and replace numeric index with readable variable names.
+# Format the coefficient table for display — summary2().tables[1] returns a DataFrame; rename columns and replace numeric index with readable variable names.
 coef_tbl = (
     linear_mod.summary2().tables[1]
     .reset_index()
@@ -1011,19 +949,17 @@ coef_tbl["Variable"] = ["Intercept"] + predictor_labels
 display(coef_tbl.round(4))
 ```
 
- According to the OLS regression results, GDP per captia has a positive and statistically significant association (p-value < 0.05) with carbon dioxide emissions per capita, i.e. an 1% increase in GDP per capita leads to an 0.3885% increase in carbon dioxide emissions per capita on average, while holding other variables constant.
+ According to the OLS regression results, GDP per captia has a positive and statistically significant association (p-value < 0.05) with carbon dioxide emissions per capita, i.e. an 1% increase in GDP per capita is associated with an 0.3457% increase in carbon dioxide emissions per capita on average, while holding other variables constant.
  
- Total population also has a positive and statistically significant association with carbon dioxide emissions per capita, i.e. an 1% increase in total population leads to an 0.0930% increase in carbon dioxide emissions per capita on average, while holding other variables constant.
+ Fossil electricity share does not have a statistically significant association with carbon dioxide emissions per capita since the p-value is `0.0878 > 0.05`.
  
- Fossil electricity share has a positive and statistically significant association with carbon dioxide emissions per capita, i.e. an 1 percent point increase in fossil electricity share leads to an 0.16% increase in carbon dioxide emissions per capita on average, while holding other variables constant.
+ Renewable energy share has a negative and statistically significant association with carbon dioxide emissions per capita, i.e. an 1 percent point increase in renewable energy share is associated with an 0.68% decrease in carbon dioxide emissions per capita on average, while holding other variables constant.
  
- Renewable energy share has a negative and statistically significant association with carbon dioxide emissions per capita, i.e. an 1 percent point increase in renewable energy share leads to an 0.69% decrease in carbon dioxide emissions per capita on average, while holding other variables constant.
+ Forest area percentage has a negative and statistically significant association with carbon dioxide emissions per capita, i.e. an 1 percent point increase in forest area percentage is associated with an 0.19% decrease in carbon dioxide emissions per capita on average, while holding other variables constant.
  
- Forest area percentage does not have a statistically significant association with carbon dioxide emissions per capita since the p-value is `0.1802 > 0.05`.
+ Urban population share has a positive and statistically significant association with carbon dioxide emissions per capita, i.e. an 1 percent point increase in urban population share is associated with an 0.54% increase in carbon dioxide emissions per capita on average, while holding other variables constant.
  
- Urban population share has a positive and statistically significant association with carbon dioxide emissions per capita, i.e. an 1 percent point increase in urban population share leads to an 0.37% increase in carbon dioxide emissions per capita on average, while holding other variables constant.
- 
- Year (centered at 1990) has a negative and statistically significant association with carbon dioxide emissions per capita, i.e. Each passing year since 1990 leads to an 1.08% decrease in carbon dioxide emissions per capita on average, while holding other variables constant, which proves the finding in Figure 1.
+ Year (centered at 1990) has a negative and statistically significant association with carbon dioxide emissions per capita, i.e. Each passing year since 1990 is associated with an 1.23% decrease in carbon dioxide emissions per capita on average, while holding other variables constant.
 
  The Adjusted $R^2$ of `{python} float(round(linear_mod.rsquared_adj, 4))` indicates that approximately `{python} float(round(linear_mod.rsquared_adj * 100, 2))`% of the variance in logged carbon dioxide emissions per capita is explained by the model's independent variables.
 
@@ -1040,17 +976,14 @@ display(coef_tbl.round(4))
 # Fit a GAM with one smooth spline term per predictor. The column index i matches the order in X.
 gam_mod = LinearGAM(
     s(0, n_splines=20) +   # log_gdp_per_capita
-    s(1, n_splines=20) +   # log_population_total
-    s(2, n_splines=20) +   # fossil_electricity_share
-    s(3, n_splines=20) +   # renewable_energy_share
-    s(4, n_splines=20) +   # forest_area_percent_land
-    s(5, n_splines=20) +   # urban_share_percent
-    l(6)                   # year_centered as linear control
+    s(1, n_splines=20) +   # fossil_electricity_share
+    s(2, n_splines=20) +   # renewable_energy_share
+    s(3, n_splines=20) +   # forest_area_percent_land
+    s(4, n_splines=20) +   # urban_share_percent
+    l(5)                   # year_centered as linear control
 ).fit(X, y)
 
-# Build a term-level GAM summary table. pygam stores EDoF per coefficient, so
-# sum across the coefficient block belonging to each term to align with the
-# feature-level p-values.
+# Build a term-level GAM summary table. pygam stores EDoF per coefficient, so sum across the coefficient block belonging to each term to align with the feature-level p-values.
 term_labels = predictor_labels + ["Intercept"]
 edof_per_coef = gam_mod.statistics_["edof_per_coef"]
 p_values = gam_mod.statistics_["p_values"]
@@ -1070,33 +1003,31 @@ gam_tbl = pd.DataFrame({
 display(gam_tbl.round(4))
 ```
 
-According to the GAM smooth-term summary, log GDP per capita, log total population, and all the other indicator independent variables have statistically significant (all p-values < 0.05) complex and nonlinear relationships with carbon dioxide emissions per capita since all their EDoFs way largr than 1, while the centered `Year` variable has a statistically significant (p-value < 0.05) linear relationship with carbon dioxide emissions per capita since its EDoF is approximately 1, which confirms that this is a linear control term in the GAM model. The Pseudo $R^2$ of `{python} float(round(gam_mod.statistics_["pseudo_r2"]["explained_deviance"], 4))` indicates that approximately `{python} float(round(gam_mod.statistics_["pseudo_r2"]["explained_deviance"] * 100, 2))`% of the variance in logged carbon dioxide emissions per capita is explained by the included predictors.
+According to the GAM smooth-term summary, log GDP per capita and all the other indicator independent variables have statistically significant (all p-values < 0.05) complex and nonlinear relationships with carbon dioxide emissions per capita since all their EDoFs way larger than 1, while the centered `Year` variable has a statistically significant (p-value < 0.05) linear relationship with carbon dioxide emissions per capita since its EDoF is approximately 1, which confirms that this is a linear control term in the GAM model. The Pseudo $R^2$ of `{python} float(round(gam_mod.statistics_["pseudo_r2"]["explained_deviance"], 4))` indicates that approximately `{python} float(round(gam_mod.statistics_["pseudo_r2"]["explained_deviance"] * 100, 2))`% of the variance in logged carbon dioxide emissions per capita is explained by the included predictors.
 
 ```{python}
 #| label: wb-regression-gam-pdp
-#| fig-cap: "Figure 11: GAM partial dependence curves for each predictor"
+#| fig-cap: "Figure 10: GAM partial dependence curves for each predictor"
 #| code-fold: true
 #| code-summary: "Show code for GAM partial dependence plots"
 #| warning: false
 #| message: false
 
-# Plot partial dependence curves for the 6 smooth terms following the lab04
-# spec-list pattern. year_centered uses l() and is excluded from the PDP.
+# Plot partial dependence curves for the 6 smooth terms. year_centered uses l() and is excluded from the PDP.
 
 # define variables and colors (term index, x-column index, x-label, color, panel title)
 spec = [
-    (0, 0, "Log GDP per Capita",                                          "#2C7FB8", "Effect of Log GDP per Capita"),
-    (1, 1, "Log Total Population",                                        "#41AB5D", "Effect of Log Total Population"),
-    (2, 2, "Fossil Electricity Share (%)",                                "#FE9929", "Effect of Fossil Electricity Share"),
-    (3, 3, "Renewable Energy Share (%)",                                  "#E84539", "Effect of Renewable Energy Share"),
-    (4, 4, "Forest Area (% of Land)",                                     "#756BB1", "Effect of Forest Area"),
-    (5, 5, "Urban Population Share (%)",                                  "#636363", "Effect of Urban Population Share"),
+    (0, 0, "Log GDP per Capita",           "#2C7FB8", "Effect of Log GDP per Capita"),
+    (1, 1, "Fossil Electricity Share (%)", "#FE9929", "Effect of Fossil Electricity Share"),
+    (2, 2, "Renewable Energy Share (%)",   "#E84539", "Effect of Renewable Energy Share"),
+    (3, 3, "Forest Area (% of Land)",      "#756BB1", "Effect of Forest Area"),
+    (4, 4, "Urban Population Share (%)",   "#636363", "Effect of Urban Population Share"),
 ]
 
 fig, axes = plt.subplots(2, 3, figsize=(14, 8))
 fig.suptitle("GAM Partial Dependence of Log CO2 Emissions per Capita", fontsize=13)
 
-# loop over smooth variables following the lab04 pattern
+# loop over smooth variables
 for ax, (term, xcol, xlabel, color, title) in zip(axes.flat, spec):
     XX = gam_mod.generate_X_grid(term=term)
     x  = XX[:, xcol]
@@ -1108,13 +1039,12 @@ for ax, (term, xcol, xlabel, color, title) in zip(axes.flat, spec):
     ax.set(xlabel=xlabel, ylabel="Partial Effect on Log CO2", title=title)
     ax.grid(True, alpha=0.3)
 
+axes[1, 2].set_visible(False)
 plt.tight_layout()
 plt.show()
 ```
 
-According to the GAM partial dependence plots, Figure 11, the Log GDP per capita smooth is somewhat nonlinear, with a general increase in long term of the partial effect on log carbon dioxide emissions per capita as the log GDP per capita increases. At higher log GDP per capita levels, it oscillates slightly and continue to increase.
-
-The log total population smooth is clearly nonlinear. THe partial effect on log carbon dioxide emissions per capita increases rapidly at low levels of total population, then immediately decrease at `{python} int(round(np.exp(10), 0))` population in real world (by using $e^{10}$ to convert the log scale back to the original scale). Then as total population increases, it continues to increase in a more gentle and linear way.
+According to the GAM partial dependence plots, Figure 10, the Log GDP per capita smooth is somewhat nonlinear, with a general increase in long term of the partial effect on log carbon dioxide emissions per capita as the log GDP per capita increases. At higher log GDP per capita levels, it oscillates slightly and continue to increase.
 
 The fossil electricity share smooth is definitely nonlinear. The partial effect on log carbon dioxide emissions per capita oscillates rapidly as fossil electricity share increases.
 
@@ -1128,7 +1058,7 @@ The urban population share smooth is clearly nonlinear. The partial effect on lo
 
 The preliminary analysis shows that economic development, energy structure, and urbanization are important factors associated with carbon dioxide emissions per capita. EDA suggests that GDP per capita has a strong positive relationship with emissions, while renewable energy share is negatively associated with emissions. Urban population share also appears positively related to emissions, whereas forest area percentage shows little clear relationship.
 
-The OLS regression confirm several of these finding in EDA. GDP per capita, total population, fossil electricity share, renewable energy share, and urban population share are statistically significant predictors of carbon dioxide emissions per capita. Forest area percentage is not statistically significant with a high p-value. The model explains `{python} float(round(linear_mod.rsquared_adj * 100, 2))`% of the variation in log carbon dioxide emissions per capita.
+The OLS regression confirm several of these finding in EDA. GDP per capita, forest area percentage, renewable energy share, and urban population share are statistically significant predictors of carbon dioxide emissions per capita. Fossil electricity share is not statistically significant with a high p-value. The model explains `{python} float(round(linear_mod.rsquared_adj * 100, 2))`% of the variation in log carbon dioxide emissions per capita.
 
 The GAM analysis further suggests that many of these relationships are nonlinear. All predictor smooth terms have effective degrees of freedom greater than one and statistically significant p-values, indicating complex nonlinear effects. The GAM model explained `{python} float(round(gam_mod.statistics_["pseudo_r2"]["explained_deviance"] * 100, 2))`% of the variation in log carbon dioxide emissions per capita. This suggests that the GAM model provides a better model fit than the OLS model when considering nonlinear relationships.
 
