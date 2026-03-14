@@ -4,7 +4,8 @@ This is my repository for the JSC370 course at the University of Toronto in Wint
 
 ## Projects
 
-- [Midterm](Project/Midterm/Midterm.qmd)
+- [Midterm.qmd](Project/Midterm/Midterm.qmd)
+- [Midterm.html](Project/Midterm/Midterm.html)
 
 ## Homework
 

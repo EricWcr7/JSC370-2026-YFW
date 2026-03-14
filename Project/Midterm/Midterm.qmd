@@ -41,6 +41,8 @@ warnings.filterwarnings("ignore")
 
 ```
 
+**[GitHub Repository](https://github.com/EricWcr7/JSC370-2026-YFW/blob/main/Project/Midterm/Midterm.qmd)**
+
 # Research Question
 
 How have carbon dioxide emissions per capita evolved across countries from 1990 to 2023, and which economic, energy, and land-use factors explain these differences?
