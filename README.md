@@ -24,3 +24,4 @@ This is my repository for the JSC370 course at the University of Toronto in Wint
 - [Lab 8](labs/lab08/lab08-trees-boosting.qmd)
 - [Lab 9](labs/lab09/lab09-xgboost.ipynb)
 - [Lab 10](labs/lab10/lab10-pc.qmd)
+- [Lab 11](labs/lab11/lab11-hpc.qmd)
