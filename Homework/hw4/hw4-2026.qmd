@@ -320,14 +320,14 @@ print(f"5-fold CV RMSE (log scale): {cv_rmse:.4f}")
 y_pred_log = ridge_cv.predict(X_test_sc)
 test_r2_log  = r2_score(y_test, y_pred_log)
 test_rmse_log = np.sqrt(mean_squared_error(y_test, y_pred_log))
-print(f"\nTest R²   (log scale): {test_r2_log:.4f}")
+print(f"\nTest R^2   (log scale): {test_r2_log:.4f}")
 print(f"Test RMSE (log scale): {test_rmse_log:.4f}")
 
 y_pred_dollars = np.exp(y_pred_log)
 y_test_dollars = np.exp(y_test)
 test_r2_dollars   = r2_score(y_test_dollars, y_pred_dollars)
 test_rmse_dollars = np.sqrt(mean_squared_error(y_test_dollars, y_pred_dollars))
-print(f"\nTest R²   (dollars): {test_r2_dollars:.4f}")
+print(f"\nTest R^2   (dollars): {test_r2_dollars:.4f}")
 print(f"Test RMSE (dollars): ${test_rmse_dollars:,.2f}")
 ```
 
@@ -341,9 +341,127 @@ The 5-fold CV RMSE on the log scale is `{python} float(round(cv_rmse, 4))`, whic
 
 **3a.** (10 points) Tune a `RandomForestRegressor` by trying two different values for `n_estimators`, three different `max_features`, two different `max_depth` values, and two different `min_samples_leaf` values (24 combinations). Write a function `fit_rf_cv(n_est, max_feat, max_d, min_leaf)` that fits the model and returns the CV RMSE, then run the grid search both serially and in parallel with `Parallel(n_jobs=4)`. Keep `random_state=370` and `n_jobs=1` inside the model. Report serial time and speedup time. Report the best combination in a table. Then fit the best Random Forest on the full training set, report test R$^2$ and RMSE (log scale and dollars). Interpret and discuss.
 
+```{python}
+#| label: Q3a-rf-setup
+
+import time
+import itertools
+from joblib import Parallel, delayed
+from sklearn.ensemble import RandomForestRegressor
+
+n_estimators_grid  = [100, 300]
+max_features_grid  = ['sqrt', 0.33, 0.5]
+max_depth_grid     = [10, 20]
+min_samples_leaf_grid = [1, 5]
+
+param_combinations = list(itertools.product(
+    n_estimators_grid, max_features_grid, max_depth_grid, min_samples_leaf_grid
+))
+print(f"Total combinations: {len(param_combinations)}")
+
+def fit_rf_cv(n_est, max_feat, max_d, min_leaf):
+    rf = RandomForestRegressor(
+        n_estimators=n_est,
+        max_features=max_feat,
+        max_depth=max_d,
+        min_samples_leaf=min_leaf,
+        random_state=370,
+        n_jobs=1
+    )
+    scores = cross_val_score(
+        rf, X_train_sc, y_train,
+        cv=5,
+        scoring='neg_mean_squared_error',
+        n_jobs=1
+    )
+    cv_rmse = np.sqrt(-scores.mean())
+    return (n_est, max_feat, max_d, min_leaf, cv_rmse)
+```
+
+```{python}
+#| label: Q3a-rf-search
+
+t0 = time.time()
+serial_results = [fit_rf_cv(*p) for p in param_combinations]
+time_serial = time.time() - t0
+print(f"Serial grid search: {time_serial:.2f}s  ({len(param_combinations)} combinations)")
+
+t0 = time.time()
+parallel_results = Parallel(n_jobs=4)(
+    delayed(fit_rf_cv)(*p) for p in param_combinations
+)
+time_parallel = time.time() - t0
+print(f"Parallel grid search (4 workers): {time_parallel:.2f}s")
+print(f"Speedup: {time_serial / time_parallel:.2f}x")
+
+best = min(parallel_results, key=lambda x: x[4])
+best_row = pd.DataFrame([{
+    'n_estimators': best[0], 'max_features': best[1],
+    'max_depth':    best[2], 'min_samples_leaf': best[3],
+    'CV RMSE':      round(best[4], 4)
+}])
+print("\nBest combination by CV RMSE:")
+print(best_row.to_string(index=False))
+```
+
+```{python}
+#| label: Q3a-best-rf-fit
+
+best_rf = RandomForestRegressor(
+    n_estimators=100,
+    max_features=0.33,
+    max_depth=10,
+    min_samples_leaf=1,
+    random_state=370,
+    n_jobs=1
+)
+best_rf.fit(X_train_sc, y_train)
+
+y_pred_rf_log = best_rf.predict(X_test_sc)
+rf_test_r2_log   = r2_score(y_test, y_pred_rf_log)
+rf_test_rmse_log = np.sqrt(mean_squared_error(y_test, y_pred_rf_log))
+
+y_pred_rf_dollars = np.exp(y_pred_rf_log)
+rf_test_r2_dollars   = r2_score(np.exp(y_test), y_pred_rf_dollars)
+rf_test_rmse_dollars = np.sqrt(mean_squared_error(np.exp(y_test), y_pred_rf_dollars))
+
+print(f"\nTest R^2   (log scale): {rf_test_r2_log:.4f}")
+print(f"Test RMSE (log scale): {rf_test_rmse_log:.4f}")
+print(f"\nTest R^2   (dollars): {rf_test_r2_dollars:.4f}")
+print(f"Test RMSE (dollars): ${rf_test_rmse_dollars:,.2f}")
+```
+
+**Interpretation**:
+
+On the test set, the random forest performed very well: the test R$^2$ is `{python} float(round(rf_test_r2_log, 4))` on the log scale and `{python} float(round(rf_test_r2_dollars, 4))` on the dollar scale. The test RMSE is `{python} float(round(rf_test_rmse_log, 4))` on the log scale and about `{python} float(round(rf_test_rmse_dollars, 2))` in dollars. These suggest that the final tuned random forest explains a significant large amount of the variation in house sale prices and predicts substantially better than the baseline model, especially on the dollar scale with a significant lower RMSE.
+
 
 **3b.** (2 points) Plot the top 15 features. Do the most important features make intuitive sense for predicting house prices?
 
+```{python}
+#| label: Q3b-feature-importance
+
+feature_names = df.columns.tolist()
+
+imp_df = pd.DataFrame({
+    'feature':    feature_names,
+    'importance': best_rf.feature_importances_
+}).sort_values('importance', ascending=False).head(15)
+
+imp_df = imp_df.sort_values('importance', ascending=True)
+imp_df['feature'] = pd.Categorical(imp_df['feature'], categories=imp_df['feature'])
+
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.barh(imp_df['feature'], imp_df['importance'])
+ax.set_xlabel('Importance')
+ax.set_title('Top 15 Random Forest Feature Importances')
+plt.tight_layout()
+plt.show()
+```
+
+**Summary:**
+
+The most important features mostly reflect overall house size, build quality, house age, and garage characteristics. In general, these are all factors closely related to housing prices. Hence, these important features make intuitive sense for predicting house prices.
 
 ### Question 4: XGBoost with Parallel Hyperparameter Search (12 points)
 
