@@ -2422,7 +2422,7 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>(1460, 81)</code></pre>
 </div>
-<div id="q1a-load-data" class="cell-output cell-output-display" data-execution_count="19">
+<div id="q1a-load-data" class="cell-output cell-output-display" data-execution_count="71">
 <div>
 
 
@@ -3090,6 +3090,58 @@ y_train 12.0296 0.4004
 <section id="question-2-baseline-ridge-regression-10-points" class="level3">
 <h3 class="anchored" data-anchor-id="question-2-baseline-ridge-regression-10-points">Question 2: Baseline — Ridge Regression (10 points)</h3>
 <p><strong>2</strong> (10 points) Write a brief description of what ridge regression is, and then fit <code>RidgeCV</code> model using <code>alphas=np.logspace(-3, 3, 50)</code> and <code>cv=5</code>. Explain what you are tuning and report the chosen <code>alpha_</code>. Then estimate the 5-fold CV RMSE using the chosen alpha. The on the test set report R<span class="math inline">\(^2\)</span> and RMSE (log scale) and convert log-scale predictions back to dollars to report test R<span class="math inline">\(^2\)</span> and RMSE in dollars. Interpret the model performance metrics.</p>
+<p><strong>Ridge Regression</strong>:</p>
+<p>It is a linear regression method that adds an L2 penalty to the loss function, shrinking coefficient estimates toward zero. This helps reduce overfitting and multicollinearity by trading a small amount of bias for lower variance.</p>
+<div id="q2-ridge" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> RidgeCV, Ridge</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_squared_error, r2_score</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>X_train_sc <span class="op">=</span> scaler.fit_transform(X_train)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>X_test_sc  <span class="op">=</span> scaler.transform(X_test)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>ridge_cv <span class="op">=</span> RidgeCV(alphas<span class="op">=</span>np.logspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">50</span>), cv<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>ridge_cv.fit(X_train_sc, y_train)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Chosen alpha: </span><span class="sc">{</span>ridge_cv<span class="sc">.</span>alpha_<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>cv_scores <span class="op">=</span> cross_val_score(</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    Ridge(alpha<span class="op">=</span>ridge_cv.alpha_),</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    X_train_sc, y_train,</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span><span class="st">&#39;neg_mean_squared_error&#39;</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>cv_rmse <span class="op">=</span> np.sqrt(<span class="op">-</span>cv_scores.mean())</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;5-fold CV RMSE (log scale): </span><span class="sc">{</span>cv_rmse<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>y_pred_log <span class="op">=</span> ridge_cv.predict(X_test_sc)</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>test_r2_log  <span class="op">=</span> r2_score(y_test, y_pred_log)</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>test_rmse_log <span class="op">=</span> np.sqrt(mean_squared_error(y_test, y_pred_log))</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R²   (log scale): </span><span class="sc">{</span>test_r2_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test RMSE (log scale): </span><span class="sc">{</span>test_rmse_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>y_pred_dollars <span class="op">=</span> np.exp(y_pred_log)</span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>y_test_dollars <span class="op">=</span> np.exp(y_test)</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>test_r2_dollars   <span class="op">=</span> r2_score(y_test_dollars, y_pred_dollars)</span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>test_rmse_dollars <span class="op">=</span> np.sqrt(mean_squared_error(y_test_dollars, y_pred_dollars))</span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R²   (dollars): </span><span class="sc">{</span>test_r2_dollars<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test RMSE (dollars): $</span><span class="sc">{</span>test_rmse_dollars<span class="sc">:,.2f}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Chosen alpha: 244.2053
+5-fold CV RMSE (log scale): 0.1357
+
+Test R²   (log scale): 0.8433
+Test RMSE (log scale): 0.1572
+
+Test R²   (dollars): 0.3349
+Test RMSE (dollars): $64,459.61</code></pre>
+</div>
+</div>
+<p><strong>Interpretation</strong>:</p>
+<p>In <code>RidgeCV</code>, the hyperparameter being tuned is <code>alpha</code>, which controls the strength of the L2 penalty. Larger values of <code>alpha</code> shrink the regression coefficients more strongly, which can reduce overfitting but may also introduce more bias. The chosen <code>alpha</code> is 244.2053, indicates that a fairly strong amount of regularization gave the best 5-fold cross-validation performance.</p>
+<p>The 5-fold CV RMSE on the log scale is 0.1357, which is reasonably close to the test RMSE of 0.1572, suggesting that the model generalizes fairly well and is not severely overfitting. On the log scale, the test R<span class="math inline">\(^2\)</span> is 0.8433, so the ridge model explains a large share of the variation in logged house prices. After converting predictions back to dollars, the test RMSE is about 64459.61 dollars, and the R<span class="math inline">\(^2\)</span> in dollars drops to 0.3349. This lower R<span class="math inline">\(^2\)</span> on the original scale shows that errors become much larger in dollar scale.</p>
 </section>
 <section id="question-3-random-forest-12-points" class="level3">
 <h3 class="anchored" data-anchor-id="question-3-random-forest-12-points">Question 3: Random Forest (12 points)</h3>
