@@ -2422,7 +2422,7 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>(1460, 81)</code></pre>
 </div>
-<div id="q1a-load-data" class="cell-output cell-output-display" data-execution_count="1">
+<div id="q1a-load-data" class="cell-output cell-output-display" data-execution_count="19">
 <div>
 
 
@@ -2805,7 +2805,287 @@ SaleCondition Nominal</code></pre>
 <ul>
 <li>Use log <code>SalePrice</code> as your target and drop <code>SalePrice</code>. Create dummy variables of the remaining <code>object</code>-dtype columns (the nominal categoricals) using <code>pd.get_dummies(...)</code>. Print the final feature count and summarize the feature engineered variables (but no need to summarize all of the dummy variables).</li>
 </ul>
+<div id="q1b-fill-missing" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Missing values before filling: </span><span class="sc">{</span>df<span class="sc">.</span>isnull()<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>num_cols <span class="op">=</span> df.select_dtypes(include<span class="op">=</span><span class="st">&quot;number&quot;</span>).columns</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>cat_cols_all <span class="op">=</span> df.select_dtypes(include<span class="op">=</span><span class="st">&quot;object&quot;</span>).columns</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>df[num_cols] <span class="op">=</span> df[num_cols].fillna(<span class="dv">0</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>df[cat_cols_all] <span class="op">=</span> df[cat_cols_all].fillna(<span class="st">&quot;None&quot;</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Missing values remaining: </span><span class="sc">{</span>df<span class="sc">.</span>isnull()<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Missing values before filling: 6965
+Missing values remaining: 0</code></pre>
+</div>
+</div>
+<div id="q1b-engineer-features" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>display(df.shape)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">&quot;TotalSF&quot;</span>]  <span class="op">=</span> (df[<span class="st">&quot;TotalBsmtSF&quot;</span>].astype(<span class="bu">float</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                  <span class="op">+</span> df[<span class="st">&quot;1stFlrSF&quot;</span>].astype(<span class="bu">float</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                  <span class="op">+</span> df[<span class="st">&quot;2ndFlrSF&quot;</span>].astype(<span class="bu">float</span>))</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>df[<span class="st">&quot;HouseAge&quot;</span>] <span class="op">=</span> df[<span class="st">&quot;YrSold&quot;</span>].astype(<span class="bu">float</span>) <span class="op">-</span> df[<span class="st">&quot;YearBuilt&quot;</span>].astype(<span class="bu">float</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>df[<span class="st">&quot;RemodAge&quot;</span>] <span class="op">=</span> df[<span class="st">&quot;YrSold&quot;</span>].astype(<span class="bu">float</span>) <span class="op">-</span> df[<span class="st">&quot;YearRemodAdd&quot;</span>].astype(<span class="bu">float</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>df.drop(columns<span class="op">=</span>[<span class="st">&quot;TotalBsmtSF&quot;</span>, <span class="st">&quot;1stFlrSF&quot;</span>, <span class="st">&quot;2ndFlrSF&quot;</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                  <span class="st">&quot;YearBuilt&quot;</span>, <span class="st">&quot;YearRemodAdd&quot;</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>display(df.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="q1b-engineer-features-1" class="cell-output cell-output-display">
+<pre><code>(1460, 81)</code></pre>
+</div>
+<div id="q1b-engineer-features-2" class="cell-output cell-output-display">
+<pre><code>(1460, 79)</code></pre>
+</div>
+</div>
+<div id="cell-Q1b-ordinal-encode" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>qual_map <span class="op">=</span> {<span class="st">&#39;None&#39;</span>: <span class="dv">0</span>, <span class="st">&#39;Po&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;Fa&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;TA&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;Gd&#39;</span>: <span class="dv">4</span>, <span class="st">&#39;Ex&#39;</span>: <span class="dv">5</span>}</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>qual_cols <span class="op">=</span> [<span class="st">&#39;ExterQual&#39;</span>, <span class="st">&#39;ExterCond&#39;</span>, <span class="st">&#39;BsmtQual&#39;</span>, <span class="st">&#39;BsmtCond&#39;</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>             <span class="st">&#39;HeatingQC&#39;</span>, <span class="st">&#39;KitchenQual&#39;</span>, <span class="st">&#39;FireplaceQu&#39;</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>             <span class="st">&#39;GarageQual&#39;</span>, <span class="st">&#39;GarageCond&#39;</span>, <span class="st">&#39;PoolQC&#39;</span>]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>other_ordinal <span class="op">=</span> {</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;BsmtExposure&#39;</span>: {<span class="st">&#39;None&#39;</span>: <span class="dv">0</span>, <span class="st">&#39;No&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;Mn&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;Av&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;Gd&#39;</span>: <span class="dv">4</span>},</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;BsmtFinType1&#39;</span>: {<span class="st">&#39;None&#39;</span>: <span class="dv">0</span>, <span class="st">&#39;Unf&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;LwQ&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;Rec&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;BLQ&#39;</span>: <span class="dv">4</span>, <span class="st">&#39;ALQ&#39;</span>: <span class="dv">5</span>, <span class="st">&#39;GLQ&#39;</span>: <span class="dv">6</span>},</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;BsmtFinType2&#39;</span>: {<span class="st">&#39;None&#39;</span>: <span class="dv">0</span>, <span class="st">&#39;Unf&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;LwQ&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;Rec&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;BLQ&#39;</span>: <span class="dv">4</span>, <span class="st">&#39;ALQ&#39;</span>: <span class="dv">5</span>, <span class="st">&#39;GLQ&#39;</span>: <span class="dv">6</span>},</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;GarageFinish&#39;</span>: {<span class="st">&#39;None&#39;</span>: <span class="dv">0</span>, <span class="st">&#39;Unf&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;RFn&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;Fin&#39;</span>: <span class="dv">3</span>},</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;Fence&#39;</span>:        {<span class="st">&#39;None&#39;</span>: <span class="dv">0</span>, <span class="st">&#39;MnWw&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;GdWo&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;MnPrv&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;GdPrv&#39;</span>: <span class="dv">4</span>},</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;Functional&#39;</span>:   {<span class="st">&#39;Sal&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;Sev&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;Maj2&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;Maj1&#39;</span>: <span class="dv">4</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>                     <span class="st">&#39;Mod&#39;</span>: <span class="dv">5</span>, <span class="st">&#39;Min2&#39;</span>: <span class="dv">6</span>, <span class="st">&#39;Min1&#39;</span>: <span class="dv">7</span>, <span class="st">&#39;Typ&#39;</span>: <span class="dv">8</span>},</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;LotShape&#39;</span>:     {<span class="st">&#39;IR3&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;IR2&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;IR1&#39;</span>: <span class="dv">3</span>, <span class="st">&#39;Reg&#39;</span>: <span class="dv">4</span>},</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;LandSlope&#39;</span>:    {<span class="st">&#39;Sev&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;Mod&#39;</span>: <span class="dv">2</span>, <span class="st">&#39;Gtl&#39;</span>: <span class="dv">3</span>},</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;PavedDrive&#39;</span>:   {<span class="st">&#39;N&#39;</span>: <span class="dv">0</span>, <span class="st">&#39;P&#39;</span>: <span class="dv">1</span>, <span class="st">&#39;Y&#39;</span>: <span class="dv">2</span>},</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> qual_cols:</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    df[col] <span class="op">=</span> df[col].<span class="bu">map</span>(qual_map)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col, mapping <span class="kw">in</span> other_ordinal.items():</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    df[col] <span class="op">=</span> df[col].<span class="bu">map</span>(mapping)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>display(df.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="q1b-ordinal-encode" class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Id</th>
+<th data-quarto-table-cell-role="th">MSSubClass</th>
+<th data-quarto-table-cell-role="th">MSZoning</th>
+<th data-quarto-table-cell-role="th">LotFrontage</th>
+<th data-quarto-table-cell-role="th">LotArea</th>
+<th data-quarto-table-cell-role="th">Street</th>
+<th data-quarto-table-cell-role="th">Alley</th>
+<th data-quarto-table-cell-role="th">LotShape</th>
+<th data-quarto-table-cell-role="th">LandContour</th>
+<th data-quarto-table-cell-role="th">Utilities</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">MiscFeature</th>
+<th data-quarto-table-cell-role="th">MiscVal</th>
+<th data-quarto-table-cell-role="th">MoSold</th>
+<th data-quarto-table-cell-role="th">YrSold</th>
+<th data-quarto-table-cell-role="th">SaleType</th>
+<th data-quarto-table-cell-role="th">SaleCondition</th>
+<th data-quarto-table-cell-role="th">SalePrice</th>
+<th data-quarto-table-cell-role="th">TotalSF</th>
+<th data-quarto-table-cell-role="th">HouseAge</th>
+<th data-quarto-table-cell-role="th">RemodAge</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>60</td>
+<td>RL</td>
+<td>65.0</td>
+<td>8450</td>
+<td>Pave</td>
+<td>None</td>
+<td>4</td>
+<td>Lvl</td>
+<td>AllPub</td>
+<td>...</td>
+<td>None</td>
+<td>0</td>
+<td>2</td>
+<td>2008</td>
+<td>WD</td>
+<td>Normal</td>
+<td>208500</td>
+<td>2566.0</td>
+<td>5.0</td>
+<td>5.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2</td>
+<td>20</td>
+<td>RL</td>
+<td>80.0</td>
+<td>9600</td>
+<td>Pave</td>
+<td>None</td>
+<td>4</td>
+<td>Lvl</td>
+<td>AllPub</td>
+<td>...</td>
+<td>None</td>
+<td>0</td>
+<td>5</td>
+<td>2007</td>
+<td>WD</td>
+<td>Normal</td>
+<td>181500</td>
+<td>2524.0</td>
+<td>31.0</td>
+<td>31.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>3</td>
+<td>60</td>
+<td>RL</td>
+<td>68.0</td>
+<td>11250</td>
+<td>Pave</td>
+<td>None</td>
+<td>3</td>
+<td>Lvl</td>
+<td>AllPub</td>
+<td>...</td>
+<td>None</td>
+<td>0</td>
+<td>9</td>
+<td>2008</td>
+<td>WD</td>
+<td>Normal</td>
+<td>223500</td>
+<td>2706.0</td>
+<td>7.0</td>
+<td>6.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>4</td>
+<td>70</td>
+<td>RL</td>
+<td>60.0</td>
+<td>9550</td>
+<td>Pave</td>
+<td>None</td>
+<td>3</td>
+<td>Lvl</td>
+<td>AllPub</td>
+<td>...</td>
+<td>None</td>
+<td>0</td>
+<td>2</td>
+<td>2006</td>
+<td>WD</td>
+<td>Abnorml</td>
+<td>140000</td>
+<td>2473.0</td>
+<td>91.0</td>
+<td>36.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>5</td>
+<td>60</td>
+<td>RL</td>
+<td>84.0</td>
+<td>14260</td>
+<td>Pave</td>
+<td>None</td>
+<td>3</td>
+<td>Lvl</td>
+<td>AllPub</td>
+<td>...</td>
+<td>None</td>
+<td>0</td>
+<td>12</td>
+<td>2008</td>
+<td>WD</td>
+<td>Normal</td>
+<td>250000</td>
+<td>3343.0</td>
+<td>8.0</td>
+<td>8.0</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 79 columns</p>
+</div>
+</div>
+</div>
+<div id="q1b-target-dummies" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.log(df[<span class="st">&quot;SalePrice&quot;</span>].astype(<span class="bu">float</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">&quot;SalePrice&quot;</span>])</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.get_dummies(df, drop_first<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Final feature count: </span><span class="sc">{</span>df<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>eng_rows <span class="op">=</span> []</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> [<span class="st">&quot;TotalSF&quot;</span>, <span class="st">&quot;HouseAge&quot;</span>, <span class="st">&quot;RemodAge&quot;</span>]:</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    eng_rows.append({</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Feature&quot;</span>: col,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Mean&quot;</span>:    <span class="bu">round</span>(df[col].mean(), <span class="dv">2</span>),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Std&quot;</span>:     <span class="bu">round</span>(df[col].std(),  <span class="dv">2</span>),</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Min&quot;</span>:     <span class="bu">round</span>(df[col].<span class="bu">min</span>(),  <span class="dv">2</span>),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Max&quot;</span>:     <span class="bu">round</span>(df[col].<span class="bu">max</span>(),  <span class="dv">2</span>),</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>eng_df <span class="op">=</span> pd.DataFrame(eng_rows)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(eng_df.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Final feature count: 202
+ Feature    Mean    Std   Min     Max
+ TotalSF 2567.05 821.71 334.0 11752.0
+HouseAge   36.55  30.25   0.0   136.0
+RemodAge   22.95  20.64  -1.0    60.0</code></pre>
+</div>
+</div>
+<p><strong>Summary</strong>:</p>
+<ul>
+<li><code>TotalSF</code> has an average of about 2567.05 sq ft and ranges from 334.0 to 11752.0, showing substantial variation (std of 821.71 sq ft) in home size.</li>
+<li><code>HouseAge</code> has a mean of about 36.55 years with values from 0 to 136.0, with a large standard deviation of 30.25 years.</li>
+<li><code>RemodAge</code> has a mean of about 22.95 years and ranges from -1.0 to 60.0, with a standard deviation of 20.64 years, indicating that many homes had not been remodeled for a long time since the sale year.</li>
+</ul>
 <p><strong>1c.</strong> (3 points) Split into 70% train and 30% test (set <code>random_state=370</code>). Print the shapes of <code>X_train</code>, <code>X_test</code>, <code>y_train</code>, <code>y_test</code>. Report the mean and standard deviation of <code>y_train</code> and <code>y_test</code>.</p>
+<div id="q1c-set-split" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df.values.astype(<span class="bu">float</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.30</span>, random_state<span class="op">=</span><span class="dv">370</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;X_train: </span><span class="sc">{</span>X_train<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;X_test:  </span><span class="sc">{</span>X_test<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;y_train: </span><span class="sc">{</span>y_train<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;y_test:  </span><span class="sc">{</span>y_test<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> [</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    {<span class="st">&#39;Set&#39;</span>: <span class="st">&#39;y_train&#39;</span>, <span class="st">&#39;Mean&#39;</span>: <span class="bu">round</span>(y_train.mean(), <span class="dv">4</span>), <span class="st">&#39;Std&#39;</span>: <span class="bu">round</span>(y_train.std(), <span class="dv">4</span>)},</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    {<span class="st">&#39;Set&#39;</span>: <span class="st">&#39;y_test&#39;</span>,  <span class="st">&#39;Mean&#39;</span>: <span class="bu">round</span>(y_test.mean(),  <span class="dv">4</span>), <span class="st">&#39;Std&#39;</span>: <span class="bu">round</span>(y_test.std(),  <span class="dv">4</span>)},</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame(results).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>X_train: (1022, 202)
+X_test:  (438, 202)
+y_train: (1022,)
+y_test:  (438,)
+    Set    Mean    Std
+y_train 12.0296 0.4004
+ y_test 12.0110 0.3974</code></pre>
+</div>
+</div>
 </section>
 <section id="question-2-baseline-ridge-regression-10-points" class="level3">
 <h3 class="anchored" data-anchor-id="question-2-baseline-ridge-regression-10-points">Question 2: Baseline — Ridge Regression (10 points)</h3>
