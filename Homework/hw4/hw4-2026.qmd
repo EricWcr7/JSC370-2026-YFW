@@ -3,6 +3,11 @@ title: "Homework 4 - Machine Learning and Parallel Computing"
 format:
   html:
     embed-resources: true
+jupyter: python3
+execute:
+  eval: true
+  warning: false
+  message: false
 ---
 
 ## Due Date
@@ -34,6 +39,98 @@ Our goal is to predict `SalePrice`. Please use fetch_openml to get the data from
 - Plot the distribution of `SalePrice` and `log(SalePrice)` side by side. Report the skewness of each and indicate whether logging might be preferred for modeling.
 - Print a summary table of the categorical columns showing: column name, number of unique values, and first few values. Use this to identify which columns are truly nominal (no order, e.g. `Neighborhood`) vs ordinal quality ratings (e.g. `ExterQual` with values `Ex/Gd/TA/Fa/Po`). Write a brief interpretation.
 
+```{python}
+#| label: Q1a-load-data
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_openml
+import warnings
+warnings.filterwarnings('ignore')
+
+# Load Ames Housing dataset from OpenML
+ames = fetch_openml(name="house_prices", version=1, as_frame=True, parser="auto")
+df = ames.frame
+print(df.shape)
+df.head()
+```
+
+```{python}
+#| label: Q1a-distribution
+
+sale_price = df["SalePrice"].astype(float)
+log_sale_price = np.log(sale_price)
+
+skew_raw = sale_price.skew()
+skew_log = log_sale_price.skew()
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+axes[0].hist(sale_price, bins=50, color="steelblue", edgecolor="white")
+axes[0].set_title(f"SalePrice\nSkewness = {skew_raw:.3f}")
+axes[0].set_xlabel("SalePrice ($)")
+axes[0].set_ylabel("Count")
+
+axes[1].hist(log_sale_price, bins=50, color="darkorange", edgecolor="white")
+axes[1].set_title(f"log(SalePrice)\nSkewness = {skew_log:.3f}")
+axes[1].set_xlabel("log(SalePrice)")
+axes[1].set_ylabel("Count")
+
+plt.tight_layout()
+plt.show()
+```
+
+**Skewness**:
+
+- `SalePrice` is positively skewed with skewness about `{python} float(round(skew_raw, 3))`
+- `log(SalePrice)` has skewness about `{python} float(round(skew_log, 3))`, which is almost symmetric.
+- **Conclusion:** Since `log(SalePrice)` is not skewed, logging is preferred for modeling.
+
+```{python}
+#| label: Q1a-summary-table
+
+cat_cols = df.select_dtypes(include="object").columns.tolist()
+
+rows = []
+for col in cat_cols:
+    unique_vals = df[col].dropna().unique()
+    first_few = ", ".join(str(v) for v in unique_vals[:5])
+    rows.append({
+        "Column": col,
+        "N Unique": df[col].nunique(),
+        "First Few Values": first_few
+    })
+
+summary_df = pd.DataFrame(rows)
+print(summary_df.to_string(index=False))
+```
+
+```{python}
+#| label: Q1a-classify-columns
+
+ordinal_cols = [
+    'LotShape', 'LandSlope',
+    'ExterQual', 'ExterCond',
+    'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2',
+    'HeatingQC', 'KitchenQual', 'Functional', 'FireplaceQu',
+    'GarageFinish', 'GarageQual', 'GarageCond',
+    'PavedDrive', 'PoolQC', 'Fence'
+]
+
+nominal_cols = [col for col in cat_cols if col not in ordinal_cols]
+
+classify_rows = (
+    [{'Column': c, 'Type': 'Ordinal'} for c in ordinal_cols] +
+    [{'Column': c, 'Type': 'Nominal'} for c in nominal_cols]
+)
+classify_df = pd.DataFrame(classify_rows)
+print(classify_df.to_string(index=False))
+```
+
+**Interpretation**:
+
+The **ordinal** variables are mostly quality, condition, finish, or rating fields, where the labels have a clear order (for example, `ExterQual`, `KitchenQual`, and `GarageFinish`). The remaining categorical variables are **nominal**, since their labels identify categories without a meaningful ranking (for example, `Neighborhood`, `RoofStyle`, and `SaleCondition`). This classification matters because ordinal variables can be encoded using their natural order, while nominal variables should be encoded in a way that does not impose an ranking relationship, such as one-hot encoding.
 
 **1b.** (8 points) Handle missing values, engineer features, encode ordinal columns, set the target, and binary encode the remaining nominal categoricals. Complete all steps:
 
