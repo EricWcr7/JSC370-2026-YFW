@@ -242,10 +242,10 @@ eng_rows = []
 for col in ["TotalSF", "HouseAge", "RemodAge"]:
     eng_rows.append({
         "Feature": col,
-        "Mean":    round(df[col].mean(), 2),
-        "Std":     round(df[col].std(),  2),
-        "Min":     round(df[col].min(),  2),
-        "Max":     round(df[col].max(),  2),
+        "Mean": round(df[col].mean(), 2),
+        "Std": round(df[col].std(),  2),
+        "Min": round(df[col].min(),  2),
+        "Max": round(df[col].max(),  2),
     })
 eng_df = pd.DataFrame(eng_rows)
 print(eng_df.to_string(index=False))
@@ -271,9 +271,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 print(f"X_train: {X_train.shape}")
-print(f"X_test:  {X_test.shape}")
+print(f"X_test: {X_test.shape}")
 print(f"y_train: {y_train.shape}")
-print(f"y_test:  {y_test.shape}")
+print(f"y_test: {y_test.shape}")
 
 results = [
     {'Set': 'y_train', 'Mean': round(y_train.mean(), 4), 'Std': round(y_train.std(), 4)},
@@ -281,6 +281,10 @@ results = [
 ]
 print(pd.DataFrame(results).to_string(index=False))
 ```
+
+**Summary:**
+
+The train set has `{python} X_train.shape[0]` rows and `{python} X_train.shape[1]` columns, and the test set has `{python} X_test.shape[0]` rows and `{python} X_test.shape[1]` columns. The mean of the target in the train set is `{python} float(round(y_train.mean(), 4))` and the standard deviation is `{python} float(round(y_train.std(), 4))`. The mean of the target variable in the test set is `{python} float(round(y_test.mean(), 4))` and the standard deviation is `{python} float(round(y_test.std(), 4))`.
 
 ### Question 2: Baseline — Ridge Regression (10 points)
 
@@ -320,14 +324,14 @@ print(f"5-fold CV RMSE (log scale): {cv_rmse:.4f}")
 y_pred_log = ridge_cv.predict(X_test_sc)
 test_r2_log  = r2_score(y_test, y_pred_log)
 test_rmse_log = np.sqrt(mean_squared_error(y_test, y_pred_log))
-print(f"\nTest R^2   (log scale): {test_r2_log:.4f}")
+print(f"\nTest R^2 (log scale): {test_r2_log:.4f}")
 print(f"Test RMSE (log scale): {test_rmse_log:.4f}")
 
 y_pred_dollars = np.exp(y_pred_log)
 y_test_dollars = np.exp(y_test)
 test_r2_dollars   = r2_score(y_test_dollars, y_pred_dollars)
 test_rmse_dollars = np.sqrt(mean_squared_error(y_test_dollars, y_pred_dollars))
-print(f"\nTest R^2   (dollars): {test_r2_dollars:.4f}")
+print(f"\nTest R^2 (dollars): {test_r2_dollars:.4f}")
 print(f"Test RMSE (dollars): ${test_rmse_dollars:,.2f}")
 ```
 
@@ -425,9 +429,9 @@ y_pred_rf_dollars = np.exp(y_pred_rf_log)
 rf_test_r2_dollars   = r2_score(np.exp(y_test), y_pred_rf_dollars)
 rf_test_rmse_dollars = np.sqrt(mean_squared_error(np.exp(y_test), y_pred_rf_dollars))
 
-print(f"\nTest R^2   (log scale): {rf_test_r2_log:.4f}")
+print(f"\nTest R^2 (log scale): {rf_test_r2_log:.4f}")
 print(f"Test RMSE (log scale): {rf_test_rmse_log:.4f}")
-print(f"\nTest R^2   (dollars): {rf_test_r2_dollars:.4f}")
+print(f"\nTest R^2 (dollars): {rf_test_r2_dollars:.4f}")
 print(f"Test RMSE (dollars): ${rf_test_rmse_dollars:,.2f}")
 ```
 
@@ -543,9 +547,9 @@ y_pred_xgb_dollars = np.exp(y_pred_xgb_log)
 xgb_test_r2_dollars   = r2_score(np.exp(y_test), y_pred_xgb_dollars)
 xgb_test_rmse_dollars = np.sqrt(mean_squared_error(np.exp(y_test), y_pred_xgb_dollars))
 
-print(f"Test R^2   (log scale): {xgb_test_r2_log:.4f}")
+print(f"Test R^2 (log scale): {xgb_test_r2_log:.4f}")
 print(f"Test RMSE (log scale): {xgb_test_rmse_log:.4f}")
-print(f"\nTest R^2   (dollars): {xgb_test_r2_dollars:.4f}")
+print(f"\nTest R^2 (dollars): {xgb_test_r2_dollars:.4f}")
 print(f"Test RMSE (dollars): ${xgb_test_rmse_dollars:,.2f}")
 ```
 
@@ -580,8 +584,8 @@ t0 = time.time()
 inner_results = [fit_xgb_cv_inner(p) for p in param_grid_xgb]
 time_inner = time.time() - t0
 print(f"Inner-parallel serial grid search (n_jobs=4 inside model): {time_inner:.2f}s")
-print(f"Serial   (n_jobs=1 everywhere):  {time_serial_xgb:.2f}s")
-print(f"Parallel (Parallel n_jobs=4):     {time_parallel_xgb:.2f}s")
+print(f"Serial   (n_jobs=1 everywhere): {time_serial_xgb:.2f}s")
+print(f"Parallel (Parallel n_jobs=4): {time_parallel_xgb:.2f}s")
 ```
 
 **Interpretation**:
@@ -616,7 +620,7 @@ Both models agree that overall quality and exterior quality are among the most i
 ### Question 5: Model Comparison (6 points)
 
 **5a.** (6 points) Assemble a summary table with columns:
-`Model`, `Best CV RMSE (log)`, `Test RMSE (log)`, `Test RMSE ($)`, `Test R2`.
+`Model`, `Best CV RMSE (log)`, `Test RMSE (log)`, `Test RMSE ($)`, `Test R^2`.
 Include Ridge, Random Forest, and XGBoost. On a single figure with three side-by-side panels, plot predicted vs actual
 `SalePrice` (in dollars) for Ridge, Random Forest, and XGBoost. Add a 1-to-1 reference line to each panel. Interpret and discuss your findings.
 
@@ -628,25 +632,25 @@ xgb_best_cv_rmse = best_xgb[1]
 
 summary_df = pd.DataFrame([
     {
-        'Model':             'Ridge',
+        'Model': 'Ridge',
         'Best CV RMSE (log)': round(cv_rmse,            4),
-        'Test RMSE (log)':    round(test_rmse_log,       4),
-        'Test RMSE ($)':      round(test_rmse_dollars,   2),
-        'Test R2':            round(test_r2_log,         4),
+        'Test RMSE (log)': round(test_rmse_log,       4),
+        'Test RMSE ($)': round(test_rmse_dollars,   2),
+        'Test R^2': round(test_r2_log,         4),
     },
     {
-        'Model':             'Random Forest',
+        'Model': 'Random Forest',
         'Best CV RMSE (log)': round(rf_best_cv_rmse,     4),
-        'Test RMSE (log)':    round(rf_test_rmse_log,    4),
-        'Test RMSE ($)':      round(rf_test_rmse_dollars, 2),
-        'Test R2':            round(rf_test_r2_log,      4),
+        'Test RMSE (log)': round(rf_test_rmse_log,    4),
+        'Test RMSE ($)': round(rf_test_rmse_dollars, 2),
+        'Test R^2': round(rf_test_r2_log,      4),
     },
     {
-        'Model':             'XGBoost',
+        'Model': 'XGBoost',
         'Best CV RMSE (log)': round(xgb_best_cv_rmse,    4),
-        'Test RMSE (log)':    round(xgb_test_rmse_log,   4),
-        'Test RMSE ($)':      round(xgb_test_rmse_dollars, 2),
-        'Test R2':            round(xgb_test_r2_log,     4),
+        'Test RMSE (log)': round(xgb_test_rmse_log,   4),
+        'Test RMSE ($)': round(xgb_test_rmse_dollars, 2),
+        'Test R^2': round(xgb_test_r2_log,     4),
     },
 ])
 print(summary_df.to_string(index=False))
@@ -698,13 +702,91 @@ According to the plot, the XGBoost panel shows points clustered most tightly aro
 Run it with N = 1,000, 100,000, and 1,000,000. For each, report the estimate, the absolute
 error from `np.pi`, and the serial time. How does accuracy scale with N? How does run time scale?
 
+```{python}
+#| label: Q6a-estimate-pi
+
+def estimate_pi(N, seed=None):
+    rng = np.random.default_rng(seed)
+    x = rng.uniform(0, 1, N)
+    y = rng.uniform(0, 1, N)
+    inside = np.sum(x**2 + y**2 <= 1)
+    return 4 * inside / N
+
+rows = []
+for N in [1_000, 100_000, 1_000_000]:
+    t0 = time.perf_counter()
+    est = estimate_pi(N, seed=370)
+    elapsed = time.perf_counter() - t0
+    rows.append({
+        'N':          N,
+        'Estimate':   round(est, 6),
+        'Abs Error':  round(abs(est - np.pi), 6),
+        'Time (s)':   round(elapsed, 6),
+    })
+
+print(pd.DataFrame(rows).to_string(index=False))
+```
+
+**Summary:**
+
+- The absolute error decreases as `N` increases, so the estimate becomes more accurate.
+- The run time increases as `N` increases because more simulated points must be generated and checked.
+
+
 **6b.** (4 points) Run `estimate_pi(N=100_000)` serially with seeds 0–1999 (2,000 runs).
 Record the serial time. Report the mean and standard deviation of the estimates.
 
+```{python}
+#| label: Q6b-serial-pi
+
+seeds = list(range(2000))
+
+t0 = time.perf_counter()
+serial_estimates = [estimate_pi(N=100_000, seed=s) for s in seeds]
+t_serial_6b = time.perf_counter() - t0
+
+mean_est = np.mean(serial_estimates)
+std_est  = np.std(serial_estimates)
+
+print(f"Serial time: {t_serial_6b:.4f} s")
+print(f"Mean estimate: {mean_est:.6f}")
+print(f"Std deviation: {std_est:.6f}")
+print(f"Abs error of mean: {abs(mean_est - np.pi):.6f}")
+```
+
+**Summary:**
+
+Running 2,000 independent Monte Carlo estimates with `N = 100,000` serially takes about `{python} float(round(t_serial_6b, 2))` seconds. The mean estimate is `{python} float(round(mean_est, 6))`, with a standard deviation of approximately `{python} float(round(std_est, 6))`. The absolute error of the mean is very small (around `{python} float(round(abs(mean_est - np.pi), 6))`), showing that averaging many independent estimates further improves the accuracy.
 
 **6c.** (4 points) Repeat 6b in parallel with `Parallel(n_jobs=4, prefer="threads")`. Report speedup.
 Verify the mean estimate is within 0.001 of the serial result. Why is `prefer="threads"` a good choice here? Is the speedup closer to 4x compared to the XGBoost grid search? Why?
 
+```{python}
+#| label: Q6c-parallel-pi
+
+t0 = time.perf_counter()
+parallel_estimates = Parallel(n_jobs=4, prefer="threads")(
+    delayed(estimate_pi)(N=100_000, seed=s) for s in seeds
+)
+t_parallel_6c = time.perf_counter() - t0
+
+mean_par = np.mean(parallel_estimates)
+speedup  = t_serial_6b / t_parallel_6c
+
+print(f"Parallel time : {t_parallel_6c:.4f} s")
+print(f"Serial time: {t_serial_6b:.4f} s")
+print(f"Speedup: {speedup:.2f}x")
+print(f"Mean (parallel): {mean_par:.6f}")
+print(f"Mean (serial): {mean_est:.6f}")
+```
+
+**Summary:**
+
+The difference between the parallel and serial mean estimates is `{python} float(round(abs(mean_par - mean_est), 6))` after rounding, so within 0.001.
+
+`prefer="threads"` is good because the core computation relies heavily on NumPy operations. NumPy releases the Global Interpreter Lock (GIL) during these operations, allowing Python threads to execute truly in parallel. Threads have much lower overhead than processes, making them ideal for this task.
+
+The speedup (`{python} float(round(speedup, 2))`x) is lower than 4x due to the remaining overhead of thread management, scheduling, and aggregating results. It's similar to the speedup seen in the XGBoost grid search, but perhaps slightly lower because the individual tasks here are very fast, meaning the overhead takes up a larger fraction of the total time compared to fitting an XGBoost model.
 
 ### Question 7: Bootstrap Confidence Interval for Test RMSE (12 points)
 

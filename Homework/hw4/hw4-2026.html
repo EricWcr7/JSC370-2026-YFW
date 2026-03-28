@@ -2422,7 +2422,7 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>(1460, 81)</code></pre>
 </div>
-<div id="q1a-load-data" class="cell-output cell-output-display" data-execution_count="1">
+<div id="q1a-load-data" class="cell-output cell-output-display" data-execution_count="25">
 <div>
 
 
@@ -3035,10 +3035,10 @@ Missing values remaining: 0</code></pre>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> [<span class="st">&quot;TotalSF&quot;</span>, <span class="st">&quot;HouseAge&quot;</span>, <span class="st">&quot;RemodAge&quot;</span>]:</span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    eng_rows.append({</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Feature&quot;</span>: col,</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Mean&quot;</span>:    <span class="bu">round</span>(df[col].mean(), <span class="dv">2</span>),</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Std&quot;</span>:     <span class="bu">round</span>(df[col].std(),  <span class="dv">2</span>),</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Min&quot;</span>:     <span class="bu">round</span>(df[col].<span class="bu">min</span>(),  <span class="dv">2</span>),</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Max&quot;</span>:     <span class="bu">round</span>(df[col].<span class="bu">max</span>(),  <span class="dv">2</span>),</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Mean&quot;</span>: <span class="bu">round</span>(df[col].mean(), <span class="dv">2</span>),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Std&quot;</span>: <span class="bu">round</span>(df[col].std(),  <span class="dv">2</span>),</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Min&quot;</span>: <span class="bu">round</span>(df[col].<span class="bu">min</span>(),  <span class="dv">2</span>),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Max&quot;</span>: <span class="bu">round</span>(df[col].<span class="bu">max</span>(),  <span class="dv">2</span>),</span>
 <span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>eng_df <span class="op">=</span> pd.DataFrame(eng_rows)</span>
 <span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(eng_df.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -3067,9 +3067,9 @@ RemodAge   22.95  20.64  -1.0    60.0</code></pre>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;X_train: </span><span class="sc">{</span>X_train<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;X_test:  </span><span class="sc">{</span>X_test<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;X_test: </span><span class="sc">{</span>X_test<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;y_train: </span><span class="sc">{</span>y_train<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;y_test:  </span><span class="sc">{</span>y_test<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;y_test: </span><span class="sc">{</span>y_test<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">&quot;</span>)</span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> [</span>
 <span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    {<span class="st">&#39;Set&#39;</span>: <span class="st">&#39;y_train&#39;</span>, <span class="st">&#39;Mean&#39;</span>: <span class="bu">round</span>(y_train.mean(), <span class="dv">4</span>), <span class="st">&#39;Std&#39;</span>: <span class="bu">round</span>(y_train.std(), <span class="dv">4</span>)},</span>
@@ -3078,14 +3078,16 @@ RemodAge   22.95  20.64  -1.0    60.0</code></pre>
 <span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame(results).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>X_train: (1022, 202)
-X_test:  (438, 202)
+X_test: (438, 202)
 y_train: (1022,)
-y_test:  (438,)
+y_test: (438,)
     Set    Mean    Std
 y_train 12.0296 0.4004
  y_test 12.0110 0.3974</code></pre>
 </div>
 </div>
+<p><strong>Summary:</strong></p>
+<p>The train set has 1022 rows and 202 columns, and the test set has 438 rows and 202 columns. The mean of the target in the train set is 12.0296 and the standard deviation is 0.4004. The mean of the target variable in the test set is 12.011 and the standard deviation is 0.3974.</p>
 </section>
 <section id="question-2-baseline-ridge-regression-10-points" class="level3">
 <h3 class="anchored" data-anchor-id="question-2-baseline-ridge-regression-10-points">Question 2: Baseline — Ridge Regression (10 points)</h3>
@@ -3119,23 +3121,23 @@ y_train 12.0296 0.4004
 <span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>y_pred_log <span class="op">=</span> ridge_cv.predict(X_test_sc)</span>
 <span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>test_r2_log  <span class="op">=</span> r2_score(y_test, y_pred_log)</span>
 <span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>test_rmse_log <span class="op">=</span> np.sqrt(mean_squared_error(y_test, y_pred_log))</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2   (log scale): </span><span class="sc">{</span>test_r2_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2 (log scale): </span><span class="sc">{</span>test_r2_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test RMSE (log scale): </span><span class="sc">{</span>test_rmse_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>y_pred_dollars <span class="op">=</span> np.exp(y_pred_log)</span>
 <span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>y_test_dollars <span class="op">=</span> np.exp(y_test)</span>
 <span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>test_r2_dollars   <span class="op">=</span> r2_score(y_test_dollars, y_pred_dollars)</span>
 <span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>test_rmse_dollars <span class="op">=</span> np.sqrt(mean_squared_error(y_test_dollars, y_pred_dollars))</span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2   (dollars): </span><span class="sc">{</span>test_r2_dollars<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2 (dollars): </span><span class="sc">{</span>test_r2_dollars<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test RMSE (dollars): $</span><span class="sc">{</span>test_rmse_dollars<span class="sc">:,.2f}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Chosen alpha: 244.2053
 5-fold CV RMSE (log scale): 0.1357
 
-Test R^2   (log scale): 0.8433
+Test R^2 (log scale): 0.8433
 Test RMSE (log scale): 0.1572
 
-Test R^2   (dollars): 0.3349
+Test R^2 (dollars): 0.3349
 Test RMSE (dollars): $64,459.61</code></pre>
 </div>
 </div>
@@ -3206,9 +3208,9 @@ Test RMSE (dollars): $64,459.61</code></pre>
 <span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Best combination by CV RMSE:&quot;</span>)</span>
 <span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(best_row.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Serial grid search: 51.59s  (24 combinations)
-Parallel grid search (4 workers): 16.34s
-Speedup: 3.16x
+<pre><code>Serial grid search: 53.12s  (24 combinations)
+Parallel grid search (4 workers): 15.36s
+Speedup: 3.46x
 
 Best combination by CV RMSE:
  n_estimators  max_features  max_depth  min_samples_leaf  CV RMSE
@@ -3234,21 +3236,21 @@ Best combination by CV RMSE:
 <span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>rf_test_r2_dollars   <span class="op">=</span> r2_score(np.exp(y_test), y_pred_rf_dollars)</span>
 <span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>rf_test_rmse_dollars <span class="op">=</span> np.sqrt(mean_squared_error(np.exp(y_test), y_pred_rf_dollars))</span>
 <span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2   (log scale): </span><span class="sc">{</span>rf_test_r2_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2 (log scale): </span><span class="sc">{</span>rf_test_r2_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test RMSE (log scale): </span><span class="sc">{</span>rf_test_rmse_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2   (dollars): </span><span class="sc">{</span>rf_test_r2_dollars<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2 (dollars): </span><span class="sc">{</span>rf_test_r2_dollars<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test RMSE (dollars): $</span><span class="sc">{</span>rf_test_rmse_dollars<span class="sc">:,.2f}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-Test R^2   (log scale): 0.8848
+Test R^2 (log scale): 0.8848
 Test RMSE (log scale): 0.1347
 
-Test R^2   (dollars): 0.8713
+Test R^2 (dollars): 0.8713
 Test RMSE (dollars): $28,353.21</code></pre>
 </div>
 </div>
 <p><strong>Interpretation</strong>:</p>
-<p>The parallel grid search completed in about 16.34 seconds compared to 51.59 seconds for the serial version, giving a speedup of 3.16x. This is close to the theoretical maximum of <code>4x</code> for four workers, since the 24 hyperparameter combinations can be evaluated independently.</p>
+<p>The parallel grid search completed in about 15.36 seconds compared to 53.12 seconds for the serial version, giving a speedup of 3.46x. This is close to the theoretical maximum of <code>4x</code> for four workers, since the 24 hyperparameter combinations can be evaluated independently.</p>
 <p>On the test set, the test R<span class="math inline">\(^2\)</span> is 0.8848 on the log scale and 0.8713 on the dollar scale. The test RMSE is 0.1347 on the log scale and about 28353.21 in dollars. These suggest that the final tuned random forest explains a significant large amount of the variation in house sale prices and predicts substantially better than the baseline model, especially on the dollar scale with a significant lower RMSE.</p>
 <p><strong>3b.</strong> (2 points) Plot the top 15 features. Do the most important features make intuitive sense for predicting house prices?</p>
 <div id="cell-Q3b-feature-importance" class="cell" data-execution_count="14">
@@ -3332,9 +3334,9 @@ Test RMSE (dollars): $28,353.21</code></pre>
 <span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Best combination by CV RMSE:&quot;</span>)</span>
 <span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(best_xgb_row.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Serial grid search: 53.05s  (81 combinations)
-Parallel grid search (4 workers): 14.23s
-Speedup: 3.73x
+<pre><code>Serial grid search: 53.50s  (81 combinations)
+Parallel grid search (4 workers): 14.16s
+Speedup: 3.78x
 
 Best combination by CV RMSE:
  max_depth  learning_rate  n_estimators  subsample  CV RMSE
@@ -3361,20 +3363,20 @@ Best combination by CV RMSE:
 <span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>xgb_test_r2_dollars   <span class="op">=</span> r2_score(np.exp(y_test), y_pred_xgb_dollars)</span>
 <span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>xgb_test_rmse_dollars <span class="op">=</span> np.sqrt(mean_squared_error(np.exp(y_test), y_pred_xgb_dollars))</span>
 <span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test R^2   (log scale): </span><span class="sc">{</span>xgb_test_r2_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test R^2 (log scale): </span><span class="sc">{</span>xgb_test_r2_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test RMSE (log scale): </span><span class="sc">{</span>xgb_test_rmse_log<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
-<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2   (dollars): </span><span class="sc">{</span>xgb_test_r2_dollars<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">Test R^2 (dollars): </span><span class="sc">{</span>xgb_test_r2_dollars<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Test RMSE (dollars): $</span><span class="sc">{</span>xgb_test_rmse_dollars<span class="sc">:,.2f}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Test R^2   (log scale): 0.8982
+<pre><code>Test R^2 (log scale): 0.8982
 Test RMSE (log scale): 0.1266
 
-Test R^2   (dollars): 0.8876
+Test R^2 (dollars): 0.8876
 Test RMSE (dollars): $26,494.95</code></pre>
 </div>
 </div>
 <p><strong>Interpretation</strong>:</p>
-<p>The parallel grid search completed in about 14.23 seconds compared to 53.05 seconds for the serial version, giving a speedup of 3.73x. As with the random forest, this speedup is close to the theoretical maximum of <code>4x</code> for four workers, since each of the 81 combinations can be evaluated independently.</p>
+<p>The parallel grid search completed in about 14.16 seconds compared to 53.5 seconds for the serial version, giving a speedup of 3.78x. As with the random forest, this speedup is close to the theoretical maximum of <code>4x</code> for four workers, since each of the 81 combinations can be evaluated independently.</p>
 <p>On the test set,the test R<span class="math inline">\(^2\)</span> is 0.8982 on the log scale and 0.8876 on the dollar scale, and the test RMSE is 0.1266 on the log scale and about 26494.95 in dollars. Compared to the random forest, XGBoost achieves a lower prediction error on the dollar scale. This is consistent that gradient boosting tends to outperform random forests on structured tabular data when model is tuned.</p>
 <p><strong>4b.</strong> (2 points) Now try <strong>inner-level parallelism</strong>: write <code>fit_xgb_cv_inner(params)</code> that uses <code>n_jobs=4</code> on the <code>XGBRegressor</code> itself (so each model uses 4 threads internally) and <code>n_jobs=1</code> in <code>cross_val_score</code>, then run the grid search serially. Report wall-clock time and compare it to the serial (<code>n_jobs=1</code>) and outer-parallel (<code>Parallel(n_jobs=4)</code>) approaches from 4a. Which strategy is fastest and why?</p>
 <div id="q4b-xgb-inner" class="cell" data-execution_count="18">
@@ -3398,12 +3400,12 @@ Test RMSE (dollars): $26,494.95</code></pre>
 <span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>inner_results <span class="op">=</span> [fit_xgb_cv_inner(p) <span class="cf">for</span> p <span class="kw">in</span> param_grid_xgb]</span>
 <span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>time_inner <span class="op">=</span> time.time() <span class="op">-</span> t0</span>
 <span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Inner-parallel serial grid search (n_jobs=4 inside model): </span><span class="sc">{</span>time_inner<span class="sc">:.2f}</span><span class="ss">s&quot;</span>)</span>
-<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Serial   (n_jobs=1 everywhere):  </span><span class="sc">{</span>time_serial_xgb<span class="sc">:.2f}</span><span class="ss">s&quot;</span>)</span>
-<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Parallel (Parallel n_jobs=4):     </span><span class="sc">{</span>time_parallel_xgb<span class="sc">:.2f}</span><span class="ss">s&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Serial   (n_jobs=1 everywhere): </span><span class="sc">{</span>time_serial_xgb<span class="sc">:.2f}</span><span class="ss">s&quot;</span>)</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Parallel (Parallel n_jobs=4): </span><span class="sc">{</span>time_parallel_xgb<span class="sc">:.2f}</span><span class="ss">s&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inner-parallel serial grid search (n_jobs=4 inside model): 48.11s
-Serial   (n_jobs=1 everywhere):  53.05s
-Parallel (Parallel n_jobs=4):     14.23s</code></pre>
+<pre><code>Inner-parallel serial grid search (n_jobs=4 inside model): 49.26s
+Serial   (n_jobs=1 everywhere): 53.50s
+Parallel (Parallel n_jobs=4): 14.16s</code></pre>
 </div>
 </div>
 <p><strong>Interpretation</strong>:</p>
@@ -3437,40 +3439,40 @@ Parallel (Parallel n_jobs=4):     14.23s</code></pre>
 </section>
 <section id="question-5-model-comparison-6-points" class="level3">
 <h3 class="anchored" data-anchor-id="question-5-model-comparison-6-points">Question 5: Model Comparison (6 points)</h3>
-<p><strong>5a.</strong> (6 points) Assemble a summary table with columns: <code>Model</code>, <code>Best CV RMSE (log)</code>, <code>Test RMSE (log)</code>, <code>Test RMSE ($)</code>, <code>Test R2</code>. Include Ridge, Random Forest, and XGBoost. On a single figure with three side-by-side panels, plot predicted vs actual <code>SalePrice</code> (in dollars) for Ridge, Random Forest, and XGBoost. Add a 1-to-1 reference line to each panel. Interpret and discuss your findings.</p>
+<p><strong>5a.</strong> (6 points) Assemble a summary table with columns: <code>Model</code>, <code>Best CV RMSE (log)</code>, <code>Test RMSE (log)</code>, <code>Test RMSE ($)</code>, <code>Test R^2</code>. Include Ridge, Random Forest, and XGBoost. On a single figure with three side-by-side panels, plot predicted vs actual <code>SalePrice</code> (in dollars) for Ridge, Random Forest, and XGBoost. Add a 1-to-1 reference line to each panel. Interpret and discuss your findings.</p>
 <div id="q5a-summary-table" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>rf_best_cv_rmse  <span class="op">=</span> best[<span class="dv">4</span>]</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>xgb_best_cv_rmse <span class="op">=</span> best_xgb[<span class="dv">1</span>]</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>summary_df <span class="op">=</span> pd.DataFrame([</span>
 <span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Model&#39;</span>:             <span class="st">&#39;Ridge&#39;</span>,</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Model&#39;</span>: <span class="st">&#39;Ridge&#39;</span>,</span>
 <span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Best CV RMSE (log)&#39;</span>: <span class="bu">round</span>(cv_rmse,            <span class="dv">4</span>),</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE (log)&#39;</span>:    <span class="bu">round</span>(test_rmse_log,       <span class="dv">4</span>),</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE ($)&#39;</span>:      <span class="bu">round</span>(test_rmse_dollars,   <span class="dv">2</span>),</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test R2&#39;</span>:            <span class="bu">round</span>(test_r2_log,         <span class="dv">4</span>),</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE (log)&#39;</span>: <span class="bu">round</span>(test_rmse_log,       <span class="dv">4</span>),</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE ($)&#39;</span>: <span class="bu">round</span>(test_rmse_dollars,   <span class="dv">2</span>),</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test R^2&#39;</span>: <span class="bu">round</span>(test_r2_log,         <span class="dv">4</span>),</span>
 <span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    },</span>
 <span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Model&#39;</span>:             <span class="st">&#39;Random Forest&#39;</span>,</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Model&#39;</span>: <span class="st">&#39;Random Forest&#39;</span>,</span>
 <span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Best CV RMSE (log)&#39;</span>: <span class="bu">round</span>(rf_best_cv_rmse,     <span class="dv">4</span>),</span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE (log)&#39;</span>:    <span class="bu">round</span>(rf_test_rmse_log,    <span class="dv">4</span>),</span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE ($)&#39;</span>:      <span class="bu">round</span>(rf_test_rmse_dollars, <span class="dv">2</span>),</span>
-<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test R2&#39;</span>:            <span class="bu">round</span>(rf_test_r2_log,      <span class="dv">4</span>),</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE (log)&#39;</span>: <span class="bu">round</span>(rf_test_rmse_log,    <span class="dv">4</span>),</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE ($)&#39;</span>: <span class="bu">round</span>(rf_test_rmse_dollars, <span class="dv">2</span>),</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test R^2&#39;</span>: <span class="bu">round</span>(rf_test_r2_log,      <span class="dv">4</span>),</span>
 <span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>    },</span>
 <span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Model&#39;</span>:             <span class="st">&#39;XGBoost&#39;</span>,</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Model&#39;</span>: <span class="st">&#39;XGBoost&#39;</span>,</span>
 <span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Best CV RMSE (log)&#39;</span>: <span class="bu">round</span>(xgb_best_cv_rmse,    <span class="dv">4</span>),</span>
-<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE (log)&#39;</span>:    <span class="bu">round</span>(xgb_test_rmse_log,   <span class="dv">4</span>),</span>
-<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE ($)&#39;</span>:      <span class="bu">round</span>(xgb_test_rmse_dollars, <span class="dv">2</span>),</span>
-<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test R2&#39;</span>:            <span class="bu">round</span>(xgb_test_r2_log,     <span class="dv">4</span>),</span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE (log)&#39;</span>: <span class="bu">round</span>(xgb_test_rmse_log,   <span class="dv">4</span>),</span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test RMSE ($)&#39;</span>: <span class="bu">round</span>(xgb_test_rmse_dollars, <span class="dv">2</span>),</span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Test R^2&#39;</span>: <span class="bu">round</span>(xgb_test_r2_log,     <span class="dv">4</span>),</span>
 <span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>    },</span>
 <span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>])</span>
 <span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summary_df.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>        Model  Best CV RMSE (log)  Test RMSE (log)  Test RMSE ($)  Test R2
-        Ridge              0.1357           0.1572       64459.61   0.8433
-Random Forest              0.1411           0.1347       28353.21   0.8848
-      XGBoost              0.1307           0.1266       26494.95   0.8982</code></pre>
+<pre><code>        Model  Best CV RMSE (log)  Test RMSE (log)  Test RMSE ($)  Test R^2
+        Ridge              0.1357           0.1572       64459.61    0.8433
+Random Forest              0.1411           0.1347       28353.21    0.8848
+      XGBoost              0.1307           0.1266       26494.95    0.8982</code></pre>
 </div>
 </div>
 <div id="cell-Q5a-pred-vs-actual" class="cell" data-execution_count="21">
@@ -3519,8 +3521,91 @@ Random Forest              0.1411           0.1347       28353.21   0.8848
 <li>Returns 4 × (count inside) / N</li>
 </ol>
 <p>Run it with N = 1,000, 100,000, and 1,000,000. For each, report the estimate, the absolute error from <code>np.pi</code>, and the serial time. How does accuracy scale with N? How does run time scale?</p>
+<div id="q6a-estimate-pi" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_pi(N, seed<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> rng.uniform(<span class="dv">0</span>, <span class="dv">1</span>, N)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> rng.uniform(<span class="dv">0</span>, <span class="dv">1</span>, N)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    inside <span class="op">=</span> np.<span class="bu">sum</span>(x<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> y<span class="op">**</span><span class="dv">2</span> <span class="op">&lt;=</span> <span class="dv">1</span>)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">4</span> <span class="op">*</span> inside <span class="op">/</span> N</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> N <span class="kw">in</span> [<span class="dv">1_000</span>, <span class="dv">100_000</span>, <span class="dv">1_000_000</span>]:</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    t0 <span class="op">=</span> time.perf_counter()</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    est <span class="op">=</span> estimate_pi(N, seed<span class="op">=</span><span class="dv">370</span>)</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> t0</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    rows.append({</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;N&#39;</span>:          N,</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Estimate&#39;</span>:   <span class="bu">round</span>(est, <span class="dv">6</span>),</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Abs Error&#39;</span>:  <span class="bu">round</span>(<span class="bu">abs</span>(est <span class="op">-</span> np.pi), <span class="dv">6</span>),</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Time (s)&#39;</span>:   <span class="bu">round</span>(elapsed, <span class="dv">6</span>),</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame(rows).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      N  Estimate  Abs Error  Time (s)
+   1000  3.080000   0.061593  0.000689
+ 100000  3.145680   0.004087  0.001115
+1000000  3.143388   0.001795  0.014105</code></pre>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<ul>
+<li>The absolute error decreases as <code>N</code> increases, so the estimate becomes more accurate.</li>
+<li>The run time increases as <code>N</code> increases because more simulated points must be generated and checked.</li>
+</ul>
 <p><strong>6b.</strong> (4 points) Run <code>estimate_pi(N=100_000)</code> serially with seeds 0–1999 (2,000 runs). Record the serial time. Report the mean and standard deviation of the estimates.</p>
+<div id="q6b-serial-pi" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>seeds <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">2000</span>))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> time.perf_counter()</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>serial_estimates <span class="op">=</span> [estimate_pi(N<span class="op">=</span><span class="dv">100_000</span>, seed<span class="op">=</span>s) <span class="cf">for</span> s <span class="kw">in</span> seeds]</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>t_serial_6b <span class="op">=</span> time.perf_counter() <span class="op">-</span> t0</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>mean_est <span class="op">=</span> np.mean(serial_estimates)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>std_est  <span class="op">=</span> np.std(serial_estimates)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Serial time: </span><span class="sc">{</span>t_serial_6b<span class="sc">:.4f}</span><span class="ss"> s&quot;</span>)</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Mean estimate: </span><span class="sc">{</span>mean_est<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Std deviation: </span><span class="sc">{</span>std_est<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Abs error of mean: </span><span class="sc">{</span><span class="bu">abs</span>(mean_est <span class="op">-</span> np.pi)<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Serial time: 1.9769 s
+Mean estimate: 3.141443
+Std deviation: 0.005389
+Abs error of mean: 0.000150</code></pre>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<p>Running 2,000 independent Monte Carlo estimates with <code>N = 100,000</code> serially takes about 1.98 seconds. The mean estimate is 3.141443, with a standard deviation of approximately 0.005389. The absolute error of the mean is very small (around 0.00015), showing that averaging many independent estimates further improves the accuracy.</p>
 <p><strong>6c.</strong> (4 points) Repeat 6b in parallel with <code>Parallel(n_jobs=4, prefer=&quot;threads&quot;)</code>. Report speedup. Verify the mean estimate is within 0.001 of the serial result. Why is <code>prefer=&quot;threads&quot;</code> a good choice here? Is the speedup closer to 4x compared to the XGBoost grid search? Why?</p>
+<div id="q6c-parallel-pi" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> time.perf_counter()</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>parallel_estimates <span class="op">=</span> Parallel(n_jobs<span class="op">=</span><span class="dv">4</span>, prefer<span class="op">=</span><span class="st">&quot;threads&quot;</span>)(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    delayed(estimate_pi)(N<span class="op">=</span><span class="dv">100_000</span>, seed<span class="op">=</span>s) <span class="cf">for</span> s <span class="kw">in</span> seeds</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>t_parallel_6c <span class="op">=</span> time.perf_counter() <span class="op">-</span> t0</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>mean_par <span class="op">=</span> np.mean(parallel_estimates)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>speedup  <span class="op">=</span> t_serial_6b <span class="op">/</span> t_parallel_6c</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Parallel time : </span><span class="sc">{</span>t_parallel_6c<span class="sc">:.4f}</span><span class="ss"> s&quot;</span>)</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Serial time: </span><span class="sc">{</span>t_serial_6b<span class="sc">:.4f}</span><span class="ss"> s&quot;</span>)</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Speedup: </span><span class="sc">{</span>speedup<span class="sc">:.2f}</span><span class="ss">x&quot;</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Mean (parallel): </span><span class="sc">{</span>mean_par<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Mean (serial): </span><span class="sc">{</span>mean_est<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Parallel time : 0.6828 s
+Serial time: 1.9769 s
+Speedup: 2.90x
+Mean (parallel): 3.141443
+Mean (serial): 3.141443</code></pre>
+</div>
+</div>
+<p><strong>Summary:</strong></p>
+<p>The difference between the parallel and serial mean estimates is 0.0 after rounding, so within 0.001.</p>
+<p><code>prefer=&quot;threads&quot;</code> is good because the core computation relies heavily on NumPy operations. NumPy releases the Global Interpreter Lock (GIL) during these operations, allowing Python threads to execute truly in parallel. Threads have much lower overhead than processes, making them ideal for this task.</p>
+<p>The speedup (2.9x) is lower than 4x due to the remaining overhead of thread management, scheduling, and aggregating results. It’s similar to the speedup seen in the XGBoost grid search, but perhaps slightly lower because the individual tasks here are very fast, meaning the overhead takes up a larger fraction of the total time compared to fitting an XGBoost model.</p>
 </section>
 <section id="question-7-bootstrap-confidence-interval-for-test-rmse-12-points" class="level3">
 <h3 class="anchored" data-anchor-id="question-7-bootstrap-confidence-interval-for-test-rmse-12-points">Question 7: Bootstrap Confidence Interval for Test RMSE (12 points)</h3>
