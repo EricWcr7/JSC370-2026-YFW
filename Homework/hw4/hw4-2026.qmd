@@ -433,7 +433,9 @@ print(f"Test RMSE (dollars): ${rf_test_rmse_dollars:,.2f}")
 
 **Interpretation**:
 
-On the test set, the random forest performed very well: the test R$^2$ is `{python} float(round(rf_test_r2_log, 4))` on the log scale and `{python} float(round(rf_test_r2_dollars, 4))` on the dollar scale. The test RMSE is `{python} float(round(rf_test_rmse_log, 4))` on the log scale and about `{python} float(round(rf_test_rmse_dollars, 2))` in dollars. These suggest that the final tuned random forest explains a significant large amount of the variation in house sale prices and predicts substantially better than the baseline model, especially on the dollar scale with a significant lower RMSE.
+The parallel grid search completed in about `{python} round(time_parallel, 2)` seconds compared to `{python} round(time_serial, 2)` seconds for the serial version, giving a speedup of `{python} round(time_serial / time_parallel, 2)`x. This is close to the theoretical maximum of `4x` for four workers, since the 24 hyperparameter combinations can be evaluated independently.
+
+On the test set, the test R$^2$ is `{python} float(round(rf_test_r2_log, 4))` on the log scale and `{python} float(round(rf_test_r2_dollars, 4))` on the dollar scale. The test RMSE is `{python} float(round(rf_test_rmse_log, 4))` on the log scale and about `{python} float(round(rf_test_rmse_dollars, 2))` in dollars. These suggest that the final tuned random forest explains a significant large amount of the variation in house sale prices and predicts substantially better than the baseline model, especially on the dollar scale with a significant lower RMSE.
 
 
 **3b.** (2 points) Plot the top 15 features. Do the most important features make intuitive sense for predicting house prices?
@@ -467,10 +469,149 @@ The most important features mostly reflect overall house size, build quality, ho
 
 **4a.** (8 points) Define a hyperparameter grid with **at least 3 values** for each of `max_depth`, `learning_rate`, `n_estimators`, and `subsample` (minimum 81 combinations). Print the total number of combinations. Write a function `fit_xgb_cv(params)` that builds an `XGBRegressor` with the given `params` (plus `n_jobs=1`, `random_state=370`, `verbosity=0`), runs 5-fold CV with `scoring='neg_root_mean_squared_error'` and `n_jobs=1` on `(X_train, y_train)`, and returns `(params, mean_cv_rmse)`. Run the grid search both serially and in parallel with `Parallel(n_jobs=4)`. Report serial time and parallel speedup. Find the best hyperparameter combination (lowest mean CV RMSE), refit on the full training set, and report test R$^2$ and RMSE in log scale and dollars. Interpret and discuss.
 
+```{python}
+#| label: Q4a-xgb-setup
+import xgboost as xgb
+
+param_grid_xgb = [
+    {'max_depth': d, 'learning_rate': lr, 'n_estimators': n, 'subsample': ss}
+    for d  in [3, 5, 7]
+    for lr in [0.01, 0.1, 0.3]
+    for n  in [50, 100, 200]
+    for ss in [0.6, 0.8, 1.0]
+]
+print(f"Total hyperparameter combinations: {len(param_grid_xgb)}")
+
+def fit_xgb_cv(params):
+    model = xgb.XGBRegressor(
+        **params,
+        n_jobs=1,
+        random_state=370,
+        verbosity=0
+    )
+    scores = cross_val_score(
+        model,
+        X_train_sc, y_train,
+        cv=5,
+        scoring='neg_root_mean_squared_error',
+        n_jobs=1
+    )
+    return (params, -scores.mean())
+```
+
+```{python}
+#| label: Q4a-xgb-search
+
+t0 = time.time()
+serial_results_xgb = [fit_xgb_cv(p) for p in param_grid_xgb]
+time_serial_xgb = time.time() - t0
+print(f"Serial grid search: {time_serial_xgb:.2f}s  ({len(param_grid_xgb)} combinations)")
+
+t0 = time.time()
+parallel_results_xgb = Parallel(n_jobs=4)(
+    delayed(fit_xgb_cv)(p) for p in param_grid_xgb
+)
+time_parallel_xgb = time.time() - t0
+print(f"Parallel grid search (4 workers): {time_parallel_xgb:.2f}s")
+print(f"Speedup: {time_serial_xgb / time_parallel_xgb:.2f}x")
+
+best_xgb = min(parallel_results_xgb, key=lambda x: x[1])
+best_xgb_row = pd.DataFrame([{**best_xgb[0], 'CV RMSE': round(best_xgb[1], 4)}])
+print("\nBest combination by CV RMSE:")
+print(best_xgb_row.to_string(index=False))
+```
+
+```{python}
+#| label: Q4a-xgb-fit
+
+best_xgb_model = xgb.XGBRegressor(
+    max_depth=3,
+    learning_rate=0.1,
+    n_estimators=200,
+    subsample=0.6,
+    n_jobs=1,
+    random_state=370,
+    verbosity=0
+)
+best_xgb_model.fit(X_train_sc, y_train)
+
+y_pred_xgb_log = best_xgb_model.predict(X_test_sc)
+xgb_test_r2_log   = r2_score(y_test, y_pred_xgb_log)
+xgb_test_rmse_log = np.sqrt(mean_squared_error(y_test, y_pred_xgb_log))
+
+y_pred_xgb_dollars = np.exp(y_pred_xgb_log)
+xgb_test_r2_dollars   = r2_score(np.exp(y_test), y_pred_xgb_dollars)
+xgb_test_rmse_dollars = np.sqrt(mean_squared_error(np.exp(y_test), y_pred_xgb_dollars))
+
+print(f"Test R^2   (log scale): {xgb_test_r2_log:.4f}")
+print(f"Test RMSE (log scale): {xgb_test_rmse_log:.4f}")
+print(f"\nTest R^2   (dollars): {xgb_test_r2_dollars:.4f}")
+print(f"Test RMSE (dollars): ${xgb_test_rmse_dollars:,.2f}")
+```
+
+**Interpretation**:
+
+The parallel grid search completed in about `{python} round(time_parallel_xgb, 2)` seconds compared to `{python} round(time_serial_xgb, 2)` seconds for the serial version, giving a speedup of `{python} round(time_serial_xgb / time_parallel_xgb, 2)`x. As with the random forest, this speedup is close to the theoretical maximum of `4x` for four workers, since each of the 81 combinations can be evaluated independently.
+
+On the test set,the test R$^2$ is `{python} float(round(xgb_test_r2_log, 4))` on the log scale and `{python} float(round(xgb_test_r2_dollars, 4))` on the dollar scale, and the test RMSE is `{python} float(round(xgb_test_rmse_log, 4))` on the log scale and about `{python} float(round(xgb_test_rmse_dollars, 2))` in dollars. Compared to the random forest, XGBoost achieves a lower prediction error on the dollar scale. This is consistent that gradient boosting tends to outperform random forests on structured tabular data when model is tuned.
+
 **4b.** (2 points) Now try **inner-level parallelism**: write `fit_xgb_cv_inner(params)` that uses `n_jobs=4` on the `XGBRegressor` itself (so each model uses 4 threads internally) and `n_jobs=1` in `cross_val_score`, then run the grid search serially. Report wall-clock time and compare it to the serial (`n_jobs=1`) and outer-parallel (`Parallel(n_jobs=4)`) approaches from 4a. Which strategy is fastest and why?
+
+```{python}
+#| label: Q4b-xgb-inner
+
+def fit_xgb_cv_inner(params):
+    model = xgb.XGBRegressor(
+        **params,
+        n_jobs=4,
+        random_state=370,
+        verbosity=0
+    )
+    scores = cross_val_score(
+        model,
+        X_train_sc, y_train,
+        cv=5,
+        scoring='neg_root_mean_squared_error',
+        n_jobs=1
+    )
+    return (params, -scores.mean())
+
+t0 = time.time()
+inner_results = [fit_xgb_cv_inner(p) for p in param_grid_xgb]
+time_inner = time.time() - t0
+print(f"Inner-parallel serial grid search (n_jobs=4 inside model): {time_inner:.2f}s")
+print(f"Serial   (n_jobs=1 everywhere):  {time_serial_xgb:.2f}s")
+print(f"Parallel (Parallel n_jobs=4):     {time_parallel_xgb:.2f}s")
+```
+
+**Interpretation**:
+
+The outer-parallel strategy is the fastest. Although giving each XGBoost model 4 threads helps a little bit, the grid search still evaluates the 81 hyperparameter combinations one after another, so the overall procedure remains mostly sequential. In contrast, outer-level parallelism distributes different hyperparameter combinations across workers at the same time, which is much more effective.
 
 **4c.** (2 points) Plot the top 15 features. How do they compare to the random forest variable importance?
 
+```{python}
+#| label: Q4c-xgb-feature-importance
+
+xgb_imp_df = pd.DataFrame({
+    'feature':    df.columns.tolist(),
+    'importance': best_xgb_model.feature_importances_
+}).sort_values('importance', ascending=False).head(15)
+
+xgb_imp_df = xgb_imp_df.sort_values('importance', ascending=True)
+xgb_imp_df['feature'] = pd.Categorical(xgb_imp_df['feature'], categories=xgb_imp_df['feature'])
+
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.barh(xgb_imp_df['feature'], xgb_imp_df['importance'])
+ax.set_xlabel('Importance')
+ax.set_title('Top 15 XGBoost Feature Importances')
+plt.tight_layout()
+plt.show()
+```
+
+**Summary:**
+
+Both models agree that overall quality and exterior quality are among the most important predictors of house price. The key difference is that XGBoost concentrates much more importance on quality-related ratings (e.g., `ExterQual`, `KitchenQual`, `GarageQual`, `GarageFinish`, `PavedDrive`), whereas the Random Forest spreads importance more broadly across continuous size and age features such as `TotalSF`, `GrLivArea`, `GarageArea`, and `HouseAge`. Hence, XGBoost sequentially corrects residuals and tends to focus on a few highly discriminative ordinal features, while the Random Forest model averaging over many trees captures a larger variety of signals.
 
 ### Question 5: Model Comparison (6 points)
 
@@ -478,6 +619,69 @@ The most important features mostly reflect overall house size, build quality, ho
 `Model`, `Best CV RMSE (log)`, `Test RMSE (log)`, `Test RMSE ($)`, `Test R2`.
 Include Ridge, Random Forest, and XGBoost. On a single figure with three side-by-side panels, plot predicted vs actual
 `SalePrice` (in dollars) for Ridge, Random Forest, and XGBoost. Add a 1-to-1 reference line to each panel. Interpret and discuss your findings.
+
+```{python}
+#| label: Q5a-summary-table
+
+rf_best_cv_rmse  = best[4]
+xgb_best_cv_rmse = best_xgb[1]
+
+summary_df = pd.DataFrame([
+    {
+        'Model':             'Ridge',
+        'Best CV RMSE (log)': round(cv_rmse,            4),
+        'Test RMSE (log)':    round(test_rmse_log,       4),
+        'Test RMSE ($)':      round(test_rmse_dollars,   2),
+        'Test R2':            round(test_r2_log,         4),
+    },
+    {
+        'Model':             'Random Forest',
+        'Best CV RMSE (log)': round(rf_best_cv_rmse,     4),
+        'Test RMSE (log)':    round(rf_test_rmse_log,    4),
+        'Test RMSE ($)':      round(rf_test_rmse_dollars, 2),
+        'Test R2':            round(rf_test_r2_log,      4),
+    },
+    {
+        'Model':             'XGBoost',
+        'Best CV RMSE (log)': round(xgb_best_cv_rmse,    4),
+        'Test RMSE (log)':    round(xgb_test_rmse_log,   4),
+        'Test RMSE ($)':      round(xgb_test_rmse_dollars, 2),
+        'Test R2':            round(xgb_test_r2_log,     4),
+    },
+])
+print(summary_df.to_string(index=False))
+```
+
+```{python}
+#| label: Q5a-pred-vs-actual
+
+y_test_dollars = np.exp(y_test)
+
+models      = ['Ridge', 'Random Forest', 'XGBoost']
+pred_list   = [y_pred_dollars, y_pred_rf_dollars, y_pred_xgb_dollars]
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+for ax, name, preds in zip(axes, models, pred_list):
+    ax.scatter(y_test_dollars, preds, alpha=0.3, s=10)
+    lims = [
+        min(y_test_dollars.min(), preds.min()),
+        max(y_test_dollars.max(), preds.max()),
+    ]
+    ax.plot(lims, lims, 'r--', linewidth=1)
+    ax.set_xlabel('Actual SalePrice ($)')
+    ax.set_ylabel('Predicted SalePrice ($)')
+    ax.set_title(name)
+
+plt.tight_layout()
+plt.show()
+```
+
+**Interpretation**:
+
+Across all metrics, XGBoost performs best, followed by the Random Forest, while Ridge (baseline) is the weakest model. XGBoost has the lowest CV RMSE on the log scale, the lowest test RMSE on the log scale, the lowest test RMSE in dollars, and the highest test R$^2$. The Random Forest is also strong and clearly improves over Ridge, but its prediction error is still slightly larger than XGBoost's. Ridge performs the worst, which suggests that a linear model is not a good fit to predict house prices.
+
+According to the plot, the XGBoost panel shows points clustered most tightly around the 1-to-1 line, indicating the most accurate overall predictions. The Random Forest one also show points clustered close to the line, but with a little bit more deviation, especially for higher-priced homes. The Ridge plot shows a concentration of points at lower prices and missing the higher priced homes, along with one significant outlier.
 
 ---
 
