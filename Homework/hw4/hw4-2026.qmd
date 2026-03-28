@@ -800,14 +800,64 @@ assumptions. Each resample is independent, making it naturally parallel.
 2. Predicts with the best XGBoost model
 3. Returns the RMSE on the resample (log scale)
 
+```{python}
+#| label: Q7a-boot-rmse
+
+def boot_rmse(idx):
+    X_resample = X_test_sc[idx]
+    y_resample = y_test.iloc[idx]
+    y_pred     = best_xgb_model.predict(X_resample)
+    return np.sqrt(mean_squared_error(y_resample, y_pred))
+```
+
 **7b.** (4 points) Generate 1,000 bootstrap index arrays using a fixed random seed, run
 `boot_rmse` serially, and compute the 95% percentile bootstrap CI for test RMSE.
 Time the computation.
 
+```{python}
+#| label: Q7b-serial-boot_rmse
+
+rng_boot = np.random.default_rng(370)
+n_test   = len(y_test)
+boot_idx = [rng_boot.choice(n_test, size=n_test, replace=True) for _ in range(1000)]
+
+t0 = time.perf_counter()
+serial_rmses = [boot_rmse(idx) for idx in boot_idx]
+t_serial_7b  = time.perf_counter() - t0
+
+ci_low_7b, ci_high_7b = np.percentile(serial_rmses, [2.5, 97.5])
+
+print(f"Serial time: {t_serial_7b:.4f} s")
+print(f"95% CI: ({ci_low_7b:.4f}, {ci_high_7b:.4f})")
+```
+
+**Summary:**
+
+Running 1,000 bootstrap resamples serially takes about `{python} float(round(t_serial_7b, 2))` seconds. The resulting 95% bootstrap confidence interval for the test RMSE (on the log scale) is `{python} float(round(ci_low_7b, 4))` to `{python} float(round(ci_high_7b, 4))`.
 
 **7c.** (4 points) Run the same 1,000 bootstrap resamples in parallel with `Parallel(n_jobs=4, prefer="threads")`.
 Compare the CI to 7b and report speedup. Why is `prefer="threads"` important here, what happens if you use the default process backend instead? Do the serial and parallel CIs agree? Should they, given that both use the same pre-generated index arrays?
 
+```{python}
+#| label: Q7c-parallel-boot_rmse
+t0 = time.perf_counter()
+parallel_rmses = Parallel(n_jobs=4, prefer="threads")(
+    delayed(boot_rmse)(idx) for idx in boot_idx
+)
+t_parallel_7c = time.perf_counter() - t0
 
+speedup_7c = t_serial_7b / t_parallel_7c
+ci_low_7c, ci_high_7c = np.percentile(parallel_rmses, [2.5, 97.5])
 
+print(f"Parallel time: {t_parallel_7c:.4f} s")
+print(f"Serial time: {t_serial_7b:.4f} s")
+print(f"Speedup: {speedup_7c:.2f}x")
+print(f"95% CI (parallel): ({ci_low_7c:.4f}, {ci_high_7c:.4f})")
+print(f"95% CI (serial): ({ci_low_7b:.4f}, {ci_high_7b:.4f})")
+```
 
+**Summary:**
+
+Running the 1,000 bootstrap resamples in parallel reduces the wall-clock time from `{python} round(t_serial_7b, 2)` seconds to `{python} round(t_parallel_7c, 2)` seconds, for a speedup of about `{python} float(round(speedup_7c, 2))`x.
+
+Using `prefer="threads"` is important here because each task is fairly small, so threads avoid the extra process startup and serialization overhead that comes with the default process backend. If the default process backend were used, `joblib` would need to send objects like `best_xgb_model`, `X_test_sc`, and the bootstrap indices across processes, which would usually make this workload less efficient. The 95% bootstrap CI from the parallel run is `{python} float(round(ci_low_7c, 4))` to `{python} float(round(ci_high_7c, 4))`, which matches the serial CI of `{python} float(round(ci_low_7b, 4))` to `{python} float(round(ci_high_7b, 4))` and they should match because both versions evaluate the same deterministic `boot_rmse` function on the same pre-generated `boot_idx` arrays.
