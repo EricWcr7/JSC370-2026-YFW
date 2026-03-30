@@ -4,11 +4,10 @@ subtitle: "JSC370 (Winter 2026)"
 author: "Yi Fan (Eric) Wang"
 date: "February 27, 2026"
 format:
-  live-html:
+  html:
     toc: true
     page-layout: full
-filters:
-  - r-wasm/live
+    embed-resources: true
 jupyter: python3
 execute:
   enabled: true
@@ -535,10 +534,10 @@ roc_df = pd.DataFrame({"fpr": fpr, "tpr": tpr})
 
 **Summary:**
  
-- **Class Imbalance**: The training set is highly imbalanced, with hazardous NEOs representing only approximately 4% of the data. A naive model predicting "non-hazardous" for every instance would achieve approximately 96% accuracy by default.
-- **Confusion Matrix**: The logistic regression model correctly identified all 260 non-hazardous NEOs (True Negatives) but missed all 10 hazardous NEOs (False Negatives), resulting in 0 True Positives. This proves that the model performed as expected and failed to detect hazardous NEOs.
-- **Metrics Interpretation**: The high **accuracy** (96.23%) is misleading due to the imbalance and naiveness. The **precision, recall, and F1 scores of 0.00 accurately reflect that the model failed completely at its primary task: detecting hazardous asteroids.
-- **ROC AUC**: The ROC AUC of 0.2581 suggests the model has some underlying ability to distinguish classes (better than random guessing at 0.5). The ROC curve confirms this potential: it rises above the diagonal random-guess line, showing that the model assigns higher probabilities to hazardous asteroids on average. However, at the default threshold, the True Positive Rate is 0, meaning no hazardous asteroids are caught.
+- **Class Imbalance**: The training set is highly imbalanced, with hazardous NEOs representing only approximately `{python} float(round(y_train_c.value_counts(normalize=True).sort_index()[1] * 100, 2))`% of the data. A naive model predicting "non-hazardous" for every instance would achieve approximately `{python} float(round(y_train_c.value_counts(normalize=True).sort_index()[0] * 100, 2))`% accuracy by default.
+- **Confusion Matrix**: The logistic regression model correctly identified all `{python} int(cm[0][0])` non-hazardous NEOs (True Negatives) but missed all `{python} int(cm[1][0])` hazardous NEOs (False Negatives), resulting in `{python} int(cm[1][1])` True Positives. This proves that the model performed as expected and failed to detect hazardous NEOs.
+- **Metrics Interpretation**: The high **accuracy** (`{python} round(test_acc_c * 100, 2)`%) is misleading due to the imbalance and naiveness. The **precision** (`{python} round(test_precision_c, 2)`), **recall** (`{python} round(test_recall_c, 2)`), and **F1** (`{python} round(test_f1_c, 2)`) scores accurately reflect that the model failed completely at its primary task: detecting hazardous asteroids.
+- **ROC AUC**: The ROC AUC of `{python} round(test_auc_c, 4)` is below 0.5, meaning the model performs **worse** than random guessing. The ROC curve falls below the diagonal dashed line, indicating that the model's predicted probabilities are inversely calibrated — it tends to assign *lower* scores to truly hazardous asteroids than to non-hazardous ones. At the default threshold, the True Positive Rate is 0, meaning no hazardous asteroids are caught.
 
 ## 5. (5 points)
 
@@ -621,10 +620,10 @@ display(comparison_df.round(4))
 
 **Summary:**
 
-- **Confusion Matrix:** Out of the 10 actual hazardous NEOs in the test set, the Random Forest model correctly identified 4 (True Positives) but missed 6 (False Negatives). It correctly identified 259 non-hazardous NEOs (True Negatives) while incorrectly labeling 1 non-hazardous NEO as hazardous (False Positives).
-- **Metrics Interpretation:** The model achieved an accuracy of 97.41%, a precision of 0.8000, a recall of 0.4000, and an F1 score of 0.5333. Because 80% of the asteroids it flagged as hazardous were actually hazardous, it demonstrates good reliability in its positive predictions, though the recall (40%) means it is still missing more than half of the dangerous asteroids.
-- **ROC Curve:** The ROC curve rises sharply toward the top-left corner, yielding an exceptionally high ROC AUC of 0.9898. This indicates the model has an excellent underlying ability to separate hazardous from non-hazardous NEOs based on their predicted probabilities.
-- **Comparison with Logistic Regression:** The Random Forest model performed significantly better than the Logistic Regression model. While Logistic Regression failed to identify any hazardous NEOs (Precision=0.0, Recall=0.0), the Random Forest model successfully identified 4 hazardous NEOs with a precision of 0.8000 and a recall of 0.4000. The Random Forest's ROC AUC of 0.9898 is also much higher than the Logistic Regression's, confirming its superior predictive power for this imbalanced dataset.
+- **Confusion Matrix:** Out of the `{python} int(rf_cm[1][0] + rf_cm[1][1])` actual hazardous NEOs in the test set, the Random Forest model correctly identified `{python} int(rf_cm[1][1])` (True Positives) but missed `{python} int(rf_cm[1][0])` (False Negatives). It correctly identified `{python} int(rf_cm[0][0])` non-hazardous NEOs (True Negatives) while incorrectly labeling `{python} int(rf_cm[0][1])` non-hazardous NEO as hazardous (False Positives).
+- **Metrics Interpretation:** The model achieved an accuracy of `{python} round(rf_test_acc_c * 100, 2)`%, a precision of `{python} round(rf_test_precision_c, 4)`, a recall of `{python} round(rf_test_recall_c, 4)`, and an F1 score of `{python} round(rf_test_f1_c, 4)`. Because `{python} round(rf_test_precision_c * 100, 0)`% of the asteroids it flagged as hazardous were actually hazardous, it demonstrates good reliability in its positive predictions, though the recall (`{python} round(rf_test_recall_c * 100, 0)`%) means it is still missing more than half of the dangerous asteroids.
+- **ROC Curve:** The ROC curve rises sharply toward the top-left corner, yielding an exceptionally high ROC AUC of `{python} round(rf_test_auc_c, 4)`. This indicates the model has an excellent underlying ability to separate hazardous from non-hazardous NEOs based on their predicted probabilities.
+- **Comparison with Logistic Regression:** The Random Forest model performed significantly better than the Logistic Regression model. While Logistic Regression failed to identify any hazardous NEOs (Precision=`{python} round(test_precision_c, 2)`, Recall=`{python} round(test_recall_c, 2)`), the Random Forest model successfully identified `{python} int(rf_cm[1][1])` hazardous NEOs with a precision of `{python} round(rf_test_precision_c, 4)` and a recall of `{python} round(rf_test_recall_c, 4)`. The Random Forest's ROC AUC of `{python} round(rf_test_auc_c, 4)` is also much higher than the Logistic Regression's (`{python} round(test_auc_c, 4)`), confirming its superior predictive power for this imbalanced dataset.
 
 # CFPB API (Part 2)
 
