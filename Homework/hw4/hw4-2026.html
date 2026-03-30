@@ -2422,7 +2422,7 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>(1460, 81)</code></pre>
 </div>
-<div id="q1a-load-data" class="cell-output cell-output-display" data-execution_count="28">
+<div id="q1a-load-data" class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
 
@@ -3208,9 +3208,9 @@ Test RMSE (dollars): $64,459.61</code></pre>
 <span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Best combination by CV RMSE:&quot;</span>)</span>
 <span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(best_row.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Serial grid search: 52.04s  (24 combinations)
-Parallel grid search (4 workers): 17.33s
-Speedup: 3.00x
+<pre><code>Serial grid search: 50.29s  (24 combinations)
+Parallel grid search (4 workers): 15.99s
+Speedup: 3.15x
 
 Best combination by CV RMSE:
  n_estimators  max_features  max_depth  min_samples_leaf  CV RMSE
@@ -3250,7 +3250,7 @@ Test RMSE (dollars): $28,353.21</code></pre>
 </div>
 </div>
 <p><strong>Interpretation</strong>:</p>
-<p>The parallel grid search completed in about 17.33 seconds compared to 52.04 seconds for the serial version, giving a speedup of 3.0x. This is close to the theoretical maximum of <code>4x</code> for four workers, since the 24 hyperparameter combinations can be evaluated independently.</p>
+<p>The parallel grid search completed in about 15.99 seconds compared to 50.29 seconds for the serial version, giving a speedup of 3.15x. This is close to the theoretical maximum of <code>4x</code> for four workers, since the 24 hyperparameter combinations can be evaluated independently.</p>
 <p>On the test set, the test R<span class="math inline">\(^2\)</span> is 0.8848 on the log scale and 0.8713 on the dollar scale. The test RMSE is 0.1347 on the log scale and about 28353.21 in dollars. These suggest that the final tuned random forest explains a significant large amount of the variation in house sale prices and predicts substantially better than the baseline model, especially on the dollar scale with a significant lower RMSE.</p>
 <p><strong>3b.</strong> (2 points) Plot the top 15 features. Do the most important features make intuitive sense for predicting house prices?</p>
 <div id="cell-Q3b-feature-importance" class="cell" data-execution_count="14">
@@ -3334,9 +3334,9 @@ Test RMSE (dollars): $28,353.21</code></pre>
 <span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Best combination by CV RMSE:&quot;</span>)</span>
 <span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(best_xgb_row.to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Serial grid search: 53.76s  (81 combinations)
-Parallel grid search (4 workers): 14.55s
-Speedup: 3.70x
+<pre><code>Serial grid search: 51.17s  (81 combinations)
+Parallel grid search (4 workers): 13.91s
+Speedup: 3.68x
 
 Best combination by CV RMSE:
  max_depth  learning_rate  n_estimators  subsample  CV RMSE
@@ -3376,7 +3376,7 @@ Test RMSE (dollars): $26,494.95</code></pre>
 </div>
 </div>
 <p><strong>Interpretation</strong>:</p>
-<p>The parallel grid search completed in about 14.55 seconds compared to 53.76 seconds for the serial version, giving a speedup of 3.7x. As with the random forest, this speedup is close to the theoretical maximum of <code>4x</code> for four workers, since each of the 81 combinations can be evaluated independently.</p>
+<p>The parallel grid search completed in about 13.91 seconds compared to 51.17 seconds for the serial version, giving a speedup of 3.68x. As with the random forest, this speedup is close to the theoretical maximum of <code>4x</code> for four workers, since each of the 81 combinations can be evaluated independently.</p>
 <p>On the test set,the test R<span class="math inline">\(^2\)</span> is 0.8982 on the log scale and 0.8876 on the dollar scale, and the test RMSE is 0.1266 on the log scale and about 26494.95 in dollars. Compared to the random forest, XGBoost achieves a lower prediction error on the dollar scale. This is consistent that gradient boosting tends to outperform random forests on structured tabular data when model is tuned.</p>
 <p><strong>4b.</strong> (2 points) Now try <strong>inner-level parallelism</strong>: write <code>fit_xgb_cv_inner(params)</code> that uses <code>n_jobs=4</code> on the <code>XGBRegressor</code> itself (so each model uses 4 threads internally) and <code>n_jobs=1</code> in <code>cross_val_score</code>, then run the grid search serially. Report wall-clock time and compare it to the serial (<code>n_jobs=1</code>) and outer-parallel (<code>Parallel(n_jobs=4)</code>) approaches from 4a. Which strategy is fastest and why?</p>
 <div id="q4b-xgb-inner" class="cell" data-execution_count="18">
@@ -3403,9 +3403,9 @@ Test RMSE (dollars): $26,494.95</code></pre>
 <span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Serial   (n_jobs=1 everywhere): </span><span class="sc">{</span>time_serial_xgb<span class="sc">:.2f}</span><span class="ss">s&quot;</span>)</span>
 <span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Parallel (Parallel n_jobs=4): </span><span class="sc">{</span>time_parallel_xgb<span class="sc">:.2f}</span><span class="ss">s&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Inner-parallel serial grid search (n_jobs=4 inside model): 49.86s
-Serial   (n_jobs=1 everywhere): 53.76s
-Parallel (Parallel n_jobs=4): 14.55s</code></pre>
+<pre><code>Inner-parallel serial grid search (n_jobs=4 inside model): 50.63s
+Serial   (n_jobs=1 everywhere): 51.17s
+Parallel (Parallel n_jobs=4): 13.91s</code></pre>
 </div>
 </div>
 <p><strong>Interpretation</strong>:</p>
@@ -3505,7 +3505,7 @@ Random Forest              0.1411           0.1347       28353.21    0.8848
 </div>
 </div>
 <p><strong>Interpretation</strong>:</p>
-<p>Across all metrics, XGBoost performs best, followed by the Random Forest, while Ridge (baseline) is the weakest model. XGBoost has the lowest CV RMSE on the log scale, the lowest test RMSE on the log scale, the lowest test RMSE in dollars, and the highest test R<span class="math inline">\(^2\)</span>. The Random Forest is also strong and clearly improves over Ridge, but its prediction error is still slightly larger than XGBoost’s. Ridge performs the worst, which suggests that a linear model is not a good fit to predict house prices.</p>
+<p>Across all metrics, XGBoost performs best, followed by the Random Forest, while Ridge (baseline) is the weakest model. XGBoost has the lowest CV RMSE on the log scale, the lowest test RMSE on the log scale, the lowest test RMSE in dollars, and the highest test R<span class="math inline">\(^2\)</span>. The Random Forest is also strong and clearly improves over Ridge in general, but its prediction error is still slightly larger than XGBoost’s. Ridge performs the worst since most of its metrics are the worst among the three models, which suggests that a linear model is not a good fit to predict house prices.</p>
 <p>According to the plot, the XGBoost panel shows points clustered most tightly around the 1-to-1 line, indicating the most accurate overall predictions. The Random Forest one also show points clustered close to the line, but with a little bit more deviation, especially for higher-priced homes. The Ridge plot shows a concentration of points at lower prices and missing the higher priced homes, along with one significant outlier.</p>
 <hr>
 </section>
@@ -3544,9 +3544,9 @@ Random Forest              0.1411           0.1347       28353.21    0.8848
 <span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame(rows).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      N  Estimate  Abs Error  Time (s)
-   1000  3.080000   0.061593  0.000333
- 100000  3.145680   0.004087  0.001014
-1000000  3.143388   0.001795  0.014294</code></pre>
+   1000  3.080000   0.061593  0.000288
+ 100000  3.145680   0.004087  0.002936
+1000000  3.143388   0.001795  0.014349</code></pre>
 </div>
 </div>
 <p><strong>Summary:</strong></p>
@@ -3570,14 +3570,14 @@ Random Forest              0.1411           0.1347       28353.21    0.8848
 <span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Std deviation: </span><span class="sc">{</span>std_est<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Abs error of mean: </span><span class="sc">{</span><span class="bu">abs</span>(mean_est <span class="op">-</span> np.pi)<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Serial time: 1.9015 s
+<pre><code>Serial time: 2.0216 s
 Mean estimate: 3.141443
 Std deviation: 0.005389
 Abs error of mean: 0.000150</code></pre>
 </div>
 </div>
 <p><strong>Summary:</strong></p>
-<p>Running 2,000 independent Monte Carlo estimates with <code>N = 100,000</code> serially takes about 1.9 seconds. The mean estimate is 3.141443, with a standard deviation of approximately 0.005389. The absolute error of the mean is very small (around 0.00015), showing that averaging many independent estimates further improves the accuracy.</p>
+<p>Running 2,000 independent Monte Carlo estimates with <code>N = 100,000</code> serially takes about 2.02 seconds. The mean estimate is 3.141443, with a standard deviation of approximately 0.005389. The absolute error of the mean is very small (around 0.00015), showing that averaging many independent estimates further improves the accuracy.</p>
 <p><strong>6c.</strong> (4 points) Repeat 6b in parallel with <code>Parallel(n_jobs=4, prefer=&quot;threads&quot;)</code>. Report speedup. Verify the mean estimate is within 0.001 of the serial result. Why is <code>prefer=&quot;threads&quot;</code> a good choice here? Is the speedup closer to 4x compared to the XGBoost grid search? Why?</p>
 <div id="q6c-parallel-pi" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> time.perf_counter()</span>
@@ -3595,9 +3595,9 @@ Abs error of mean: 0.000150</code></pre>
 <span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Mean (parallel): </span><span class="sc">{</span>mean_par<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span>
 <span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Mean (serial): </span><span class="sc">{</span>mean_est<span class="sc">:.6f}</span><span class="ss">&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Parallel time : 0.5216 s
-Serial time: 1.9015 s
-Speedup: 3.65x
+<pre><code>Parallel time : 0.5474 s
+Serial time: 2.0216 s
+Speedup: 3.69x
 Mean (parallel): 3.141443
 Mean (serial): 3.141443</code></pre>
 </div>
@@ -3605,7 +3605,7 @@ Mean (serial): 3.141443</code></pre>
 <p><strong>Summary:</strong></p>
 <p>The difference between the parallel and serial mean estimates is 0.0 after rounding, so within 0.001.</p>
 <p><code>prefer=&quot;threads&quot;</code> is good because the core computation relies heavily on NumPy operations. NumPy releases the Global Interpreter Lock (GIL) during these operations, allowing Python threads to execute truly in parallel. Threads have much lower overhead than processes, making them ideal for this task.</p>
-<p>The speedup (3.65x) is lower than 4x due to the remaining overhead of thread management, scheduling, and aggregating results. It’s similar to the speedup seen in the XGBoost grid search, but perhaps slightly lower because the individual tasks here are very fast, meaning the overhead takes up a larger fraction of the total time compared to fitting an XGBoost model.</p>
+<p>The speedup (3.69x) is lower than 4x due to the remaining overhead of thread management, scheduling, and aggregating results. It’s similar to the speedup seen in the XGBoost grid search, but perhaps slightly lower because the individual tasks here are very fast, meaning the overhead takes up a larger fraction of the total time compared to fitting an XGBoost model.</p>
 </section>
 <section id="question-7-bootstrap-confidence-interval-for-test-rmse-12-points" class="level3">
 <h3 class="anchored" data-anchor-id="question-7-bootstrap-confidence-interval-for-test-rmse-12-points">Question 7: Bootstrap Confidence Interval for Test RMSE (12 points)</h3>
@@ -3638,7 +3638,7 @@ Mean (serial): 3.141443</code></pre>
 <span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Serial time: </span><span class="sc">{</span>t_serial_7b<span class="sc">:.4f}</span><span class="ss"> s&quot;</span>)</span>
 <span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;95% CI: (</span><span class="sc">{</span>ci_low_7b<span class="sc">:.4f}</span><span class="ss">, </span><span class="sc">{</span>ci_high_7b<span class="sc">:.4f}</span><span class="ss">)&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Serial time: 0.6899 s
+<pre><code>Serial time: 0.6883 s
 95% CI: (0.1076, 0.1469)</code></pre>
 </div>
 </div>
@@ -3661,15 +3661,15 @@ Mean (serial): 3.141443</code></pre>
 <span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;95% CI (parallel): (</span><span class="sc">{</span>ci_low_7c<span class="sc">:.4f}</span><span class="ss">, </span><span class="sc">{</span>ci_high_7c<span class="sc">:.4f}</span><span class="ss">)&quot;</span>)</span>
 <span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;95% CI (serial): (</span><span class="sc">{</span>ci_low_7b<span class="sc">:.4f}</span><span class="ss">, </span><span class="sc">{</span>ci_high_7b<span class="sc">:.4f}</span><span class="ss">)&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Parallel time: 0.4462 s
-Serial time: 0.6899 s
-Speedup: 1.55x
+<pre><code>Parallel time: 0.3570 s
+Serial time: 0.6883 s
+Speedup: 1.93x
 95% CI (parallel): (0.1076, 0.1469)
 95% CI (serial): (0.1076, 0.1469)</code></pre>
 </div>
 </div>
 <p><strong>Summary:</strong></p>
-<p>Running the 1,000 bootstrap resamples in parallel reduces the wall-clock time from 0.69 seconds to 0.45 seconds, for a speedup of about 1.55x.</p>
+<p>Running the 1,000 bootstrap resamples in parallel reduces the wall-clock time from 0.69 seconds to 0.36 seconds, for a speedup of about 1.93x.</p>
 <p>Using <code>prefer=&quot;threads&quot;</code> is important here because each task is fairly small, so threads avoid the extra process startup and serialization overhead that comes with the default process backend. If the default process backend were used, <code>joblib</code> would need to send objects like <code>best_xgb_model</code>, <code>X_test_sc</code>, and the bootstrap indices across processes, which would usually make this workload less efficient. The 95% bootstrap CI from the parallel run is 0.1076 to 0.1469, which matches the serial CI of 0.1076 to 0.1469 and they should match because both versions evaluate the same deterministic <code>boot_rmse</code> function on the same pre-generated <code>boot_idx</code> arrays.</p>
 </section>
 </section>

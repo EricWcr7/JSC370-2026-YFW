@@ -683,7 +683,7 @@ plt.show()
 
 **Interpretation**:
 
-Across all metrics, XGBoost performs best, followed by the Random Forest, while Ridge (baseline) is the weakest model. XGBoost has the lowest CV RMSE on the log scale, the lowest test RMSE on the log scale, the lowest test RMSE in dollars, and the highest test R$^2$. The Random Forest is also strong and clearly improves over Ridge, but its prediction error is still slightly larger than XGBoost's. Ridge performs the worst, which suggests that a linear model is not a good fit to predict house prices.
+Across all metrics, XGBoost performs best, followed by the Random Forest, while Ridge (baseline) is the weakest model. XGBoost has the lowest CV RMSE on the log scale, the lowest test RMSE on the log scale, the lowest test RMSE in dollars, and the highest test R$^2$. The Random Forest is also strong and clearly improves over Ridge in general, but its prediction error is still slightly larger than XGBoost's. Ridge performs the worst since most of its metrics are the worst among the three models, which suggests that a linear model is not a good fit to predict house prices.
 
 According to the plot, the XGBoost panel shows points clustered most tightly around the 1-to-1 line, indicating the most accurate overall predictions. The Random Forest one also show points clustered close to the line, but with a little bit more deviation, especially for higher-priced homes. The Ridge plot shows a concentration of points at lower prices and missing the higher priced homes, along with one significant outlier.
 
