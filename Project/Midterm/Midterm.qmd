@@ -4,10 +4,9 @@ subtitle: "JSC370 (Winter 2026)"
 author: "Yi Fan (Eric) Wang"
 date: "March 13, 2026"
 format:
-  live-html:
+  html:
     toc: true
-filters:
-  - r-wasm/live
+    embed-resources: true
 jupyter: python3
 execute:
   enabled: true
@@ -79,7 +78,7 @@ For the main analysis, missing values were handled at the row level by dropping 
 
 EDA was conducted to examine the structure of the dataset and to identify patterns related to the research question. First, descriptive statistics were computed for all numerical variables included in the dataset. Counts, means, medians, standard deviation, minimum & maximum values, and percentiles were calculated to summarize the distribution of each numerical variable and not including country codes and names. These measures provide an overview of the variables' distributions, which can help identify potential extreme values or outliers.
 
-Visual exploration was then performed to examine patterns in the data. Several graphical methods were used to explore relationships between variables and to identify potential trends. Line plots were used to examine how carbon dioxide emissions per capita change over time. Histograms were used to inspect the distribution of individual variables and to identify skewness or potential outliers. Scatter plots were used to examine the relationship between carbon dioxide emissions per capita and explanatory variables. Box plots with the implementation of quantile binning were used to examine and confirm the relationship between carbon dioxide emissions per capita and explanatory variables that were identified in the scatter plots. So is the correlation matrixto examine the correlation between all the variables.
+Visual exploration was then performed to examine patterns in the data. Several graphical methods were used to explore relationships between variables and to identify potential trends. Line plots were used to examine how carbon dioxide emissions per capita change over time. Histograms were used to inspect the distribution of individual variables and to identify skewness or potential outliers. Scatter plots were used to examine the relationship between carbon dioxide emissions per capita and explanatory variables. Box plots with the implementation of quantile binning were used to examine and confirm the relationship between carbon dioxide emissions per capita and explanatory variables that were identified in the scatter plots. So is the correlation matrix to examine the correlation between all the variables.
 
 ## 2.4 Feature Engineering
 
@@ -959,7 +958,7 @@ display(coef_tbl.round(4))
 
  The Adjusted $R^2$ of `{python} float(round(linear_mod.rsquared_adj, 4))` indicates that approximately `{python} float(round(linear_mod.rsquared_adj * 100, 2))`% of the variance in logged carbon dioxide emissions per capita is explained by the model's independent variables.
 
- ## 3.3.2 GAM
+## 3.3.2 GAM
 
 ```{python}
 #| label: wb-regression-gam
