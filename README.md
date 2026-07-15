@@ -4,11 +4,6 @@ This is my repository for the JSC370 course at the University of Toronto in Wint
 
 **Key Note: Remeber to enable `embed-resources: true` in the YAML header of the .qmd files to view the resources correctly.**
 
-## Projects
-
-- [Midterm.qmd](Project/Midterm/Midterm.qmd)
-- [Midterm.html](Project/Midterm/Midterm.html)
-
 ## Homework
 
 - [Homework 1](Homework/hw1/hw1_final.html)
